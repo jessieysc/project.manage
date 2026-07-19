@@ -43,7 +43,7 @@ select,input,textarea{font-family:inherit;font-size:14px}
   padding:12px 14px 12px 0;margin-right:4px;border-right:1px solid var(--line);white-space:nowrap}
 .proj-context{display:flex;align-items:center;gap:8px}
 .proj-context .sel{min-width:200px}
-main{padding:28px 0 80px}
+main{padding:40px 0 80px}
 .view{display:none}.view.active{display:block}
 .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:28px}
 .stat{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow)}
@@ -230,6 +230,63 @@ body.readonly .proj-name-ro{margin-left:auto;font-weight:700;font-size:15px;colo
   .stat .num{font-size:25px}.row2{grid-template-columns:1fr}.row3{grid-template-columns:1fr}.brand{font-size:18px}
   th,td{padding:8px 8px;font-size:13px}
 }
+
+/* ═══ 手機版排版優化 ═══ */
+@media(max-width:680px){
+  .wrap{padding:0 12px}
+  main{padding:26px 0 60px}
+
+  /* 頁首：改直向堆疊，按鈕不再擠成一團 */
+  .head-inner{gap:10px;padding:10px 0}
+  .proj-select{margin-left:0;width:100%;gap:8px}
+  .proj-select .btn.sm{flex:0 0 auto}
+  .sel{min-width:0;width:100%;flex:1 1 100%}
+  .proj-context{width:100%;flex-wrap:wrap}
+  .proj-context .sel{min-width:0;flex:1}
+  #cloudStatus{flex:1 1 100%;text-align:right}
+
+  /* 分頁標籤：可橫向滑動，不擠壓 */
+  .tabs{gap:2px;-webkit-overflow-scrolling:touch}
+  .tab{padding:10px 12px;font-size:14px}
+  .tab-scope{padding:10px 10px 10px 0;font-size:13px}
+
+  /* 統計卡：一排一格或兩格 */
+  .stat-grid{grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+  .stat{padding:13px 14px}
+  .stat .num{font-size:22px}
+
+  /* 卡片內距縮小 */
+  .card-head{padding:12px 13px;gap:8px}
+  .card-body{padding:0 13px 14px}
+  .card-title{font-size:14.5px}
+
+  /* 寬表格：外層可橫向捲動，避免撐破畫面 */
+  .card-body table,#view-budget table,#view-settings table,#view-works table{min-width:100%}
+  .table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+
+  /* 區塊標題與按鈕 */
+  .sec-head{gap:8px}
+  .sec-head h2{font-size:17px}
+
+  /* 彈窗：貼合手機、可捲動 */
+  .modal-bg{padding:20px 10px}
+  .modal h3{font-size:16.5px;padding:16px 16px 0}
+  .modal-body{padding:14px 16px}
+  .modal-foot{padding:12px 16px 16px}
+  .modal-foot .btn{flex:1}
+
+  /* 行內新增欄位改直向，好點擊 */
+  .inline-add{flex-direction:column;align-items:stretch}
+  .inline-add input,.inline-add select,.inline-add .btn{width:100%}
+
+  /* 聯絡人／窗口卡片單欄 */
+  .contact-grid{grid-template-columns:1fr}
+
+  /* 待辦、清單項目觸控區加大 */
+  .task{padding:12px 13px}
+  .chk{width:22px;height:22px}
+}
+/* ═══ 手機版排版優化 結束 ═══ */
 </style>
 </head>
 <body>
@@ -244,10 +301,6 @@ body.readonly .proj-name-ro{margin-left:auto;font-weight:700;font-size:15px;colo
           <select class="sel" id="projSelect" onchange="switchProject(this.value)"></select>
         </span>
         <button class="btn sm" onclick="openProjModal()">＋ 新專案</button>
-        <button class="btn sm primary" onclick="makeShare()">產生分享檔</button>
-        <button class="btn sm ghost" onclick="exportData()">匯出備份</button>
-        <button class="btn sm ghost" onclick="document.getElementById('importFile').click()">匯入</button>
-        <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
         <button class="btn sm ghost" id="cloudBtn" onclick="cloudButtonClick()" title="連結 Google 雲端自動同步">☁ 連結雲端</button>
         <span id="cloudStatus" style="font-size:12px;color:var(--ink-soft);white-space:nowrap"></span>
       </div>
@@ -435,12 +488,23 @@ function render(){
   renderProjSelect();
   syncNav();
   // 這兩頁是跨專案／總覽，不需要選定專案
-  if(activeTab==="projects"){renderProjects();save();return;}
-  if(activeTab==="schedule"){renderSchedule();save();return;}
-  if(activeTab==="ai"){renderAI();save();return;}
+  if(activeTab==="projects"){renderProjects();save();wrapTables();return;}
+  if(activeTab==="schedule"){renderSchedule();save();wrapTables();return;}
+  if(activeTab==="ai"){renderAI();save();wrapTables();return;}
   if(!proj()){document.getElementById("view-"+activeTab).innerHTML=`<div class="empty"><p>還沒有任何專案</p><span>點右上角「＋ 新專案」開始建立</span></div>`;return;}
   ({overview:renderOverview,months:renderMonths,works:renderWorks,budget:renderBudget,midreport:renderMidreport,settings:renderSettings}[activeTab])();
   save();
+  wrapTables();
+}
+/* 手機版：自動幫每個表格包一層可橫向捲動的容器（避免撐破畫面） */
+function wrapTables(){
+  document.querySelectorAll(".view.active table").forEach(t=>{
+    if(t.parentElement && t.parentElement.classList.contains("table-scroll"))return;
+    const wrap=document.createElement("div");
+    wrap.className="table-scroll";
+    t.parentNode.insertBefore(wrap,t);
+    wrap.appendChild(t);
+  });
 }
 
 /* 共用：計算單一專案的進度與經費概況 */
@@ -985,7 +1049,7 @@ function renderSettings(){
         <div class="sub-title" style="margin:0">系統帳號密碼</div>
         <button class="btn sm primary" onclick="openAccountModal()">＋ 新增</button>
       </div>
-      <p style="font-size:12.5px;color:var(--rose);margin-bottom:12px">⚠ 密碼以未加密文字儲存，且會包含在「產生分享檔」中。請勿把含帳密的分享檔傳給不該看到的人。</p>
+      <p style="font-size:12.5px;color:var(--rose);margin-bottom:12px">⚠ 密碼以未加密文字儲存於雲端資料中，請注意保管你的 Google 帳號存取權限。</p>
       ${p.accounts.length?`<table><thead><tr><th>帳號</th><th>密碼</th><th></th></tr></thead>
         <tbody>${p.accounts.map(a=>`<tr>
           <td style="font-weight:600">${esc(a.user)}</td>
@@ -1000,7 +1064,7 @@ function renderSettings(){
     <div class="card"><div style="padding:16px 18px">
       <div class="sub-title" style="margin-bottom:8px">危險操作</div>
       <button class="btn danger sm" onclick="delProject('${p.id}')" style="color:var(--rose)">刪除整個專案</button>
-      <p style="font-size:12.5px;color:var(--ink-soft);margin-top:8px">刪除後無法復原，會一併移除此專案的所有資料。建議先「匯出備份」。</p>
+      <p style="font-size:12.5px;color:var(--ink-soft);margin-top:8px">刪除後無法復原，會一併移除此專案的所有資料。資料已同步至雲端，仍請確認同步狀態顯示「已同步 ✓」。</p>
     </div></div>
   `;
 }
@@ -1053,7 +1117,7 @@ function delAccount(id){if(!confirm("確定刪除此系統帳密？"))return;pro
 /* 刪除專案 */
 function delProject(id){
   const p=db.projects.find(x=>x.id===id);if(!p)return;
-  if(!confirm(`確定刪除專案「${p.name}」？\n此專案的所有資料都會被移除，且無法復原。\n建議先按「匯出備份」。`))return;
+  if(!confirm(`確定刪除專案「${p.name}」？\n此專案的所有資料都會被移除，且無法復原。\n資料已同步雲端。`))return;
   db.projects=db.projects.filter(x=>x.id!==id);
   if(current===id)current=db.projects[0]?.id||null;
   render();
@@ -1219,6 +1283,7 @@ const CLOUD_CLIENT_ID = "277958923565-8kbdod8dh0jtg9urraq15lur0295k7n9.apps.goog
   const SCOPE = "https://www.googleapis.com/auth/drive.file";
   const TOKEN_KEY = "pm_cloud_token";      // 暫存登入權杖
   const AUTOCONNECT_KEY = "pm_cloud_auto"; // 記住使用者曾登入過，之後自動連
+  const LOCAL_TIME_KEY = "pm_cloud_localtime"; // 本機上次同步的時間戳（用來比對雲端新舊）
 
   let accessToken = null;
   let fileId = null;
@@ -1323,44 +1388,56 @@ const CLOUD_CLIENT_ID = "277958923565-8kbdod8dh0jtg9urraq15lur0295k7n9.apps.goog
     return j;
   }
 
-  // 連線成功後：先抓雲端資料
+  // 連線成功後：智慧比對雲端與本機的時間，自動決定同步方向
   async function onConnected(){
     setBtn("☁ 已連結"); setStatus("同步中…", "var(--slate)");
     try{
-      const f = await findFile();
+      const f = await findFile();  // 回傳含 modifiedTime
       if(f){
         fileId = f.id;
-        const cloudData = await downloadFile(f.id);
-        if(cloudData && cloudData.projects){
-          // 雲端有資料 → 問要不要用雲端版覆蓋本機
-          const localCount = (db.projects||[]).length;
-          const cloudCount = cloudData.projects.length;
-          const useCloud = confirm(
-            "已連結雲端 ✓\n\n" +
-            "雲端有一份資料（" + cloudCount + " 個專案），本機目前有 " + localCount + " 個專案。\n\n" +
-            "按「確定」＝ 用雲端版覆蓋畫面（換裝置時選這個）\n" +
-            "按「取消」＝ 保留本機這份，並上傳覆蓋雲端"
-          );
-          if(useCloud){
+        const cloudTime = new Date(f.modifiedTime).getTime();          // 雲端最後修改時間
+        const localTime = parseInt(localStorage.getItem(LOCAL_TIME_KEY) || "0", 10); // 本機上次同步時間
+
+        if(cloudTime > localTime + 2000){
+          // 雲端比本機新（換裝置、或別處改過）→ 自動用雲端版更新畫面
+          const cloudData = await downloadFile(f.id);
+          if(cloudData && cloudData.projects){
             db = migrate(cloudData);
             current = db.projects[0] ? db.projects[0].id : null;
-            realSave();      // 存回本機
+            realSave();
+            localStorage.setItem(LOCAL_TIME_KEY, String(cloudTime));
             render();
-          } else {
-            await uploadFile(db); // 本機蓋雲端
+            setStatus("已載入雲端最新版 ✓ " + nowTime(), "var(--accent)");
+            return;
           }
-        } else {
-          await uploadFile(db);
         }
+        // 本機較新或相同 → 把本機上傳（順便更新時間戳）
+        await pushLocal();
       } else {
-        // 雲端沒檔 → 把本機資料上傳建立
-        await uploadFile(db);
+        // 雲端還沒有檔 → 建立
+        await pushLocal();
       }
       setStatus("已同步 ✓ " + nowTime(), "var(--accent)");
     }catch(e){
       if(e.message === "TOKEN_EXPIRED"){ reconnectSilently(); }
       else { setStatus("同步失敗，稍後重試", "var(--rose)"); console.error(e); }
     }
+  }
+
+  // 上傳本機資料，並記下這次同步時間
+  async function pushLocal(){
+    const j = await uploadFile(db);
+    // 上傳後用回傳的 modifiedTime 更新本機時間戳（拿不到就用現在時間）
+    let t = Date.now();
+    if(j && j.id){
+      try{
+        const meta = await api("https://www.googleapis.com/drive/v3/files/" + j.id + "?fields=modifiedTime");
+        const mj = await meta.json();
+        if(mj.modifiedTime) t = new Date(mj.modifiedTime).getTime();
+      }catch(_){}
+    }
+    localStorage.setItem(LOCAL_TIME_KEY, String(t));
+    return j;
   }
 
   function nowTime(){ const d=new Date(); return ("0"+d.getHours()).slice(-2)+":"+("0"+d.getMinutes()).slice(-2); }
@@ -1379,7 +1456,7 @@ const CLOUD_CLIENT_ID = "277958923565-8kbdod8dh0jtg9urraq15lur0295k7n9.apps.goog
       clearTimeout(saveTimer);
       saveTimer = setTimeout(async ()=>{
         if(syncing) return; syncing = true;
-        try{ await uploadFile(db); setStatus("已同步 ✓ " + nowTime(), "var(--accent)"); }
+        try{ await pushLocal(); setStatus("已同步 ✓ " + nowTime(), "var(--accent)"); }
         catch(e){
           if(e.message === "TOKEN_EXPIRED") reconnectSilently();
           else setStatus("同步失敗", "var(--rose)");
@@ -1388,6 +1465,30 @@ const CLOUD_CLIENT_ID = "277958923565-8kbdod8dh0jtg9urraq15lur0295k7n9.apps.goog
       }, 1500);
     }
   };
+
+  // 當分頁重新切回前景，且已連雲端、目前沒在編輯 → 自動檢查雲端有無更新
+  document.addEventListener("visibilitychange", async ()=>{
+    if(document.visibilityState !== "visible") return;
+    if(!accessToken || syncing) return;
+    try{
+      const f = await findFile();
+      if(!f) return;
+      fileId = f.id;
+      const cloudTime = new Date(f.modifiedTime).getTime();
+      const localTime = parseInt(localStorage.getItem(LOCAL_TIME_KEY) || "0", 10);
+      if(cloudTime > localTime + 2000){
+        const cloudData = await downloadFile(f.id);
+        if(cloudData && cloudData.projects){
+          db = migrate(cloudData);
+          current = db.projects[0] ? db.projects[0].id : null;
+          realSave();
+          localStorage.setItem(LOCAL_TIME_KEY, String(cloudTime));
+          render();
+          setStatus("已載入雲端最新版 ✓ " + nowTime(), "var(--accent)");
+        }
+      }
+    }catch(e){ if(e.message === "TOKEN_EXPIRED") reconnectSilently(); }
+  });
 
   // 頁面載入：初始化 + 若之前登入過就自動連
   waitForGoogle(()=>{
