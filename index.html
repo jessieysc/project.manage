@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>專案管理(Jessie)</title>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
 :root{
   --ink:#1a1d21;--ink-soft:#5a6270;--line:#e2e0d8;--paper:#faf8f3;--panel:#ffffff;
@@ -247,6 +248,8 @@ body.readonly .proj-name-ro{margin-left:auto;font-weight:700;font-size:15px;colo
         <button class="btn sm ghost" onclick="exportData()">匯出備份</button>
         <button class="btn sm ghost" onclick="document.getElementById('importFile').click()">匯入</button>
         <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+        <button class="btn sm ghost" id="cloudBtn" onclick="cloudButtonClick()" title="連結 Google 雲端自動同步">☁ 連結雲端</button>
+        <span id="cloudStatus" style="font-size:12px;color:var(--ink-soft);white-space:nowrap"></span>
       </div>
     </div>
     <div class="tabs" id="tabsGlobal">
@@ -1200,6 +1203,202 @@ if(READONLY){
   }
 }
 render();
+
+/* ═══════════════════════════════════════════════════════════════
+   ☁ Google Drive 雲端自動同步模組
+   ───────────────────────────────────────────────────────────────
+   ⚠️ 之後你若要改網頁的其他功能，請「不要動」這整個框框內的程式碼。
+   ⚠️ 只有下面這一行 CLOUD_CLIENT_ID 是你的專屬設定，換帳號才需要改。
+   ═══════════════════════════════════════════════════════════════ */
+const CLOUD_CLIENT_ID = "277958923565-8kbdod8dh0jtg9urraq15lur0295k7n9.apps.googleusercontent.com";
+
+(function(){
+  if(READONLY) return; // 分享版（唯讀）不啟用雲端同步
+
+  const FILE_NAME = "專案管理_data.json";   // 存在你 Google Drive 的檔名
+  const SCOPE = "https://www.googleapis.com/auth/drive.file";
+  const TOKEN_KEY = "pm_cloud_token";      // 暫存登入權杖
+  const AUTOCONNECT_KEY = "pm_cloud_auto"; // 記住使用者曾登入過，之後自動連
+
+  let accessToken = null;
+  let fileId = null;
+  let tokenClient = null;
+  let syncing = false;
+  let saveTimer = null;
+
+  const statusEl = () => document.getElementById("cloudStatus");
+  const btnEl = () => document.getElementById("cloudBtn");
+  function setStatus(txt, color){
+    const el = statusEl(); if(!el) return;
+    el.textContent = txt || "";
+    el.style.color = color || "var(--ink-soft)";
+  }
+  function setBtn(txt){ const b = btnEl(); if(b) b.textContent = txt; }
+
+  // 等 Google 函式庫載入好
+  function waitForGoogle(cb){
+    if(window.google && google.accounts && google.accounts.oauth2){ cb(); return; }
+    let n=0; const t=setInterval(()=>{
+      if(window.google && google.accounts && google.accounts.oauth2){ clearInterval(t); cb(); }
+      else if(++n>50){ clearInterval(t); setStatus("雲端函式庫載入失敗", "var(--rose)"); }
+    },100);
+  }
+
+  function initTokenClient(){
+    tokenClient = google.accounts.oauth2.initTokenClient({
+      client_id: CLOUD_CLIENT_ID,
+      scope: SCOPE,
+      callback: (resp)=>{
+        if(resp && resp.access_token){
+          accessToken = resp.access_token;
+          localStorage.setItem(AUTOCONNECT_KEY, "1");
+          onConnected();
+        } else {
+          setStatus("登入未完成", "var(--rose)");
+        }
+      },
+    });
+  }
+
+  // 使用者點「連結雲端」按鈕
+  window.cloudButtonClick = function(){
+    if(accessToken){
+      // 已連線 → 詢問是否中斷
+      if(confirm("目前已連結雲端並自動同步中。\n要中斷連結嗎？（資料仍會保留在你的 Google Drive）")){
+        accessToken=null; fileId=null;
+        localStorage.removeItem(AUTOCONNECT_KEY);
+        setBtn("☁ 連結雲端"); setStatus("");
+      }
+      return;
+    }
+    if(!tokenClient){ setStatus("尚在初始化，請稍候再點一次", "var(--amber)"); return; }
+    setStatus("開啟 Google 登入…", "var(--slate)");
+    tokenClient.requestAccessToken({ prompt: "" });
+  };
+
+  // API 呼叫小工具
+  async function api(url, opts){
+    opts = opts || {};
+    opts.headers = Object.assign({ "Authorization": "Bearer " + accessToken }, opts.headers||{});
+    const r = await fetch(url, opts);
+    if(r.status === 401){ // 權杖過期
+      accessToken = null;
+      throw new Error("TOKEN_EXPIRED");
+    }
+    return r;
+  }
+
+  // 找雲端上的資料檔
+  async function findFile(){
+    const q = encodeURIComponent("name='" + FILE_NAME + "' and trashed=false");
+    const r = await api("https://www.googleapis.com/drive/v3/files?q=" + q + "&spaces=drive&fields=files(id,modifiedTime)");
+    const j = await r.json();
+    return (j.files && j.files.length) ? j.files[0] : null;
+  }
+
+  // 下載雲端資料
+  async function downloadFile(id){
+    const r = await api("https://www.googleapis.com/drive/v3/files/" + id + "?alt=media");
+    return await r.json();
+  }
+
+  // 上傳（新建或更新）
+  async function uploadFile(dataObj){
+    const meta = { name: FILE_NAME, mimeType: "application/json" };
+    const body = new Blob([JSON.stringify(dataObj)], { type: "application/json" });
+    const form = new FormData();
+    form.append("metadata", new Blob([JSON.stringify(meta)], { type: "application/json" }));
+    form.append("file", body);
+    let url, method;
+    if(fileId){
+      url = "https://www.googleapis.com/upload/drive/v3/files/" + fileId + "?uploadType=multipart";
+      method = "PATCH";
+    } else {
+      url = "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart";
+      method = "POST";
+    }
+    const r = await api(url, { method, body: form });
+    const j = await r.json();
+    if(j.id) fileId = j.id;
+    return j;
+  }
+
+  // 連線成功後：先抓雲端資料
+  async function onConnected(){
+    setBtn("☁ 已連結"); setStatus("同步中…", "var(--slate)");
+    try{
+      const f = await findFile();
+      if(f){
+        fileId = f.id;
+        const cloudData = await downloadFile(f.id);
+        if(cloudData && cloudData.projects){
+          // 雲端有資料 → 問要不要用雲端版覆蓋本機
+          const localCount = (db.projects||[]).length;
+          const cloudCount = cloudData.projects.length;
+          const useCloud = confirm(
+            "已連結雲端 ✓\n\n" +
+            "雲端有一份資料（" + cloudCount + " 個專案），本機目前有 " + localCount + " 個專案。\n\n" +
+            "按「確定」＝ 用雲端版覆蓋畫面（換裝置時選這個）\n" +
+            "按「取消」＝ 保留本機這份，並上傳覆蓋雲端"
+          );
+          if(useCloud){
+            db = migrate(cloudData);
+            current = db.projects[0] ? db.projects[0].id : null;
+            realSave();      // 存回本機
+            render();
+          } else {
+            await uploadFile(db); // 本機蓋雲端
+          }
+        } else {
+          await uploadFile(db);
+        }
+      } else {
+        // 雲端沒檔 → 把本機資料上傳建立
+        await uploadFile(db);
+      }
+      setStatus("已同步 ✓ " + nowTime(), "var(--accent)");
+    }catch(e){
+      if(e.message === "TOKEN_EXPIRED"){ reconnectSilently(); }
+      else { setStatus("同步失敗，稍後重試", "var(--rose)"); console.error(e); }
+    }
+  }
+
+  function nowTime(){ const d=new Date(); return ("0"+d.getHours()).slice(-2)+":"+("0"+d.getMinutes()).slice(-2); }
+
+  // 權杖過期時，靜默重新取得
+  function reconnectSilently(){
+    if(tokenClient){ setStatus("重新連線…", "var(--amber)"); tokenClient.requestAccessToken({ prompt: "" }); }
+  }
+
+  // 把雲端上傳掛到 save()：包住原本的 save，不改原邏輯
+  const realSave = window.save;
+  window.save = function(){
+    realSave();               // ① 原本的本機儲存，完全不變
+    if(accessToken){          // ② 若已連雲端，延遲 1.5 秒批次上傳（避免每次點擊都打 API）
+      setStatus("編輯中…", "var(--slate)");
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(async ()=>{
+        if(syncing) return; syncing = true;
+        try{ await uploadFile(db); setStatus("已同步 ✓ " + nowTime(), "var(--accent)"); }
+        catch(e){
+          if(e.message === "TOKEN_EXPIRED") reconnectSilently();
+          else setStatus("同步失敗", "var(--rose)");
+        }
+        finally{ syncing = false; }
+      }, 1500);
+    }
+  };
+
+  // 頁面載入：初始化 + 若之前登入過就自動連
+  waitForGoogle(()=>{
+    initTokenClient();
+    if(localStorage.getItem(AUTOCONNECT_KEY) === "1"){
+      setStatus("自動連線中…", "var(--slate)");
+      tokenClient.requestAccessToken({ prompt: "" });
+    }
+  });
+})();
+/* ═══════════ ☁ 雲端同步模組結束 ═══════════ */
 </script>
 </body>
 </html>
