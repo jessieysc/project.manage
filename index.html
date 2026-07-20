@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>專案管理(Jessie)</title>
+<title>ProjectHub</title>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
 :root{
@@ -54,6 +54,7 @@ main{padding:64px 0 80px}
 .bar{height:7px;border-radius:4px;background:var(--line);overflow:hidden;margin-top:12px}
 .bar>span{display:block;height:100%;background:var(--accent);border-radius:4px;transition:width .3s}
 .bar.over>span{background:var(--rose)}
+.view.active>.sec-head:first-child,.view.active>.stat-grid:first-child{margin-top:10px}
 .sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:12px;flex-wrap:wrap}
 .sec-head h2{font-size:19px;font-weight:800;letter-spacing:-.01em}
 .sec-head .hint{font-size:13px;color:var(--ink-soft);font-weight:500}
@@ -71,16 +72,16 @@ main{padding:64px 0 80px}
 .t-over{background:var(--rose-soft);color:var(--rose)}
 .t-role{background:var(--accent-soft);color:var(--accent)}
 .t-cat{background:var(--slate-soft);color:var(--slate)}
-.note-list{display:flex;flex-direction:column;gap:7px}
-.note-item{display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--paper);border:1px solid var(--line);border-radius:8px}
-.note-item.pinned{border-color:var(--accent);background:var(--accent-soft)}
-.note-item .note-date{flex:0 0 auto;font-size:12.5px;font-weight:700;color:var(--ink-soft);min-width:82px}
-.note-item .note-txt{flex:1;font-size:14px;line-height:1.5}
-.note-item .note-pin{flex:0 0 auto;font-size:12.5px;color:var(--ink-soft);font-weight:600;display:flex;align-items:center;gap:4px;cursor:pointer;white-space:nowrap}
-.note-item .note-pin input{cursor:pointer}
+.note-list{display:flex;flex-direction:column;gap:8px}
+.note-item2{display:flex;gap:10px;padding:10px 12px;background:var(--paper);border:1px solid var(--line);border-radius:8px}
+.note-item2.pinned{border-color:var(--accent);background:var(--accent-soft)}
+.note-item2 .note-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}
+.note-item2 .note-title-in{width:100%;padding:7px 10px;border:1px solid var(--line);border-radius:7px;background:var(--panel);font-family:inherit;font-size:14px;font-weight:700}
+.note-item2 .note-note-in{width:100%;padding:7px 10px;border:1px solid var(--line);border-radius:7px;background:var(--panel);font-family:inherit;font-size:13px;line-height:1.6;resize:vertical;color:var(--ink-soft)}
+.note-item2 .note-side{flex:0 0 auto;display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.note-item2 .note-pin{font-size:12.5px;color:var(--ink-soft);font-weight:600;display:flex;align-items:center;gap:4px;cursor:pointer;white-space:nowrap}
 .tile-notes{margin-top:10px;display:flex;flex-direction:column;gap:5px}
 .tile-note{display:flex;gap:7px;align-items:baseline;font-size:12.5px;background:var(--accent-soft);border-radius:6px;padding:5px 9px;line-height:1.45}
-.tile-note .d{color:var(--accent);font-weight:700;flex:0 0 auto}
 .tile-note .t{color:var(--ink);flex:1}
 .month-block{margin-bottom:22px}
 .month-label{font-weight:800;font-size:15px;margin-bottom:8px;display:flex;align-items:center;gap:8px;color:var(--ink)}
@@ -118,6 +119,23 @@ td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
 .field input:focus,.field select:focus,.field textarea:focus{outline:2px solid var(--accent);outline-offset:0;border-color:transparent}
 .field textarea{resize:vertical}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cons-summary{background:var(--accent-soft);border-radius:8px;padding:10px 14px;font-size:14px;margin:12px 0 4px}
+.cons-summary b{font-weight:800}
+.warn-txt{color:var(--rose)}
+.budget-table{width:100%;border-collapse:collapse;font-size:13.5px}
+.budget-table th{text-align:left;font-weight:700;color:var(--ink-soft);font-size:12.5px;padding:9px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+.budget-table td{padding:10px 12px;border-bottom:1px solid var(--line)}
+.budget-table th.num,.budget-table td.num{text-align:right}
+.budget-table tfoot td{border-bottom:none}
+.dsp-list{display:flex;flex-direction:column;gap:14px}
+.mv-cell{width:110px;text-align:right;padding:5px 8px;border:1px solid var(--line);border-radius:6px;background:var(--paper);font-family:inherit;font-size:13px}
+.mv-cell.over{color:var(--rose);border-color:var(--rose)}
+.conf-dot{display:inline-block;width:11px;height:11px;border-radius:50%;flex:0 0 auto}
+.prio-item{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--paper);border:1px solid var(--line);border-radius:8px}
+.prio-item .prio-num{flex:0 0 auto;width:20px;height:20px;border-radius:50%;background:var(--accent);color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center}
+.prio-item .txt{flex:1;font-size:14px}
+.prio-item.done .txt{text-decoration:line-through;color:var(--ink-soft)}
+.prio-item.done .prio-num{background:var(--ink-soft)}
 .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
 .modal-foot{padding:14px 22px 20px;display:flex;gap:10px;justify-content:flex-end;border-top:1px solid var(--line)}
 .inline-add{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
@@ -157,6 +175,28 @@ td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
 .proj-tile .tile-bar>span{display:block;height:100%;background:var(--accent);border-radius:4px}
 .proj-tile .tile-del{position:absolute;top:10px;right:8px}
 .proj-tile .tile-alert{font-size:11.5px;font-weight:700;color:var(--rose);background:var(--rose-soft);padding:1px 8px;border-radius:20px}
+.tk-lines{display:flex;flex-direction:column;gap:6px;margin-top:2px}
+.tk-line{display:flex;gap:7px;align-items:baseline;font-size:12.5px;line-height:1.45;padding:6px 9px;border-radius:7px;background:var(--paper);border-left:3px solid var(--line)}
+.tk-line .tk-ico{flex:0 0 auto;font-size:13px}
+.tk-line .tk-lab{flex:0 0 auto;font-weight:800;color:var(--ink-soft);min-width:28px}
+.tk-line .tk-txt{flex:1;min-width:0;color:var(--ink)}
+.tk-line.dim .tk-txt{color:var(--ink-soft)}
+.tk-line.warn{border-left-color:var(--amber);background:var(--amber-soft)}
+.tk-line.soon{border-left-color:var(--amber);background:var(--amber-soft)}
+.tk-line.over{border-left-color:var(--rose);background:var(--rose-soft)}
+.tk-line.over .tk-txt{color:var(--rose);font-weight:700}
+.focus-box{background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:16px 18px;margin-bottom:26px}
+.focus-head{font-weight:800;font-size:16px;display:flex;align-items:center;gap:9px;margin-bottom:12px}
+.focus-cnt{font-size:12.5px;font-weight:700;color:var(--rose);background:var(--rose-soft);padding:1px 10px;border-radius:20px}
+.focus-list{display:flex;flex-direction:column;gap:6px}
+.focus-item{display:flex;gap:10px;align-items:baseline;padding:8px 11px;border-radius:8px;background:var(--paper);border-left:3px solid var(--line);cursor:pointer;flex-wrap:wrap}
+.focus-item:hover{background:var(--accent-soft)}
+.focus-item.soon{border-left-color:var(--amber);background:var(--amber-soft)}
+.focus-item.over{border-left-color:var(--rose);background:var(--rose-soft)}
+.focus-item .fi-proj{font-weight:800;font-size:13px;flex:0 0 auto}
+.focus-item .fi-label{flex:1;min-width:0;font-size:13px;color:var(--ink)}
+.focus-item .fi-due{flex:0 0 auto;font-size:12.5px;font-weight:700;color:var(--ink-soft)}
+.focus-item.over .fi-due{color:var(--rose)}
 @media(max-width:900px){.proj-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:600px){.proj-grid{grid-template-columns:1fr}}
 .date-badge{display:inline-block;margin-left:8px;font-size:12px;font-weight:700;color:var(--accent);
@@ -209,10 +249,15 @@ td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
 .ev-self .ev-del{margin-left:auto;color:var(--ink-soft);cursor:pointer;border:none;background:none;font-size:12px;padding:0 2px}
 .ev-self .ev-del:hover{color:var(--rose)}
 @media(max-width:760px){
-  .cal-grid,.cal-weekhead{grid-template-columns:repeat(7,1fr);gap:3px}
-  .cal-cell{min-height:64px;padding:3px 3px}
-  .cal-daynum{font-size:11px}.ev{font-size:10px;padding:3px 4px}.ev-proj{font-size:9px}
-  .cal-weekhead div{font-size:11px}
+  .cal-weekhead{display:none}
+  .cal-grid{display:flex;flex-direction:column;gap:6px}
+  .cal-cell{min-height:0;padding:8px 10px;flex-direction:row;flex-wrap:wrap;align-items:flex-start;gap:8px}
+  .cal-cell.blank{display:none}
+  .cal-cell.mob-empty{display:none}
+  .cal-daynum{font-size:14px;min-width:34px;flex:0 0 auto}
+  .cal-cell .cal-evs{flex:1;min-width:0}
+  .cal-add{opacity:1}
+  .ev{font-size:13px;padding:5px 8px}.ev-proj{font-size:11px}
 }
 
 /* 唯讀分享模式 */
@@ -235,6 +280,8 @@ body.readonly #view-midreport .inline-add{display:none !important}
 body.readonly .proj-context .btn{display:none !important}
 body.readonly .chk{cursor:default;pointer-events:none}
 body.readonly .note-pin{pointer-events:none;opacity:.7}
+body.readonly .note-title-in,body.readonly .note-note-in,body.readonly .prog-in{pointer-events:none;opacity:.85;background:var(--paper)}
+body.readonly #view-budget select,body.readonly #view-budget input{pointer-events:none;opacity:.85}
 body.readonly #view-midreport input[type=text],body.readonly #view-midreport input:not([type]){pointer-events:none;opacity:.85}
 .ro-banner{display:none}
 body.readonly .ro-banner{display:block;background:var(--accent-soft);color:var(--accent);font-size:13px;font-weight:600;text-align:center;padding:7px 12px}
@@ -305,11 +352,11 @@ body.readonly .proj-name-ro{margin-left:auto;font-weight:700;font-size:15px;colo
 </style>
 </head>
 <body>
-<div class="ro-banner">唯讀分享檢視 · 由專案管理(Jessie)產生</div>
+<div class="ro-banner">唯讀分享檢視 · 由 ProjectHub 產生</div>
 <header>
   <div class="wrap">
     <div class="head-inner">
-      <div class="brand"><span class="dot"></span>專案管理(Jessie)</div>
+      <div class="brand"><span class="dot"></span>ProjectHub</div>
       <div class="proj-select">
         <span class="proj-context" id="projContext" style="display:none">
           <button class="btn sm ghost" onclick="backToOverview()" title="回到跨專案總覽">← 返回</button>
@@ -323,7 +370,7 @@ body.readonly .proj-name-ro{margin-left:auto;font-weight:700;font-size:15px;colo
     <div class="tabs" id="tabsGlobal">
       <button class="tab active" data-view="projects" onclick="switchTab('projects')">專案列表</button>
       <button class="tab" data-view="schedule" onclick="switchTab('schedule')">行事曆</button>
-      <button class="tab" data-view="ai" onclick="switchTab('ai')">本公司交付項目</button>
+      <button class="tab" data-view="ai" onclick="switchTab('ai')">工程總覽</button>
     </div>
     <div class="tabs" id="tabsProject" style="display:none">
       <span class="tab-scope" id="tabScopeName"></span>
@@ -384,6 +431,10 @@ function migrate(d){
   d.standaloneEvents=d.standaloneEvents||[];  // 行事曆自訂事項（與專案無關）
   d.projects.forEach(p=>{
     p.budgetItems=p.budgetItems||[];
+    // 總預算拆補助款/自籌款；舊資料沒有拆分時，暫把原總額當補助款
+    if(p.budgetGov===undefined&&p.budgetSelf===undefined){p.budgetGov=+p.budget||0;p.budgetSelf=0;}
+    p.budgetGov=+p.budgetGov||0; p.budgetSelf=+p.budgetSelf||0;
+    p.budget=p.budgetGov+p.budgetSelf;   // 總預算 = 補助 + 自籌（自動）
     p.contacts=p.contacts||[];
     p.alerts=p.alerts||[];        // 重大事項提醒
     p.accounts=p.accounts||[];    // 系統帳密
@@ -396,11 +447,19 @@ function migrate(d){
     p.midReportNotes=p.midReportNotes||"";                   // 期中報告資料整理（暫存文字，內容之後再定）
     p.midReportItems=p.midReportItems||[];                   // 期中報告待整理項目清單
     (p.midReportItems||[]).forEach(it=>{it.done=!!it.done;});
-    p.notes=p.notes||[];                                     // 注意事項日誌 {id,date,text,pin} pin=是否顯示在專案列表卡片
-    (p.notes||[]).forEach(n=>{n.date=n.date||""; n.text=n.text||""; n.pin=!!n.pin;});
+    p.notes=p.notes||[];                                     // 注意事項 {id,title,note,pin}
+    (p.notes||[]).forEach(n=>{
+      if(n.title===undefined && n.text!==undefined) n.title=n.text; // 舊 text → title
+      n.title=n.title||""; n.note=n.note||""; n.pin=!!n.pin; delete n.text; delete n.date;
+    });
+    p.acctTodos=p.acctTodos||[];                             // 會計待處理 {id,text,done}
+    (p.acctTodos||[]).forEach(a=>{a.text=a.text||""; a.done=!!a.done;});
+    p.priorities=p.priorities||[];                           // 接下來三件事 {id,text,done}
+    (p.priorities||[]).forEach(pr=>{pr.text=pr.text||""; pr.done=!!pr.done;});
     p.mrCheckpoints=p.mrCheckpoints||[];                     // 期中報告查核點 {id,name,status,note,materials:[{id,name,type,who,got}]}
     (p.mrCheckpoints||[]).forEach(cp=>{
       cp.status=cp.status||"todo";      // todo未開始 / collecting資料收集中 / ready已到齊
+      cp.confidence=cp.confidence||"none"; // 達成信心 none未評/ok有把握/risk有風險/hard可能達不到
       cp.note=cp.note||"";
       cp.materials=cp.materials||[];    // 待收資料
       cp.materials.forEach(mt=>{ mt.type=mt.type||"file"; mt.who=mt.who||""; mt.got=!!mt.got; });
@@ -435,9 +494,30 @@ function migrate(d){
       w.status=w.status||"none";        // 手動狀態：未開始/進行中/完成
       w.steps=w.steps||[];              // 執行步驟 {id,text,date,done}
       w.dataNeeded=w.dataNeeded||"";    // 要收集的資料（AI 類項目用）
+      w.progress=w.progress||"";        // 目前進度（卡片顯示用）
+      w.progressAt=w.progressAt||"";    // 進度更新時間戳（排序用）
       w.steps.forEach(s=>{s.date=s.date||""; s.done=!!s.done;});
     });
-    (p.budgetItems||[]).forEach(b=>{b.spends=b.spends||[]});
+    (p.budgetItems||[]).forEach(b=>{
+      b.spends=b.spends||[];
+      b.status=b.status||"none";        // 動支狀態 none未動支/doing進行中/done已完成/ongoing持續執行中
+      b.note=b.note||"";                // 選填備註
+      // 科目編列拆補助/自籌；舊資料把原 budget 當補助
+      if(b.gov===undefined&&b.self===undefined){b.gov=+b.budget||0;b.self=0;}
+      b.gov=+b.gov||0; b.self=+b.self||0;
+      b.budget=b.gov+b.self;            // 科目合計 = 補助 + 自籌
+      // moved：累計動支金額（手填）；舊資料若有 spent/明細則帶入
+      if(b.moved===undefined||b.moved===null){
+        let init="";
+        if(b.spent!==""&&b.spent!==undefined&&b.spent!==null)init=+b.spent||0;
+        else{const legacy=(b.spends||[]).reduce((s,x)=>s+(+x.amount||0),0);if(legacy>0)init=legacy;}
+        b.moved=init;
+      }
+      b.consumables=b.consumables||[];  // 耗材明細 {id,name,budget,bought,note} bought=已核銷
+      (b.consumables||[]).forEach(c=>{c.name=c.name||""; c.budget=+c.budget||0; c.bought=+c.bought||0; c.note=c.note||"";});
+      b.consNotes=b.consNotes||[];      // 耗材待處理問題 {id,text,done}
+      (b.consNotes||[]).forEach(cn=>{cn.text=cn.text||""; cn.done=!!cn.done;});
+    });
   });
   return d;
 }
@@ -475,6 +555,17 @@ current=db.projects[0]?.id||null;
 
 function proj(){return db.projects.find(p=>p.id===current);}
 function money(n){return "NT$ "+(n||0).toLocaleString("en-US");}
+/* 距某日期還有幾天（負數=已逾期）；非日期回傳 null */
+function daysUntil(dstr){
+  if(!dstr)return null;
+  const t=new Date(dstr+"T00:00:00"), now=new Date(today()+"T00:00:00");
+  if(isNaN(t))return null;
+  return Math.round((t-now)/86400000);
+}
+/* 依剩餘天數給緊急度：over逾期 / soon 7天內 / "" 其他 */
+function urgency(dstr){const d=daysUntil(dstr);if(d===null)return "";if(d<0)return "over";if(d<=7)return "soon";return "";}
+/* 剩餘天數的人話標籤 */
+function dueLabel(dstr){const d=daysUntil(dstr);if(d===null)return "";if(d<0)return `逾期 ${-d} 天`;if(d===0)return "今天";return `剩 ${d} 天`;}
 function biSpent(b){return(b.spends||[]).reduce((s,x)=>s+(+x.amount||0),0);}
 
 const GLOBAL_TABS=["projects","schedule","ai"];   // 跨專案層
@@ -535,7 +626,7 @@ function wrapTables(){
 function projStats(p){
   const tT=p.months.length,tD=p.months.filter(m=>m.done).length;
   const taskPct=tT?Math.round(tD/tT*100):0;
-  const spent=p.budgetItems.reduce((s,b)=>s+biSpent(b),0);
+  const spent=p.budgetItems.reduce((s,b)=>s+biSpentNew(b),0);
   const budgetPct=p.budget?Math.round(spent/p.budget*100):0;
   return {tT,tD,taskPct,spent,budgetPct,over:spent>p.budget&&p.budget>0};
 }
@@ -546,7 +637,7 @@ function renderOverview(){
   const tT=p.months.length,tD=p.months.filter(m=>m.done).length;
   const taskPct=tT?Math.round(tD/tT*100):0;
   const totalBudget=p.budget||0;
-  const spent=p.budgetItems.reduce((s,b)=>s+biSpent(b),0);
+  const spent=p.budgetItems.reduce((s,b)=>s+biSpentNew(b),0);
   const allocated=p.budgetItems.reduce((s,b)=>s+(+b.budget||0),0);
   const budgetPct=totalBudget?Math.round(spent/totalBudget*100):0;
   const over=spent>totalBudget&&totalBudget>0;
@@ -556,6 +647,21 @@ function renderOverview(){
   const cpPct=cpT?Math.round(cpD/cpT*100):0;
 
   document.getElementById("view-overview").innerHTML=`
+    <div class="sec-head"><div><h2>接下來三件事</h2><span class="hint">這個案子現在最該處理的事，你自己排</span></div></div>
+    <div class="card" style="margin-bottom:22px"><div style="padding:16px 18px">
+      ${(p.priorities||[]).length?`<div class="chip-list" style="margin-bottom:${(p.priorities||[]).length<3?"12px":"0"}">
+        ${p.priorities.map((pr,i)=>`<div class="prio-item ${pr.done?"done":""}">
+          <div class="chk ${pr.done?"on":""}" onclick="togglePriority('${pr.id}')"></div>
+          <span class="prio-num">${i+1}</span>
+          <span class="txt">${esc(pr.text)}</span>
+          <button class="del-x" onclick="delPriority('${pr.id}')">✕</button>
+        </div>`).join("")}
+      </div>`:`<div style="color:var(--ink-soft);font-size:13px;margin-bottom:12px">還沒有排定，把現在最該做的幾件事寫下來。</div>`}
+      ${(p.priorities||[]).length<3?`<div class="inline-add">
+        <input id="prio-new" placeholder="接下來要做的事，例：催客戶回簽約文件" style="flex:2;min-width:200px" onkeydown="if(event.key==='Enter')addPriority()">
+        <button class="btn sm primary" onclick="addPriority()">＋ 新增</button>
+      </div>`:`<div style="color:var(--ink-soft);font-size:12.5px">已排滿三件；完成或刪除一件才能再加。</div>`}
+    </div></div>
     <div class="stat-grid">
       <div class="stat"><div class="label">目前狀態</div>
         <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;align-items:center">
@@ -571,19 +677,22 @@ function renderOverview(){
       <div class="stat"><div class="label">工程項目查核點</div><div class="num">${cpPct}%</div>
         <div class="sub">${p.works.length} 項工程 · 查核點 ${cpD}/${cpT}</div></div>
     </div>
-    <div class="sec-head"><div><h2>注意事項</h2><span class="hint">記錄每天遇到的問題；勾選「釘選」可顯示在專案列表卡片上</span></div></div>
+    <div class="sec-head"><div><h2>注意事項</h2><span class="hint">記錄要注意的事；勾選「釘選」可顯示在專案列表卡片上</span></div></div>
     <div class="card"><div style="padding:16px 18px">
       <div class="inline-add" style="margin-bottom:${p.notes && p.notes.length?"14px":"0"}">
-        <input type="date" id="note-date" value="${today()}" style="flex:0 0 auto">
-        <input id="note-text" placeholder="今天遇到的問題／要注意的事…" style="flex:2;min-width:200px" onkeydown="if(event.key==='Enter')addNote()">
+        <input id="note-title" placeholder="事項（一句話標題）" style="flex:2;min-width:200px" onkeydown="if(event.key==='Enter')addNote()">
         <button class="btn sm primary" onclick="addNote()">＋ 新增</button>
       </div>
       ${p.notes && p.notes.length?`<div class="note-list">
-        ${p.notes.slice().sort((a,b)=>(b.date||"").localeCompare(a.date||"")).map(n=>`<div class="note-item${n.pin?" pinned":""}">
-          <span class="note-date">${esc(n.date||"—")}</span>
-          <span class="note-txt">${esc(n.text)}</span>
-          <label class="note-pin" title="顯示在專案列表卡片"><input type="checkbox" ${n.pin?"checked":""} onchange="toggleNotePin('${n.id}')"> 釘選</label>
-          <button class="del-x" onclick="delNote('${n.id}')">✕</button>
+        ${p.notes.map(n=>`<div class="note-item2${n.pin?" pinned":""}">
+          <div class="note-main">
+            <input class="note-title-in" value="${esc(n.title)}" placeholder="事項" onchange="setNoteTitle('${n.id}',this.value)">
+            <textarea class="note-note-in" rows="2" placeholder="備註（補充說明，選填）" onchange="setNoteNote('${n.id}',this.value)">${esc(n.note)}</textarea>
+          </div>
+          <div class="note-side">
+            <label class="note-pin" title="顯示在專案列表卡片"><input type="checkbox" ${n.pin?"checked":""} onchange="toggleNotePin('${n.id}')"> 釘選</label>
+            <button class="del-x" onclick="delNote('${n.id}')">✕</button>
+          </div>
         </div>`).join("")}
       </div>`:`<div style="color:var(--ink-soft);font-size:13px;margin-top:0">還沒有注意事項。</div>`}
     </div></div>
@@ -680,6 +789,10 @@ function renderWorks(){
             </select>
           </div>
 
+          <div class="sub-block"><div class="sub-title">目前進度 <span style="font-weight:600;color:var(--ink-soft)">（會顯示在專案列表卡片上）</span></div>
+            <input class="prog-in" value="${esc(w.progress||"")}" placeholder="一句話寫工程師目前做到哪，例：手臂已到貨，等整合測試" onchange="setWorkProgress('${w.id}',this.value)" style="width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--paper);font-family:inherit;font-size:14px">
+          </div>
+
           <div class="sub-block"><div class="sub-title">項目內容</div>
             <div class="field-read">${w.content?esc(w.content):'<span style="color:var(--ink-soft)">（尚未填寫，點「編輯」新增）</span>'}</div></div>
 
@@ -734,56 +847,121 @@ function renderWorks(){
   `;
 }
 
-/* ---- 經費 ---- */
+/* ---- 經費（錢與會計總管）---- */
+function isConsumable(b){return (b.name||"").indexOf("耗材")>=0;}
+/* 單一科目已動支金額：耗材用明細已核銷加總，其他用手填 moved */
+function biSpentNew(b){
+  if(isConsumable(b)) return (b.consumables||[]).reduce((s,c)=>s+(+c.bought||0),0);
+  return +b.moved||0;
+}
+const BI_STATUS={none:{label:"未動支",cls:"t-plan"},doing:{label:"進行中",cls:"t-run"},done:{label:"已完成",cls:"t-done"},ongoing:{label:"持續執行中",cls:"t-award"}};
 function renderBudget(){
   const p=proj();
-  const allocated=p.budgetItems.reduce((s,b)=>s+(+b.budget||0),0);
-  const spent=p.budgetItems.reduce((s,b)=>s+biSpent(b),0);
+  const spent=p.budgetItems.reduce((s,b)=>s+biSpentNew(b),0);
+  const acctOpen=(p.acctTodos||[]).filter(a=>!a.done).length;
+  const budgetPct=p.budget?Math.round(spent/p.budget*100):0;
+  const totalGov=p.budgetItems.reduce((s,b)=>s+(+b.gov||0),0);
+  const totalSelf=p.budgetItems.reduce((s,b)=>s+(+b.self||0),0);
+  const allocated=totalGov+totalSelf;
   document.getElementById("view-budget").innerHTML=`
-    <div class="sec-head"><div><h2>經費</h2><span class="hint">預算項目與動支情形，自動加總、算餘額</span></div>
-      <button class="btn primary sm" onclick="openBudgetModal()">＋ 新增預算項目</button></div>
+    <div class="sec-head"><div><h2>經費與會計</h2><span class="hint">預算編列、動支進度、耗材採購，以及你在盯的會計問題，都整理在這頁</span></div>
+      <button class="btn primary sm" onclick="openBudgetModal()">＋ 新增科目</button></div>
 
     <div class="stat-grid">
-      <div class="stat"><div class="label">專案總預算</div><div class="num" style="font-size:22px">${money(p.budget)}</div>
-        <button class="btn ghost sm" style="margin-top:6px;padding-left:0" onclick="openProjModal('${p.id}')">調整</button></div>
-      <div class="stat"><div class="label">已編列（各項預算合計）</div><div class="num" style="font-size:22px">${money(allocated)}</div>
-        <div class="sub">${p.budget?"占總預算 "+Math.round(allocated/p.budget*100)+"%":""}</div></div>
-      <div class="stat"><div class="label">已動支</div><div class="num" style="font-size:22px">${money(spent)}</div>
-        <div class="bar ${spent>p.budget&&p.budget>0?"over":""}"><span style="width:${p.budget?Math.min(Math.round(spent/p.budget*100),100):0}%"></span></div></div>
-      <div class="stat"><div class="label">總餘額</div><div class="num" style="font-size:22px">${money(p.budget-spent)}</div></div>
+      <div class="stat"><div class="label">政府補助款</div><div class="num" style="font-size:22px">${money(p.budgetGov)}</div></div>
+      <div class="stat"><div class="label">公司自籌款</div><div class="num" style="font-size:22px">${money(p.budgetSelf)}</div></div>
+      <div class="stat"><div class="label">總經費</div><div class="num" style="font-size:22px">${money(p.budget)}</div>
+        <button class="btn ghost sm" style="margin-top:6px;padding-left:0" onclick="openProjModal('${p.id}')">調整補助／自籌</button></div>
+      <div class="stat"><div class="label">參考動支率</div><div class="num" style="font-size:22px;${budgetPct<50?"color:var(--rose)":""}">${budgetPct}%</div>
+        <div class="sub">${budgetPct<50?"⚠ 未過半":"已過半 ✓"}　已動支 ${money(spent)}</div></div>
     </div>
 
-    ${p.budgetItems.length?p.budgetItems.map(b=>{
-      const sp=biSpent(b),diff=(+b.budget||0)-sp,ov=diff<0;
-      return `<div class="card">
-        <div class="card-head" onclick="toggleCard('bi-${b.id}')">
-          <span class="card-title">${esc(b.name)}</span>
-          ${ov?`<span class="tag t-over">超支</span>`:""}
-          <span style="margin-left:auto;font-size:13px;color:var(--ink-soft)">預算 ${money(b.budget)}</span>
-          <span class="money" style="font-size:13px">動支 ${money(sp)}</span>
-          <span class="money ${ov?"over":""}" style="font-size:13px">餘 ${money(diff)}</span>
-          <button class="btn ghost sm" onclick="event.stopPropagation();openBudgetModal('${b.id}')">編輯</button>
-          <button class="del-x" onclick="event.stopPropagation();delBudget('${b.id}')">✕</button>
+    <div class="sec-head" style="margin:22px 0 12px"><div><h2 style="font-size:16px">預算編列表</h2><span class="hint">金額單位：元。合計、佔比自動計算；直接在「累計核銷」欄填最新金額，耗材列自動帶入下方明細</span></div></div>
+    ${p.budgetItems.length?`<div class="card"><div style="padding:4px 2px"><table class="budget-table">
+      <thead><tr><th>會計科目</th><th class="num">政府補助款</th><th class="num">公司自籌款</th><th class="num">合計</th><th class="num">佔總經費</th><th class="num">累計核銷</th><th></th></tr></thead>
+      <tbody>
+        ${p.budgetItems.map(b=>{const bt=(+b.gov||0)+(+b.self||0);const pct=p.budget?Math.round(bt/p.budget*100):0;
+          const cons=isConsumable(b);const spent=biSpentNew(b);const ov=spent>bt&&bt>0;
+          return `<tr>
+            <td><b>${esc(b.name)}</b></td>
+            <td class="num money">${money(b.gov)}</td>
+            <td class="num money">${money(b.self)}</td>
+            <td class="num money">${money(bt)}</td>
+            <td class="num">${pct}%</td>
+            <td class="num">${cons
+              ? `<span class="money ${ov?"over":""}">${money(spent)}</span><div style="font-size:11px;color:var(--ink-soft)">依明細核銷</div>`
+              : `<input type="number" class="mv-cell ${ov?"over":""}" value="${b.moved!==""&&b.moved!==undefined&&b.moved!==null?b.moved:""}" placeholder="0" onchange="setBiMoved('${b.id}',this.value)">`}</td>
+            <td class="num"><button class="btn ghost sm" onclick="openBudgetModal('${b.id}')">編輯</button><button class="del-x" onclick="delBudget('${b.id}')">✕</button></td>
+          </tr>`;}).join("")}
+      </tbody>
+      <tfoot><tr style="border-top:2px solid var(--line);font-weight:800">
+        <td>合計</td><td class="num money">${money(totalGov)}</td><td class="num money">${money(totalSelf)}</td>
+        <td class="num money">${money(allocated)}</td><td class="num">${p.budget?Math.round(allocated/p.budget*100):0}%</td>
+        <td class="num money ${spent>p.budget&&p.budget>0?"over":""}">${money(spent)}</td><td></td></tr></tfoot>
+    </table></div></div>`:`<div class="empty"><p>還沒有預算科目</p><span>點右上角「＋ 新增科目」開始，例：人事費、耗材、設備、委外</span></div>`}
+
+    <div class="sec-head" style="margin:22px 0 12px"><div><h2 style="font-size:16px">耗材明細</h2><span class="hint">逐項登記耗材編列與已核銷，待採購金額自動算</span></div></div>
+    ${(()=>{
+      const conB=p.budgetItems.find(b=>isConsumable(b));
+      if(!conB)return `<div style="color:var(--ink-soft);font-size:13px">尚無「耗材」科目。先在上方新增一個名稱含「耗材」的科目，就會出現明細表。</div>`;
+      const cs=conB.consumables||[];
+      const cBudget=cs.reduce((s,c)=>s+(+c.budget||0),0);
+      const cBought=cs.reduce((s,c)=>s+(+c.bought||0),0);
+      const cLeft=cBudget-cBought;
+      return `<div class="card"><div style="padding:4px 2px"><table class="budget-table">
+        <thead><tr><th>名稱</th><th class="num">編列金額</th><th class="num">已核銷金額</th><th class="num">待採購金額</th><th>備註</th><th></th></tr></thead>
+        <tbody>
+          ${cs.length?cs.map(c=>{const d=(+c.budget||0)-(+c.bought||0);return `<tr>
+            <td>${esc(c.name)}</td>
+            <td class="num money">${money(c.budget)}</td>
+            <td class="num money">${money(c.bought)}</td>
+            <td class="num money ${d<0?"over":d>0?"warn-txt":""}">${money(d)}</td>
+            <td style="font-size:12.5px;color:var(--ink-soft)">${esc(c.note||"")}</td>
+            <td class="num"><button class="btn ghost sm" onclick="editConsumable('${conB.id}','${c.id}')">改</button><button class="del-x" onclick="delConsumable('${conB.id}','${c.id}')">✕</button></td>
+          </tr>`;}).join(""):`<tr><td colspan="6" style="color:var(--ink-soft);font-size:13.5px">尚無耗材項目，用下方欄位新增。</td></tr>`}
+        </tbody>
+        <tfoot><tr style="border-top:2px solid var(--line);font-weight:800">
+          <td>合計</td><td class="num money">${money(cBudget)}</td><td class="num money">${money(cBought)}</td>
+          <td class="num money ${cLeft<0?"over":cLeft>0?"warn-txt":""}">${money(cLeft)}</td><td></td><td></td></tr></tfoot>
+      </table>
+      <div class="inline-add" style="padding:12px 16px">
+        <input id="cons-name-${conB.id}" placeholder="名稱" style="flex:2;min-width:120px">
+        <input id="cons-budget-${conB.id}" type="number" placeholder="編列金額" style="flex:1;min-width:90px">
+        <input id="cons-bought-${conB.id}" type="number" placeholder="已核銷金額" style="flex:1;min-width:90px">
+        <input id="cons-note-${conB.id}" placeholder="備註（選填）" style="flex:1;min-width:100px">
+        <button class="btn sm primary" onclick="addConsumable('${conB.id}')">加入</button>
+      </div>
+      <div style="padding:6px 16px 14px">
+        <div class="sub-title" style="margin-bottom:8px">耗材待處理問題</div>
+        ${(conB.consNotes||[]).length?`<div class="chip-list" style="margin-bottom:10px">
+          ${conB.consNotes.map(cn=>`<div class="chip ${cn.done?"done":""}">
+            <div class="chk ${cn.done?"on":""}" onclick="toggleConsNote('${conB.id}','${cn.id}')"></div>
+            <span class="txt">${esc(cn.text)}</span>
+            <button class="del-x" onclick="delConsNote('${conB.id}','${cn.id}')">✕</button>
+          </div>`).join("")}
+        </div>`:`<div style="color:var(--ink-soft);font-size:13px;margin-bottom:10px">目前沒有耗材待處理問題。</div>`}
+        <div class="inline-add">
+          <input id="consnote-new-${conB.id}" placeholder="耗材問題，例：某項發票品名不符無法核銷、要改買別的規格" style="flex:2;min-width:220px" onkeydown="if(event.key==='Enter')addConsNote('${conB.id}')">
+          <button class="btn sm primary" onclick="addConsNote('${conB.id}')">＋ 新增</button>
         </div>
-        <div class="card-body" id="body-bi-${b.id}" style="display:none">
-          <div class="sub-block"><div class="sub-title">動支明細</div>
-            ${b.spends.length?`<table><thead><tr><th>日期</th><th>摘要</th><th class="num">金額</th><th></th></tr></thead>
-              <tbody>${b.spends.map(s=>`<tr><td>${esc(s.date||"")}</td><td>${esc(s.note||"")}</td>
-                <td class="num money">${money(s.amount)}</td>
-                <td class="num"><button class="del-x" onclick="delSpend('${b.id}','${s.id}')">✕</button></td></tr>`).join("")}</tbody>
-              <tfoot><tr style="border-top:2px solid var(--line);font-weight:800"><td>小計</td><td></td>
-                <td class="num money ${ov?"over":""}">${money(sp)}</td><td></td></tr></tfoot></table>`:
-              `<div style="color:var(--ink-soft);font-size:13.5px">尚無動支紀錄</div>`}
-            <div class="inline-add">
-              <input id="sp-date-${b.id}" type="date" style="flex:1;min-width:130px">
-              <input id="sp-note-${b.id}" placeholder="摘要，例：請購耗材" style="flex:2;min-width:140px">
-              <input id="sp-amt-${b.id}" type="number" placeholder="金額" style="flex:1;min-width:90px">
-              <button class="btn sm primary" onclick="addSpend('${b.id}')">加入</button>
-            </div>
-          </div>
-        </div>
-      </div>`;
-    }).join(""):`<div class="empty"><p>還沒有預算項目</p><span>點「＋ 新增預算項目」開始，例：人事費、耗材、設備購置</span></div>`}
+      </div>
+      </div></div>`;
+    })()}
+
+    <div class="sec-head" style="margin:26px 0 12px"><div><h2 style="font-size:16px">會計待處理 ${acctOpen?`<span style="font-weight:600;color:var(--rose);font-size:13px">（${acctOpen} 筆未解決）</span>`:""}</h2><span class="hint">你在幫廠商盯的會計問題，例如報表狀況、人事費轉帳、發票核銷</span></div></div>
+    <div class="card"><div style="padding:16px 18px">
+      <div class="inline-add" style="margin-bottom:${(p.acctTodos||[]).length?"14px":"0"}">
+        <input id="acct-new" placeholder="會計問題，例：8月人事費轉帳金額對不上" style="flex:2;min-width:220px" onkeydown="if(event.key==='Enter')addAcctTodo()">
+        <button class="btn sm primary" onclick="addAcctTodo()">＋ 新增</button>
+      </div>
+      ${(p.acctTodos||[]).length?`<div class="chip-list">
+        ${p.acctTodos.map(a=>`<div class="chip ${a.done?"done":""}">
+          <div class="chk ${a.done?"on":""}" onclick="toggleAcctTodo('${a.id}')"></div>
+          <span class="txt">${esc(a.text)}</span>
+          <button class="del-x" onclick="delAcctTodo('${a.id}')">✕</button>
+        </div>`).join("")}
+      </div>`:`<div style="color:var(--ink-soft);font-size:13px">目前沒有待處理的會計問題。</div>`}
+    </div></div>
   `;
 }
 
@@ -792,31 +970,82 @@ function renderBudget(){
 function renderProjects(){
   const el=document.getElementById("view-projects");
   if(!db.projects.length){el.innerHTML=`<div class="sec-head"><h2>專案列表</h2><button class="btn primary sm" onclick="openProjModal()">＋ 新增專案</button></div><div class="empty"><p>還沒有任何專案</p><span>點「＋ 新增專案」開始</span></div>`;return;}
-  // 依 STAGES 的順序分組
-  const groups=STAGE_KEYS.map(k=>({key:k,label:STAGES[k].label,cls:STAGES[k].cls,projs:db.projects.filter(p=>p.stage===k)}));
+
+  // 三條追蹤線的資料
+  const workLine=p=>{
+    if(!p.works.length)return {txt:"尚無工程項目",dim:true};
+    const withProg=p.works.filter(w=>w.progress).sort((a,b)=>(b.progressAt||"").localeCompare(a.progressAt||""));
+    const done=p.works.filter(w=>w.status==="done").length;
+    const doing=p.works.filter(w=>w.status==="doing").length;
+    const stat=`${p.works.length} 項 · ${doing} 進行中 · ${done} 完成`;
+    if(withProg.length)return {txt:`${stat}｜${withProg[0].progress}`,dim:false};
+    return {txt:`${stat}｜尚未填寫進度`,dim:true};
+  };
+  const acctLine=p=>{
+    const open=(p.acctTodos||[]).filter(a=>!a.done);
+    if(!open.length)return {txt:"無待處理",dim:true};
+    return {txt:`${open.length} 筆待處理：${open[0].text}`,dim:false,warn:true};
+  };
+  const midLine=p=>{
+    const cps=p.mrCheckpoints||[];
+    const ready=cps.filter(c=>c.status==="ready").length;
+    let pend=0; cps.forEach(c=>(c.materials||[]).forEach(m=>{if(!m.got)pend++;}));
+    const parts=[];
+    let urg="";
+    if(p.midReportDue){const u=urgency(p.midReportDue);if(u)urg=u;parts.push(`${p.midReportDue} 到期（${dueLabel(p.midReportDue)}）`);}
+    if(cps.length)parts.push(`查核點 ${ready}/${cps.length}`);
+    if(pend)parts.push(`待收 ${pend} 筆`);
+    if(!parts.length)return {txt:"尚未設定期中報告",dim:true};
+    return {txt:parts.join(" · "),dim:false,urg};
+  };
+
+  const line=(icon,label,d)=>`<div class="tk-line ${d.dim?"dim":""} ${d.warn?"warn":""} ${d.urg==="over"?"over":d.urg==="soon"?"soon":""}">
+    <span class="tk-ico">${icon}</span><span class="tk-lab">${label}</span><span class="tk-txt">${esc(d.txt)}</span></div>`;
+
   const tile=p=>{
-    const s=projStats(p);
-    const openAlerts=p.alerts.filter(a=>!a.done).length;
-    const wkDone=p.works.filter(w=>w.status==="done").length;
+    const pins=(p.notes||[]).filter(n=>n.pin);
     return `<div class="proj-tile" onclick="openProject('${p.id}')">
       <button class="del-x tile-del" onclick="event.stopPropagation();delProject('${p.id}')" title="刪除專案">✕</button>
       <div class="tile-name">${esc(p.name)}</div>
-      <div class="tile-tags">
-        <span class="tag t-cat">${CATEGORIES[p.category]||"個案"}</span>
-        ${openAlerts?`<span class="tile-alert">${openAlerts} 項待注意</span>`:""}
+      <div class="tile-tags"><span class="tag t-cat">${CATEGORIES[p.category]||"個案"}</span></div>
+      <div class="tk-lines">
+        ${line("🔧","工程",workLine(p))}
+        ${line("📊","會計",acctLine(p))}
+        ${line("📋","期中",midLine(p))}
       </div>
-      <div class="tile-meta">
-        <span>總預算 <b>${money(p.budget)}</b></span>
-        <span>已動支 <b>${money(s.spent)}</b>　餘額 <b>${money(p.budget-s.spent)}</b></span>
-        <span>待辦 <b>${s.tD}/${s.tT}</b>${p.works.length?`　工程 <b>${wkDone}/${p.works.length}</b>`:""}${p.midReportDue?`　期中 <b>${esc(p.midReportDue)}</b>`:""}</span>
-      </div>
-      <div class="tile-bar"><span style="width:${s.taskPct}%"></span></div>
-      ${(()=>{const pins=(p.notes||[]).filter(n=>n.pin).sort((a,b)=>(b.date||"").localeCompare(a.date||""));return pins.length?`<div class="tile-notes">${pins.map(n=>`<div class="tile-note"><span class="d">📌 ${esc(n.date||"")}</span><span class="t">${esc(n.text)}</span></div>`).join("")}</div>`:"";})()}
+      ${pins.length?`<div class="tile-notes">${pins.map(n=>`<div class="tile-note"><span class="t">📌 ${esc(n.title)}</span></div>`).join("")}</div>`:""}
     </div>`;
   };
+
+  // 跨專案「本週該追什麼」：撈快到期/逾期日期 + 未解決會計
+  const urgent=[];
+  db.projects.forEach(p=>{
+    const push=(dstr,label)=>{const u=urgency(dstr);if(u)urgent.push({proj:p.name,pid:p.id,label,date:dstr,d:daysUntil(dstr),u});};
+    push(p.midReportDue,"期中報告繳交");
+    push(p.midVisit,"期中查訪");
+    push(p.finalVisit,"期末查訪");
+    push(p.endDate,"計畫執行結束");
+    (p.acctTodos||[]).filter(a=>!a.done).forEach(a=>urgent.push({proj:p.name,pid:p.id,label:"會計待處理",text:a.text,u:"acct",d:9999}));
+  });
+  urgent.sort((a,b)=>(a.d||0)-(b.d||0));
+
+  const groups=STAGE_KEYS.map(k=>({key:k,label:STAGES[k].label,cls:STAGES[k].cls,projs:db.projects.filter(p=>p.stage===k)}));
+
   el.innerHTML=`
-    <div class="sec-head"><div><h2>專案列表</h2><span class="hint">依目前狀態分類，點卡片進入專案</span></div>
+    <div class="sec-head"><div><h2>專案列表</h2><span class="hint">每張卡片顯示該案的工程、會計、期中三條追蹤線</span></div>
       <button class="btn primary sm" onclick="openProjModal()">＋ 新增專案</button></div>
+
+    ${urgent.length?`<div class="focus-box">
+      <div class="focus-head">本週該追什麼<span class="focus-cnt">${urgent.length} 項</span></div>
+      <div class="focus-list">
+        ${urgent.slice(0,12).map(u=>`<div class="focus-item ${u.u==="over"?"over":u.u==="soon"?"soon":""}" onclick="openProject('${u.pid}')">
+          <span class="fi-proj">${esc(u.proj)}</span>
+          <span class="fi-label">${u.label}${u.text?"："+esc(u.text):""}</span>
+          <span class="fi-due">${u.u==="acct"?"未解決":u.date+" · "+dueLabel(u.date)}</span>
+        </div>`).join("")}
+      </div>
+    </div>`:""}
+
     ${groups.map(g=>g.projs.length?`
       <div class="stage-group">
         <div class="stage-group-head">
@@ -877,7 +1106,7 @@ function renderSchedule(){
         const col=idx%7, weekend=(col===0||col===6);
         const ds=`${calYear}-${String(calMonth+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
         const evs=byDate[ds]||[], isToday=ds===todayStr;
-        return `<div class="cal-cell ${isToday?"today":""} ${weekend?"weekend":""}">
+        return `<div class="cal-cell ${isToday?"today":""} ${weekend?"weekend":""} ${evs.length===0&&!isToday?"mob-empty":""}">
           <div class="cal-daynum">${d}
             <button class="cal-add" title="新增事項" onclick="openSelfEventModal('${ds}')">＋</button></div>
           <div class="cal-evs">
@@ -929,7 +1158,7 @@ function renderAI(){
   const noneCnt=all.filter(x=>x.w.status==="none").length;
 
   el.innerHTML=`
-    <div class="sec-head"><div><h2>本公司交付項目</h2><span class="hint">彙整所有專案的工程項目執行狀況；在各專案「工程項目」頁編輯，這裡同步呈現</span></div></div>
+    <div class="sec-head"><div><h2>工程總覽</h2><span class="hint">彙整所有專案的工程項目執行狀況；在各專案「工程項目」頁編輯，這裡同步呈現</span></div></div>
     <div class="stat-grid">
       <div class="stat"><div class="label">工程項目總數</div><div class="num">${total}</div>
         <div class="sub">跨 ${db.projects.length} 個客戶案</div></div>
@@ -989,6 +1218,12 @@ const MR_STATUS = {
   collecting:{label:"資料收集中",cls:"t-run"},
   ready:{label:"資料已到齊",cls:"t-done"},
 };
+const MR_CONFIDENCE = {
+  none:{label:"未評估",dot:"#b4b2a9"},
+  ok:{label:"有把握",dot:"#639922"},
+  risk:{label:"有風險",dot:"#ef9f27"},
+  hard:{label:"可能達不到",dot:"#b0524a"},
+};
 const MR_TYPE = { image:"圖片", data:"數據", file:"文件" };
 const MR_TYPE_CLS = { image:"t-role", data:"t-cat", file:"t-plan" };
 
@@ -1010,6 +1245,10 @@ function renderMidreport(){
     <!-- 總覽 -->
     <div class="stat-grid" style="margin-bottom:20px">
       <div class="stat"><div class="label">查核點</div><div class="num">${cps.length}</div><div class="sub">${readyCnt} 個資料已到齊</div></div>
+      <div class="stat"><div class="label">達成信心</div>
+        ${(()=>{const risk=cps.filter(c=>c.confidence==="risk").length,hard=cps.filter(c=>c.confidence==="hard").length,ok=cps.filter(c=>c.confidence==="ok").length;
+          return `<div class="num" style="font-size:22px;${(risk+hard)?"color:var(--rose)":""}">${risk+hard?`${risk+hard} 個要注意`:`${ok} 個有把握`}</div>
+          <div class="sub">${cps.length?`有把握 ${ok}・有風險 ${risk}・可能達不到 ${hard}`:"尚未評估"}</div>`;})()}</div>
       <div class="stat"><div class="label">待收資料</div><div class="num" style="${pending.length?"color:var(--rose)":""}">${pending.length}</div>
         <div class="sub">${pending.length?`圖片 ${pImg}・數據 ${pData}・文件 ${pFile}`:"全部到齊 ✓"}</div></div>
     </div>
@@ -1053,6 +1292,7 @@ function mrCheckpointCard(cp){
   return `<div class="card">
     <div class="card-head" onclick="toggleMrOpen('${cp.id}')">
       <span class="tag ${st.cls}">${st.label}</span>
+      <span class="conf-dot" title="達成信心：${(MR_CONFIDENCE[cp.confidence]||MR_CONFIDENCE.none).label}" style="background:${(MR_CONFIDENCE[cp.confidence]||MR_CONFIDENCE.none).dot}"></span>
       <span class="card-title" style="flex:1">${esc(cp.name)}</span>
       <span style="font-size:12.5px;color:var(--ink-soft)">${mats.length?`資料 ${gotCnt}/${mats.length}`:"無資料"}</span>
       <button class="del-x" onclick="event.stopPropagation();delMrCp('${cp.id}')">✕</button>
@@ -1067,6 +1307,12 @@ function mrCheckpointCard(cp){
         <label>狀態</label>
         <select onchange="setMrStatus('${cp.id}',this.value)" style="max-width:220px">
           ${Object.entries(MR_STATUS).map(([k,v])=>`<option value="${k}" ${cp.status===k?"selected":""}>${v.label}</option>`).join("")}
+        </select>
+      </div>
+      <div class="field" style="margin-bottom:14px">
+        <label>達成信心（這個查核點做不做得到、能不能呈現）</label>
+        <select onchange="setMrConfidence('${cp.id}',this.value)" style="max-width:220px">
+          ${Object.entries(MR_CONFIDENCE).map(([k,v])=>`<option value="${k}" ${cp.confidence===k?"selected":""}>${v.label}</option>`).join("")}
         </select>
       </div>
 
@@ -1106,12 +1352,18 @@ function delMrCp(id){if(!confirm("刪除這個查核點？底下的資料也會�
   proj().mrCheckpoints=proj().mrCheckpoints.filter(c=>c.id!==id);render();}
 function setMrStatus(cid,v){const c=proj().mrCheckpoints.find(x=>x.id===cid);c.status=v;render();}
 function renameMrCp(cid,v){const c=proj().mrCheckpoints.find(x=>x.id===cid);if(!c)return;const t=(v||"").trim();if(t)c.name=t;render();}
-/* 注意事項（總覽日誌） */
-function addNote(){const p=proj();const text=val("note-text");if(!text)return;
-  const dateEl=document.getElementById("note-date");const date=dateEl?dateEl.value:today();
-  p.notes=p.notes||[];p.notes.push({id:uid(),date:date||today(),text,pin:false});render();}
+function setMrConfidence(cid,v){const c=proj().mrCheckpoints.find(x=>x.id===cid);if(c){c.confidence=v;render();}}
+/* 注意事項（事項標題 + 備註 + 釘選） */
+function addNote(){const p=proj();const title=val("note-title");if(!title)return;
+  p.notes=p.notes||[];p.notes.push({id:uid(),title,note:"",pin:false});render();}
 function delNote(id){const p=proj();p.notes=(p.notes||[]).filter(n=>n.id!==id);render();}
 function toggleNotePin(id){const p=proj();const n=(p.notes||[]).find(x=>x.id===id);if(n)n.pin=!n.pin;render();}
+function setNoteTitle(id,v){const n=(proj().notes||[]).find(x=>x.id===id);if(n){n.title=v;save();}}
+function setNoteNote(id,v){const n=(proj().notes||[]).find(x=>x.id===id);if(n){n.note=v;save();}}
+/* 接下來三件事 */
+function addPriority(){const p=proj();const text=val("prio-new");if(!text)return;p.priorities=p.priorities||[];if(p.priorities.length>=3){alert("最多三件，先完成或刪除一件");return;}p.priorities.push({id:uid(),text,done:false});render();}
+function togglePriority(id){const pr=(proj().priorities||[]).find(x=>x.id===id);if(pr){pr.done=!pr.done;render();}}
+function delPriority(id){proj().priorities=(proj().priorities||[]).filter(x=>x.id!==id);render();}
 function setMrNote(cid,v){const c=proj().mrCheckpoints.find(x=>x.id===cid);c.note=v;save();}
 function addMrMat(cid){const c=proj().mrCheckpoints.find(x=>x.id===cid);
   const name=val("mrmat-name-"+cid);if(!name)return;
@@ -1250,9 +1502,37 @@ function delWork(id){if(!confirm("確定刪除此工程項目？"))return;proj()
 /* 動支 */
 function addSpend(bid){const b=proj().budgetItems.find(x=>x.id===bid);const amt=+val("sp-amt-"+bid)||0;const note=val("sp-note-"+bid);
   if(!note&&!amt){alert("請至少填摘要或金額");return;}
-  b.spends.push({id:uid(),date:val("sp-date-"+bid),note,amount:amt});render();keepOpen("bi-"+bid);}
-function delSpend(bid,sid){const b=proj().budgetItems.find(x=>x.id===bid);b.spends=b.spends.filter(s=>s.id!==sid);render();keepOpen("bi-"+bid);}
-function delBudget(id){if(!confirm("確定刪除此預算項目及其動支紀錄？"))return;proj().budgetItems=proj().budgetItems.filter(b=>b.id!==id);render();}
+  b.spends.push({id:uid(),date:val("sp-date-"+bid),note,amount:amt});render();}
+function delSpend(bid,sid){const b=proj().budgetItems.find(x=>x.id===bid);b.spends=b.spends.filter(s=>s.id!==sid);render();}
+function delBudget(id){if(!confirm("確定刪除此科目及其明細？"))return;proj().budgetItems=proj().budgetItems.filter(b=>b.id!==id);render();}
+/* 一般科目：狀態 / 累計動支 / 備註 */
+function setBiStatus(id,v){const b=proj().budgetItems.find(x=>x.id===id);if(b){b.status=v;render();}}
+function setBiMoved(id,v){const b=proj().budgetItems.find(x=>x.id===id);if(b){b.moved=(v===""?"":+v||0);render();}}
+function setBiNote(id,v){const b=proj().budgetItems.find(x=>x.id===id);if(b){b.note=v;save();}}
+/* 耗材待處理問題 */
+function addConsNote(bid){const b=proj().budgetItems.find(x=>x.id===bid);if(!b)return;const t=val("consnote-new-"+bid);if(!t)return;b.consNotes=b.consNotes||[];b.consNotes.push({id:uid(),text:t,done:false});render();}
+function toggleConsNote(bid,cid){const b=proj().budgetItems.find(x=>x.id===bid);const cn=(b.consNotes||[]).find(x=>x.id===cid);if(cn){cn.done=!cn.done;render();}}
+function delConsNote(bid,cid){const b=proj().budgetItems.find(x=>x.id===bid);b.consNotes=(b.consNotes||[]).filter(x=>x.id!==cid);render();}
+/* 耗材明細 */
+function addConsumable(bid){const b=proj().budgetItems.find(x=>x.id===bid);if(!b)return;
+  const name=val("cons-name-"+bid);if(!name)return;
+  b.consumables=b.consumables||[];
+  b.consumables.push({id:uid(),name,budget:+val("cons-budget-"+bid)||0,bought:+val("cons-bought-"+bid)||0,note:val("cons-note-"+bid)});
+  render();}
+function delConsumable(bid,cid){const b=proj().budgetItems.find(x=>x.id===bid);b.consumables=(b.consumables||[]).filter(c=>c.id!==cid);render();}
+function editConsumable(bid,cid){const b=proj().budgetItems.find(x=>x.id===bid);const c=(b.consumables||[]).find(x=>x.id===cid);if(!c)return;
+  openModal("編輯耗材項目",`
+    <div class="field"><label>項目名稱</label><input id="ce-name" value="${esc(c.name)}"></div>
+    <div class="row2">
+      <div class="field"><label>編列金額</label><input id="ce-budget" type="number" value="${c.budget||0}"></div>
+      <div class="field"><label>已核銷金額</label><input id="ce-bought" type="number" value="${c.bought||0}"></div>
+    </div>
+    <div class="field"><label>備註</label><input id="ce-note" value="${esc(c.note||"")}" placeholder="例：這項要改品項"></div>`,
+  ()=>{c.name=val("ce-name")||c.name;c.budget=+val("ce-budget")||0;c.bought=+val("ce-bought")||0;c.note=val("ce-note");closeModal();render();});}
+/* 會計待處理 */
+function addAcctTodo(){const p=proj();const text=val("acct-new");if(!text)return;p.acctTodos=p.acctTodos||[];p.acctTodos.push({id:uid(),text,done:false});render();}
+function toggleAcctTodo(id){const a=(proj().acctTodos||[]).find(x=>x.id===id);if(a){a.done=!a.done;render();}}
+function delAcctTodo(id){proj().acctTodos=(proj().acctTodos||[]).filter(a=>a.id!==id);render();}
 /* 窗口 */
 /* 重大事項提醒 */
 function addAlert(pid){const p=db.projects.find(x=>x.id===pid);const t=val("al-"+pid);if(!t)return;
@@ -1286,10 +1566,14 @@ function openProjModal(id){
   const p=id?db.projects.find(x=>x.id===id):null;
   openModal(p?"編輯專案":"新增專案",`
     <div class="field"><label>專案名稱</label><input id="m-name" value="${p?esc(p.name):""}" placeholder="例：社區公園改善工程"></div>
-    <div class="field"><label>總預算（NT$）</label><input id="m-budget" type="number" value="${p?p.budget:""}" placeholder="3000000"></div>`,
-  ()=>{const name=val("m-name"),budget=+val("m-budget")||0;if(!name){alert("請輸入專案名稱");return;}
-    if(p){p.name=name;p.budget=budget;}
-    else{const np={id:uid(),name,budget,months:[],works:[],budgetItems:[],contacts:[],alerts:[],accounts:[],startDate:"",endDate:"",midReportDue:"",midVisit:"",finalVisit:"",stage:"plan",midReportNotes:"",midReportItems:[],notes:[],checklist:DEFAULT_CHECKLIST.map(t=>({id:uid(),text:t,done:false}))};db.projects.push(np);current=np.id;}
+    <div class="row2">
+      <div class="field"><label>政府補助款（元）</label><input id="m-bgov" type="number" value="${p?p.budgetGov:""}" placeholder="0"></div>
+      <div class="field"><label>公司自籌款（元）</label><input id="m-bself" type="number" value="${p?p.budgetSelf:""}" placeholder="0"></div>
+    </div>
+    <p style="font-size:12.5px;color:var(--ink-soft);margin-top:-4px">總經費＝補助＋自籌，自動計算。</p>`,
+  ()=>{const name=val("m-name");const gov=+val("m-bgov")||0,self=+val("m-bself")||0;if(!name){alert("請輸入專案名稱");return;}
+    if(p){p.name=name;p.budgetGov=gov;p.budgetSelf=self;p.budget=gov+self;}
+    else{const np={id:uid(),name,budgetGov:gov,budgetSelf:self,budget:gov+self,months:[],works:[],budgetItems:[],contacts:[],alerts:[],accounts:[],startDate:"",endDate:"",midReportDue:"",midVisit:"",finalVisit:"",stage:"plan",midReportNotes:"",midReportItems:[],notes:[],acctTodos:[],priorities:[],checklist:DEFAULT_CHECKLIST.map(t=>({id:uid(),text:t,done:false}))};db.projects.push(np);current=np.id;}
     closeModal();render();});
 }
 
@@ -1334,6 +1618,7 @@ function openWorkModal(id){
     closeModal();render();});
 }
 function setWorkStatus(wid,v){proj().works.find(x=>x.id===wid).status=v;render();keepOpen(wid);}
+function setWorkProgress(wid,v){const w=proj().works.find(x=>x.id===wid);if(w){w.progress=v;w.progressAt=new Date().toISOString();save();}}
 function addStep(wid){const w=proj().works.find(x=>x.id===wid);const t=val("sp-"+wid);if(!t)return;
   w.steps.push({id:uid(),text:t,date:"",done:false});render();keepOpen(wid);}
 function applyTemplate(wid,key){const w=proj().works.find(x=>x.id===wid);
@@ -1350,13 +1635,17 @@ function delStep(wid,sid){const w=proj().works.find(x=>x.id===wid);
 
 function openBudgetModal(id){
   const b=id?proj().budgetItems.find(x=>x.id===id):null;
-  openModal(b?"編輯預算項目":"新增預算項目",`
-    <div class="field"><label>預算項目名稱</label><input id="m-bname" value="${b?esc(b.name):""}" placeholder="例：人事費、耗材、設備購置"></div>
-    <div class="field"><label>預算金額（NT$）</label><input id="m-bbudget" type="number" value="${b?b.budget:""}" placeholder="2000000"></div>
-    ${b?"":`<p style="font-size:12.5px;color:var(--ink-soft);margin-top:-4px">建立後點卡片展開，即可逐筆登錄動支情形。</p>`}`,
-  ()=>{const name=val("m-bname");if(!name){alert("請輸入項目名稱");return;}const budget=+val("m-bbudget")||0;
-    if(b){b.name=name;b.budget=budget;}
-    else proj().budgetItems.push({id:uid(),name,budget,spends:[]});
+  openModal(b?"編輯科目":"新增科目",`
+    <div class="field"><label>會計科目名稱</label><input id="m-bname" value="${b?esc(b.name):""}" placeholder="例：人事費、耗材、設備、委託研究"></div>
+    <div class="row2">
+      <div class="field"><label>政府補助款（元）</label><input id="m-bgov" type="number" value="${b?b.gov:""}" placeholder="0"></div>
+      <div class="field"><label>公司自籌款（元）</label><input id="m-bself" type="number" value="${b?b.self:""}" placeholder="0"></div>
+    </div>
+    <p style="font-size:12.5px;color:var(--ink-soft);margin-top:-4px">合計＝補助＋自籌，自動計算。名稱含「耗材」的科目會出現耗材明細表。</p>`,
+  ()=>{const name=val("m-bname");if(!name){alert("請輸入科目名稱");return;}
+    const gov=+val("m-bgov")||0, self=+val("m-bself")||0;
+    if(b){b.name=name;b.gov=gov;b.self=self;b.budget=gov+self;}
+    else proj().budgetItems.push({id:uid(),name,gov,self,budget:gov+self,moved:"",status:"none",note:"",spends:[],consumables:[],consNotes:[]});
     closeModal();render();});
 }
 
