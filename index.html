@@ -7,9 +7,10 @@
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
 :root{
-  --ink:#1a1d21;--ink-soft:#5a6270;--line:#e2e0d8;--paper:#faf8f3;--panel:#ffffff;
-  --accent:#2d6a5e;--accent-soft:#e6f0ed;--amber:#b8863b;--amber-soft:#f6ecd9;
-  --rose:#a8443c;--rose-soft:#f5e3e1;--slate:#4a6fa5;--slate-soft:#e6edf5;
+  /* 色卡：#FAF0E4 淺底 · #EECFBB 膚 · #F6B99D 珊瑚 · #CB8A90 玫瑰 + 補：深褐字/主色/警告 */
+  --ink:#43302b;--ink-soft:#9c8079;--line:#e6d3c4;--paper:#faf0e4;--panel:#fffaf4;
+  --accent:#b56b74;--accent-soft:#f3ddd8;--amber:#c07a4e;--amber-soft:#fbe6d5;
+  --rose:#b0524a;--rose-soft:#f6ddd7;--slate:#c98f79;--slate-soft:#f6e4d6;
   --radius:10px;--shadow:0 1px 2px rgba(26,29,33,.04),0 4px 16px rgba(26,29,33,.05);
 }
 *{box-sizing:border-box;margin:0;padding:0}
@@ -43,7 +44,7 @@ select,input,textarea{font-family:inherit;font-size:14px}
   padding:12px 14px 12px 0;margin-right:4px;border-right:1px solid var(--line);white-space:nowrap}
 .proj-context{display:flex;align-items:center;gap:8px}
 .proj-context .sel{min-width:200px}
-main{padding:40px 0 80px}
+main{padding:64px 0 80px}
 .view{display:none}.view.active{display:block}
 .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:28px}
 .stat{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow)}
@@ -62,14 +63,25 @@ main{padding:40px 0 80px}
 .card-title{font-weight:700;font-size:15.5px}
 .card-body{padding:0 18px 18px;border-top:1px solid var(--line)}
 .tag{font-size:12px;font-weight:700;padding:3px 9px;border-radius:20px;white-space:nowrap}
-.t-plan{background:var(--slate-soft);color:var(--slate)}
+.t-plan{background:#f3e6d6;color:#9a7a4e}
 .t-bid{background:var(--amber-soft);color:var(--amber)}
-.t-run{background:var(--amber-soft);color:var(--amber)}
+.t-run{background:#f7e0d0;color:#c06a3e}
 .t-award{background:var(--accent-soft);color:var(--accent)}
-.t-done{background:var(--accent-soft);color:var(--accent)}
+.t-done{background:#e3ead9;color:#6e8352}
 .t-over{background:var(--rose-soft);color:var(--rose)}
 .t-role{background:var(--accent-soft);color:var(--accent)}
 .t-cat{background:var(--slate-soft);color:var(--slate)}
+.note-list{display:flex;flex-direction:column;gap:7px}
+.note-item{display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--paper);border:1px solid var(--line);border-radius:8px}
+.note-item.pinned{border-color:var(--accent);background:var(--accent-soft)}
+.note-item .note-date{flex:0 0 auto;font-size:12.5px;font-weight:700;color:var(--ink-soft);min-width:82px}
+.note-item .note-txt{flex:1;font-size:14px;line-height:1.5}
+.note-item .note-pin{flex:0 0 auto;font-size:12.5px;color:var(--ink-soft);font-weight:600;display:flex;align-items:center;gap:4px;cursor:pointer;white-space:nowrap}
+.note-item .note-pin input{cursor:pointer}
+.tile-notes{margin-top:10px;display:flex;flex-direction:column;gap:5px}
+.tile-note{display:flex;gap:7px;align-items:baseline;font-size:12.5px;background:var(--accent-soft);border-radius:6px;padding:5px 9px;line-height:1.45}
+.tile-note .d{color:var(--accent);font-weight:700;flex:0 0 auto}
+.tile-note .t{color:var(--ink);flex:1}
 .month-block{margin-bottom:22px}
 .month-label{font-weight:800;font-size:15px;margin-bottom:8px;display:flex;align-items:center;gap:8px;color:var(--ink)}
 .month-label .cnt{font-size:12px;font-weight:600;color:var(--ink-soft)}
@@ -222,6 +234,8 @@ body.readonly #view-midreport textarea{pointer-events:none;opacity:.85}
 body.readonly #view-midreport .inline-add{display:none !important}
 body.readonly .proj-context .btn{display:none !important}
 body.readonly .chk{cursor:default;pointer-events:none}
+body.readonly .note-pin{pointer-events:none;opacity:.7}
+body.readonly #view-midreport input[type=text],body.readonly #view-midreport input:not([type]){pointer-events:none;opacity:.85}
 .ro-banner{display:none}
 body.readonly .ro-banner{display:block;background:var(--accent-soft);color:var(--accent);font-size:13px;font-weight:600;text-align:center;padding:7px 12px}
 body.readonly .proj-name-ro{margin-left:auto;font-weight:700;font-size:15px;color:var(--ink)}
@@ -252,6 +266,7 @@ body.readonly .proj-name-ro{margin-left:auto;font-weight:700;font-size:15px;colo
 
   /* 統計卡：一排一格或兩格 */
   .stat-grid{grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+  main{padding:40px 0 60px}
   .stat{padding:13px 14px}
   .stat .num{font-size:22px}
 
@@ -381,6 +396,8 @@ function migrate(d){
     p.midReportNotes=p.midReportNotes||"";                   // 期中報告資料整理（暫存文字，內容之後再定）
     p.midReportItems=p.midReportItems||[];                   // 期中報告待整理項目清單
     (p.midReportItems||[]).forEach(it=>{it.done=!!it.done;});
+    p.notes=p.notes||[];                                     // 注意事項日誌 {id,date,text,pin} pin=是否顯示在專案列表卡片
+    (p.notes||[]).forEach(n=>{n.date=n.date||""; n.text=n.text||""; n.pin=!!n.pin;});
     p.mrCheckpoints=p.mrCheckpoints||[];                     // 期中報告查核點 {id,name,status,note,materials:[{id,name,type,who,got}]}
     (p.mrCheckpoints||[]).forEach(cp=>{
       cp.status=cp.status||"todo";      // todo未開始 / collecting資料收集中 / ready已到齊
@@ -554,6 +571,22 @@ function renderOverview(){
       <div class="stat"><div class="label">工程項目查核點</div><div class="num">${cpPct}%</div>
         <div class="sub">${p.works.length} 項工程 · 查核點 ${cpD}/${cpT}</div></div>
     </div>
+    <div class="sec-head"><div><h2>注意事項</h2><span class="hint">記錄每天遇到的問題；勾選「釘選」可顯示在專案列表卡片上</span></div></div>
+    <div class="card"><div style="padding:16px 18px">
+      <div class="inline-add" style="margin-bottom:${p.notes && p.notes.length?"14px":"0"}">
+        <input type="date" id="note-date" value="${today()}" style="flex:0 0 auto">
+        <input id="note-text" placeholder="今天遇到的問題／要注意的事…" style="flex:2;min-width:200px" onkeydown="if(event.key==='Enter')addNote()">
+        <button class="btn sm primary" onclick="addNote()">＋ 新增</button>
+      </div>
+      ${p.notes && p.notes.length?`<div class="note-list">
+        ${p.notes.slice().sort((a,b)=>(b.date||"").localeCompare(a.date||"")).map(n=>`<div class="note-item${n.pin?" pinned":""}">
+          <span class="note-date">${esc(n.date||"—")}</span>
+          <span class="note-txt">${esc(n.text)}</span>
+          <label class="note-pin" title="顯示在專案列表卡片"><input type="checkbox" ${n.pin?"checked":""} onchange="toggleNotePin('${n.id}')"> 釘選</label>
+          <button class="del-x" onclick="delNote('${n.id}')">✕</button>
+        </div>`).join("")}
+      </div>`:`<div style="color:var(--ink-soft);font-size:13px;margin-top:0">還沒有注意事項。</div>`}
+    </div></div>
     <div class="sec-head"><h2>工程項目</h2><span class="hint">到「工程項目」分頁可展開內容、查核點與採購清單</span></div>
     ${p.works.length?p.works.map(w=>{
       const cd=w.checkpoints.filter(c=>c.done).length;
@@ -778,6 +811,7 @@ function renderProjects(){
         <span>待辦 <b>${s.tD}/${s.tT}</b>${p.works.length?`　工程 <b>${wkDone}/${p.works.length}</b>`:""}${p.midReportDue?`　期中 <b>${esc(p.midReportDue)}</b>`:""}</span>
       </div>
       <div class="tile-bar"><span style="width:${s.taskPct}%"></span></div>
+      ${(()=>{const pins=(p.notes||[]).filter(n=>n.pin).sort((a,b)=>(b.date||"").localeCompare(a.date||""));return pins.length?`<div class="tile-notes">${pins.map(n=>`<div class="tile-note"><span class="d">📌 ${esc(n.date||"")}</span><span class="t">${esc(n.text)}</span></div>`).join("")}</div>`:"";})()}
     </div>`;
   };
   el.innerHTML=`
@@ -1026,6 +1060,10 @@ function mrCheckpointCard(cp){
     </div>
     ${open?`<div class="card-body" style="padding-top:14px">
       <div class="field" style="margin-bottom:14px">
+        <label>查核點名稱</label>
+        <input value="${esc(cp.name)}" onchange="renameMrCp('${cp.id}',this.value)" placeholder="查核點名稱" style="width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--paper);font-family:inherit;font-size:14px">
+      </div>
+      <div class="field" style="margin-bottom:14px">
         <label>狀態</label>
         <select onchange="setMrStatus('${cp.id}',this.value)" style="max-width:220px">
           ${Object.entries(MR_STATUS).map(([k,v])=>`<option value="${k}" ${cp.status===k?"selected":""}>${v.label}</option>`).join("")}
@@ -1067,6 +1105,13 @@ function addMrCp(){const t=val("mr-cp-new");if(!t)return;proj().mrCheckpoints=pr
 function delMrCp(id){if(!confirm("刪除這個查核點？底下的資料也會一起移除。"))return;
   proj().mrCheckpoints=proj().mrCheckpoints.filter(c=>c.id!==id);render();}
 function setMrStatus(cid,v){const c=proj().mrCheckpoints.find(x=>x.id===cid);c.status=v;render();}
+function renameMrCp(cid,v){const c=proj().mrCheckpoints.find(x=>x.id===cid);if(!c)return;const t=(v||"").trim();if(t)c.name=t;render();}
+/* 注意事項（總覽日誌） */
+function addNote(){const p=proj();const text=val("note-text");if(!text)return;
+  const dateEl=document.getElementById("note-date");const date=dateEl?dateEl.value:today();
+  p.notes=p.notes||[];p.notes.push({id:uid(),date:date||today(),text,pin:false});render();}
+function delNote(id){const p=proj();p.notes=(p.notes||[]).filter(n=>n.id!==id);render();}
+function toggleNotePin(id){const p=proj();const n=(p.notes||[]).find(x=>x.id===id);if(n)n.pin=!n.pin;render();}
 function setMrNote(cid,v){const c=proj().mrCheckpoints.find(x=>x.id===cid);c.note=v;save();}
 function addMrMat(cid){const c=proj().mrCheckpoints.find(x=>x.id===cid);
   const name=val("mrmat-name-"+cid);if(!name)return;
@@ -1244,7 +1289,7 @@ function openProjModal(id){
     <div class="field"><label>總預算（NT$）</label><input id="m-budget" type="number" value="${p?p.budget:""}" placeholder="3000000"></div>`,
   ()=>{const name=val("m-name"),budget=+val("m-budget")||0;if(!name){alert("請輸入專案名稱");return;}
     if(p){p.name=name;p.budget=budget;}
-    else{const np={id:uid(),name,budget,months:[],works:[],budgetItems:[],contacts:[],alerts:[],accounts:[],startDate:"",endDate:"",midReportDue:"",midVisit:"",finalVisit:"",stage:"plan",midReportNotes:"",midReportItems:[],checklist:DEFAULT_CHECKLIST.map(t=>({id:uid(),text:t,done:false}))};db.projects.push(np);current=np.id;}
+    else{const np={id:uid(),name,budget,months:[],works:[],budgetItems:[],contacts:[],alerts:[],accounts:[],startDate:"",endDate:"",midReportDue:"",midVisit:"",finalVisit:"",stage:"plan",midReportNotes:"",midReportItems:[],notes:[],checklist:DEFAULT_CHECKLIST.map(t=>({id:uid(),text:t,done:false}))};db.projects.push(np);current=np.id;}
     closeModal();render();});
 }
 
