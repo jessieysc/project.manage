@@ -360,6 +360,124 @@ body.readonly .proj-name-ro{margin-left:auto;font-weight:700;font-size:15px;colo
   .chk{width:22px;height:22px}
 }
 /* ═══ 手機版排版優化 結束 ═══ */
+
+/* ═══ 新增：快速切換專案 ═══ */
+.jump-bg{position:fixed;inset:0;background:rgba(26,29,33,.42);z-index:200;display:none;
+  align-items:flex-start;justify-content:center;padding:80px 16px}
+.jump-bg.show{display:flex}
+.jump-box{background:var(--panel);border-radius:14px;max-width:520px;width:100%;
+  box-shadow:0 20px 60px rgba(26,29,33,.28);overflow:hidden;animation:pop .14s ease}
+.jump-box>input{width:100%;border:none;border-bottom:1px solid var(--line);padding:16px 18px;
+  font-size:16px;font-weight:600;background:var(--panel);color:var(--ink);outline:none}
+.jump-list{max-height:340px;overflow-y:auto;padding:6px}
+.jump-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;cursor:pointer}
+.jump-item .jn{font-weight:700;font-size:14.5px;flex:1;min-width:0}
+.jump-item .jm{font-size:12px;color:var(--ink-soft);flex:0 0 auto}
+.jump-item.on{background:var(--accent-soft)}
+.jump-item:hover{background:var(--accent-soft)}
+.jump-empty{padding:22px;text-align:center;color:var(--ink-soft);font-size:13.5px}
+.jump-foot{border-top:1px solid var(--line);padding:8px 14px;font-size:11.5px;color:var(--ink-soft);text-align:right}
+
+/* ═══ 新增：專案卡片的執行期間 ═══ */
+.tile-period{display:flex;flex-direction:column;gap:4px;margin-top:2px}
+.tile-period .tp-row{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:12px;color:var(--ink-soft)}
+.tile-period .tp-date{font-variant-numeric:tabular-nums;font-weight:600;color:var(--ink)}
+.tile-period .tp-left{font-weight:700;flex:0 0 auto}
+.tile-period .tp-left.soon{color:var(--amber)}
+.tile-period .tp-left.over{color:var(--rose)}
+.tile-period .tp-bar{height:5px;border-radius:4px;background:var(--line);overflow:hidden}
+.tile-period .tp-bar>span{display:block;height:100%;background:var(--slate);border-radius:4px}
+.tile-period .tp-bar.over>span{background:var(--rose)}
+
+/* ═══ 新增：卡片上可直接編輯的釘選事項 ═══ */
+.tile-notes .tile-note{align-items:center;gap:4px}
+.tile-note .tn-in{flex:1;min-width:0;border:none;background:transparent;font-family:inherit;
+  font-size:12.5px;color:var(--ink);padding:2px 3px;border-radius:5px;line-height:1.4}
+.tile-note .tn-in:focus{outline:none;background:var(--panel);box-shadow:0 0 0 1.5px var(--accent)}
+.tile-note .tn-x{border:none;background:none;color:var(--ink-soft);cursor:pointer;font-size:13px;
+  line-height:1;padding:1px 4px;border-radius:4px;flex:0 0 auto}
+.tile-note .tn-x:hover{color:var(--rose);background:var(--rose-soft)}
+.tile-note .tn-date{font-size:11px;font-weight:700;color:var(--accent);flex:0 0 auto}
+.tile-note .chk{width:15px;height:15px;margin-top:0;flex:0 0 auto}
+.tile-note .chk.on::after{font-size:9px}
+.tile-noteadd{display:flex;gap:5px;margin-top:6px}
+.tile-noteadd input{flex:1;min-width:0;padding:5px 9px;border:1px dashed var(--line);border-radius:6px;
+  background:transparent;font-family:inherit;font-size:12.5px}
+.tile-noteadd input:focus{outline:none;border-style:solid;border-color:var(--accent);background:var(--panel)}
+.tile-noteadd button{flex:0 0 auto;border:none;background:var(--accent-soft);color:var(--accent);
+  font-weight:800;font-size:13px;border-radius:6px;padding:0 10px;cursor:pointer}
+.tile-more{font-size:11.5px;color:var(--ink-soft);padding:2px 4px}
+
+/* ═══ 新增：排序切換 ═══ */
+.sort-bar{display:flex;gap:4px;align-items:center;background:var(--panel);border:1px solid var(--line);
+  border-radius:9px;padding:3px}
+.sort-bar .sb{border:none;background:none;font-family:inherit;font-size:13px;font-weight:700;
+  color:var(--ink-soft);padding:6px 12px;border-radius:7px;cursor:pointer;white-space:nowrap}
+.sort-bar .sb.on{background:var(--accent);color:#fff}
+
+/* ═══ 新增：事項頁 ═══ */
+.item-group{margin-bottom:22px}
+.item-group-head{font-weight:800;font-size:14.5px;margin-bottom:9px;display:flex;align-items:center;gap:8px}
+.item-group-head .cnt{font-size:12px;font-weight:600;color:var(--ink-soft)}
+.item-group-head .gh-note{font-size:12px;font-weight:500;color:var(--ink-soft)}
+.task.pinned{border-color:var(--accent);background:var(--accent-soft)}
+.pin-btn{border:none;background:none;cursor:pointer;font-size:14px;line-height:1;padding:3px 5px;
+  border-radius:5px;flex:0 0 auto;opacity:.35}
+.pin-btn.on{opacity:1}
+.pin-btn:hover{background:var(--accent-soft)}
+.delay-badge{display:inline-block;margin-left:6px;font-size:11.5px;font-weight:800;color:var(--rose);
+  background:var(--rose-soft);padding:1px 8px;border-radius:20px;vertical-align:middle}
+.date-badge.editable{cursor:pointer}
+.date-badge.editable:hover{background:var(--accent);color:#fff}
+.date-badge.over{background:var(--rose-soft);color:var(--rose)}
+.date-badge.soon{background:var(--amber-soft);color:var(--amber)}
+.task .note-rank{flex-direction:row;gap:0;padding-top:0;align-items:center}
+
+/* ═══ 新增：跨專案 會計 / 期中報告 頁 ═══ */
+.gp-block{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--shadow);margin-bottom:16px;overflow:hidden}
+.gp-head{display:flex;align-items:center;gap:10px;padding:13px 17px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.gp-head .gp-name{font-weight:800;font-size:15.5px}
+.gp-head .gp-meta{font-size:12.5px;color:var(--ink-soft)}
+.gp-head .gp-go{margin-left:auto}
+.gp-body{padding:14px 17px}
+.gp-sub{font-weight:700;font-size:12.5px;color:var(--ink-soft);margin:12px 0 7px}
+.gp-sub:first-child{margin-top:0}
+.gp-none{font-size:13px;color:var(--ink-soft)}
+.chip .chip-date{font-size:11.5px;font-weight:700;color:var(--accent);background:var(--accent-soft);
+  padding:1px 8px;border-radius:20px;flex:0 0 auto;cursor:pointer}
+.chip .chip-date.none{color:var(--ink-soft);background:none;border:1px dashed var(--line)}
+.chip .chip-date.over{color:var(--rose);background:var(--rose-soft)}
+.mini-bar{height:6px;border-radius:4px;background:var(--line);overflow:hidden;margin-top:6px}
+.mini-bar>span{display:block;height:100%;background:var(--accent);border-radius:4px}
+.mini-bar.over>span{background:var(--rose)}
+.gp-stat{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--ink-soft)}
+.gp-stat b{color:var(--ink);font-weight:800}
+.gp-stat .bad{color:var(--rose)}
+
+/* ═══ 新增：行事曆事項可點編輯 ═══ */
+.ev-body{cursor:pointer}
+.ev-acct{background:var(--amber-soft);color:var(--ink);border-left:3px solid var(--amber);display:flex;gap:6px;align-items:flex-start}
+.ev-acct .chk{width:15px;height:15px;margin-top:1px}
+.ev-acct .chk.on::after{font-size:9px}
+.ev-acct.done{opacity:.55}
+.ev-acct.done .ev-body{text-decoration:line-through;color:var(--ink-soft)}
+.ev-delay{display:inline-block;font-size:10px;font-weight:800;color:var(--rose);background:var(--rose-soft);
+  padding:0 5px;border-radius:20px;margin-left:4px}
+
+/* 唯讀模式：新元件一併鎖住 */
+body.readonly #jumpBtn{display:inline-flex !important}
+body.readonly .tile-noteadd,body.readonly .tile-note .tn-x,body.readonly .pin-btn{display:none !important}
+body.readonly .tile-note .tn-in{pointer-events:none}
+body.readonly .ev-body{cursor:default}
+body.readonly .chip .chip-date{pointer-events:none}
+body.readonly .date-badge.editable{pointer-events:none}
+@media(max-width:680px){
+  .jump-bg{padding:50px 10px}
+  .sort-bar{width:100%}
+  .sort-bar .sb{flex:1;text-align:center}
+}
+/* ═══ 新增樣式結束 ═══ */
 </style>
 </head>
 <body>
@@ -373,6 +491,7 @@ body.readonly .proj-name-ro{margin-left:auto;font-weight:700;font-size:15px;colo
           <button class="btn sm ghost" onclick="backToOverview()" title="回到跨專案總覽">← 返回</button>
           <select class="sel" id="projSelect" onchange="switchProject(this.value)"></select>
         </span>
+        <button class="btn sm" id="jumpBtn" onclick="openJump()" title="搜尋並跳到其他專案（Ctrl / ⌘ + K）">🔍 切換專案</button>
         <button class="btn sm" onclick="openProjModal()">＋ 新專案</button>
         <button class="btn sm ghost" id="cloudBtn" onclick="cloudButtonClick()" title="連結 Google 雲端自動同步">☁ 連結雲端</button>
         <span id="cloudStatus" style="font-size:12px;color:var(--ink-soft);white-space:nowrap"></span>
@@ -381,12 +500,14 @@ body.readonly .proj-name-ro{margin-left:auto;font-weight:700;font-size:15px;colo
     <div class="tabs" id="tabsGlobal">
       <button class="tab active" data-view="projects" onclick="switchTab('projects')">專案列表</button>
       <button class="tab" data-view="schedule" onclick="switchTab('schedule')">行事曆</button>
-      <button class="tab" data-view="ai" onclick="switchTab('ai')">工程總覽</button>
+      <button class="tab" data-view="ai" onclick="switchTab('ai')">工程</button>
+      <button class="tab" data-view="acct" onclick="switchTab('acct')">會計</button>
+      <button class="tab" data-view="mid" onclick="switchTab('mid')">期中報告</button>
     </div>
     <div class="tabs" id="tabsProject" style="display:none">
       <span class="tab-scope" id="tabScopeName"></span>
       <button class="tab" data-view="overview" onclick="switchTab('overview')">總覽</button>
-      <button class="tab" data-view="months" onclick="switchTab('months')">待辦事項</button>
+      <button class="tab" data-view="months" onclick="switchTab('months')">事項</button>
       <button class="tab" data-view="works" onclick="switchTab('works')">工程項目</button>
       <button class="tab" data-view="budget" onclick="switchTab('budget')">經費</button>
       <button class="tab" data-view="midreport" onclick="switchTab('midreport')">期中報告</button>
@@ -399,6 +520,8 @@ body.readonly .proj-name-ro{margin-left:auto;font-weight:700;font-size:15px;colo
   <section class="view active" id="view-projects"></section>
   <section class="view" id="view-schedule"></section>
   <section class="view" id="view-ai"></section>
+  <section class="view" id="view-acct"></section>
+  <section class="view" id="view-mid"></section>
   <section class="view" id="view-overview"></section>
   <section class="view" id="view-months"></section>
   <section class="view" id="view-works"></section>
@@ -415,6 +538,14 @@ body.readonly .proj-name-ro{margin-left:auto;font-weight:700;font-size:15px;colo
       <button class="btn ghost" onclick="closeModal()">取消</button>
       <button class="btn primary" id="modalSave">儲存</button>
     </div>
+  </div>
+</div>
+
+<div class="jump-bg" id="jumpBg" onclick="if(event.target.id==='jumpBg')closeJump()">
+  <div class="jump-box">
+    <input id="jumpInput" placeholder="輸入公司名稱關鍵字，例：泰湖 / 昌岱" autocomplete="off">
+    <div class="jump-list" id="jumpList"></div>
+    <div class="jump-foot">↑↓ 選擇 · Enter 前往 · Esc 關閉</div>
   </div>
 </div>
 
@@ -440,6 +571,8 @@ function load(){
 function migrate(d){
   const STAGE_MAP={plan:"plan",prep:"acct",exec:"account",mid:"bind",done:"signed"}; // 舊→新階段對映
   d.standaloneEvents=d.standaloneEvents||[];  // 行事曆自訂事項（與專案無關）
+  d.standaloneEvents.forEach(e=>{e.text=e.text||""; e.date=e.date||""; e.done=!!e.done;
+    e.note=e.note||""; e.delayCount=+e.delayCount||0;});
   d.projects.forEach(p=>{
     p.budgetItems=p.budgetItems||[];
     // 總預算拆補助款/自籌款；舊資料沒有拆分時，暫把原總額當補助款
@@ -458,13 +591,22 @@ function migrate(d){
     p.midReportNotes=p.midReportNotes||"";                   // 期中報告資料整理（暫存文字，內容之後再定）
     p.midReportItems=p.midReportItems||[];                   // 期中報告待整理項目清單
     (p.midReportItems||[]).forEach(it=>{it.done=!!it.done;});
-    p.notes=p.notes||[];                                     // 注意事項 {id,title,note,pin}
-    (p.notes||[]).forEach(n=>{
-      if(n.title===undefined && n.text!==undefined) n.title=n.text; // 舊 text → title
-      n.title=n.title||""; n.note=n.note||""; n.pin=!!n.pin; delete n.text; delete n.date;
-    });
-    p.acctTodos=p.acctTodos||[];                             // 會計待處理 {id,text,done}
-    (p.acctTodos||[]).forEach(a=>{a.text=a.text||""; a.done=!!a.done;});
+    // 舊版「注意事項」一次性併入事項清單（沒日期的事項＝原本的注意事項）
+    p.notes=p.notes||[];
+    if(p.notes.length){
+      const conv=p.notes.map(n=>({
+        id:n.id||uid(),
+        month:"", date:"",
+        text:(n.title!==undefined?n.title:n.text)||"",
+        details:n.note||"",
+        done:false, pin:!!n.pin, delayCount:0, subtasks:[]
+      })).filter(x=>x.text.trim());
+      p.months=conv.concat(p.months||[]);   // 放最前面，維持原本手動排序
+      p.notes=[];
+    }
+    p.acctTodos=p.acctTodos||[];                             // 會計待處理 {id,text,done,date,note,delayCount}
+    (p.acctTodos||[]).forEach(a=>{a.text=a.text||""; a.done=!!a.done;
+      a.date=a.date||""; a.note=a.note||""; a.delayCount=+a.delayCount||0;});
     p.priorities=[];                                         // 「接下來三件事」功能已移除，清空舊資料
     p.mrCheckpoints=p.mrCheckpoints||[];                     // 期中報告查核點 {id,name,status,note,materials:[{id,name,type,who,got}]}
     (p.mrCheckpoints||[]).forEach(cp=>{
@@ -494,7 +636,11 @@ function migrate(d){
     if(!p.checklist)p.checklist=DEFAULT_CHECKLIST.map(t=>({id:uid(),text:t,done:false})); // 簽約前檢核
     delete p.deliverables; // 舊的「本公司交付項目」結構已停用，改由工程項目彙整
     delete p.ai;           // 更舊的單筆 AI 欄位
-    (p.months||[]).forEach(m=>{m.date=m.date||""; m.details=m.details||""; m.subtasks=m.subtasks||[];  // 待辦選填日期、細節說明、子項
+    // 事項（原「待辦事項」，已合併「注意事項」）
+    (p.months||[]).forEach(m=>{m.date=m.date||""; m.details=m.details||""; m.subtasks=m.subtasks||[];
+      m.pin=!!m.pin;                       // 釘選 → 顯示在專案列表卡片
+      m.delayCount=+m.delayCount||0;       // 延期次數（改到更晚的日期才計）
+      m.month=m.month||(m.date?m.date.slice(0,7):"");
       (m.subtasks||[]).forEach(s=>{s.done=!!s.done;});});
     (p.works||[]).forEach(w=>{
       w.content=w.content||"";
@@ -578,7 +724,40 @@ function urgency(dstr){const d=daysUntil(dstr);if(d===null)return "";if(d<0)retu
 function dueLabel(dstr){const d=daysUntil(dstr);if(d===null)return "";if(d<0)return `逾期 ${-d} 天`;if(d===0)return "今天";return `剩 ${d} 天`;}
 function biSpent(b){return(b.spends||[]).reduce((s,x)=>s+(+x.amount||0),0);}
 
-const GLOBAL_TABS=["projects","schedule","ai"];   // 跨專案層
+/* ── 事項共用工具 ───────────────────────────── */
+/* 依專案 id 取專案 */
+function P(pid){return db.projects.find(x=>x.id===pid);}
+/* 事項排序：沒排日期的在前（保留手動順序），其餘照日期由近到遠 */
+function splitItems(p){
+  const arr=p.months||[];
+  return {
+    undated:arr.filter(m=>!m.date),
+    dated:arr.filter(m=>m.date).slice().sort((a,b)=>a.date.localeCompare(b.date)),
+  };
+}
+/* 改日期：新日期比原本晚 → 延期次數 +1（往前挪、首次填日期都不算） */
+function applyNewDate(obj,nd){
+  const old=obj.date||"";
+  nd=(nd||"").trim();
+  if(old&&nd&&nd>old)obj.delayCount=(+obj.delayCount||0)+1;
+  obj.date=nd;
+  if(obj.month!==undefined)obj.month=nd?nd.slice(0,7):(obj.month||"");
+}
+/* 延期標記 */
+function delayTag(o,mini){
+  const n=+o.delayCount||0;
+  if(!n)return "";
+  return mini?`<span class="ev-delay">延${n}</span>`:`<span class="delay-badge">延 ${n} 次</span>`;
+}
+/* 計畫執行期間的時間進度（0~100，未設日期回傳 null） */
+function periodProgress(p){
+  if(!p.startDate||!p.endDate)return null;
+  const s=new Date(p.startDate+"T00:00:00"),e=new Date(p.endDate+"T00:00:00"),n=new Date(today()+"T00:00:00");
+  if(isNaN(s)||isNaN(e)||e<=s)return null;
+  return Math.max(0,Math.min(100,Math.round((n-s)/(e-s)*100)));
+}
+
+const GLOBAL_TABS=["projects","schedule","ai","acct","mid"];   // 跨專案層
 function isGlobal(v){return GLOBAL_TABS.includes(v);}
 function switchTab(v){
   activeTab=v;
@@ -616,6 +795,8 @@ function render(){
   if(activeTab==="projects"){renderProjects();save();wrapTables();return;}
   if(activeTab==="schedule"){renderSchedule();save();wrapTables();return;}
   if(activeTab==="ai"){renderAI();save();wrapTables();return;}
+  if(activeTab==="acct"){renderAcctAll();save();wrapTables();return;}
+  if(activeTab==="mid"){renderMidAll();save();wrapTables();return;}
   if(!proj()){document.getElementById("view-"+activeTab).innerHTML=`<div class="empty"><p>還沒有任何專案</p><span>點右上角「＋ 新專案」開始建立</span></div>`;return;}
   ({overview:renderOverview,months:renderMonths,works:renderWorks,budget:renderBudget,midreport:renderMidreport,settings:renderSettings}[activeTab])();
   save();
@@ -657,30 +838,6 @@ function renderOverview(){
   const cpPct=cpT?Math.round(cpD/cpT*100):0;
 
   document.getElementById("view-overview").innerHTML=`
-    <div class="sec-head"><div><h2>注意事項</h2><span class="hint">記錄要注意的事；用 ↑↓ 排優先順序，勾「釘選」可顯示在專案列表卡片上</span></div></div>
-    <div class="card" style="margin-bottom:22px"><div style="padding:16px 18px">
-      <div class="inline-add" style="margin-bottom:${p.notes && p.notes.length?"14px":"0"}">
-        <input id="note-title" placeholder="事項（一句話標題）" style="flex:2;min-width:200px" onkeydown="if(event.key==='Enter')addNote()">
-        <button class="btn sm primary" onclick="addNote()">＋ 新增</button>
-      </div>
-      ${p.notes && p.notes.length?`<div class="note-list">
-        ${p.notes.map((n,i)=>`<div class="note-item2${n.pin?" pinned":""}">
-          <div class="note-rank">
-            <button class="rank-btn" title="上移" onclick="moveNote('${n.id}',-1)" ${i===0?"disabled":""}>▲</button>
-            <span class="rank-num">${i+1}</span>
-            <button class="rank-btn" title="下移" onclick="moveNote('${n.id}',1)" ${i===p.notes.length-1?"disabled":""}>▼</button>
-          </div>
-          <div class="note-main">
-            <input class="note-title-in" value="${esc(n.title)}" placeholder="事項" onchange="setNoteTitle('${n.id}',this.value)">
-            <textarea class="note-note-in" rows="2" placeholder="備註（補充說明，選填）" onchange="setNoteNote('${n.id}',this.value)">${esc(n.note)}</textarea>
-          </div>
-          <div class="note-side">
-            <label class="note-pin" title="顯示在專案列表卡片"><input type="checkbox" ${n.pin?"checked":""} onchange="toggleNotePin('${n.id}')"> 釘選</label>
-            <button class="del-x" onclick="delNote('${n.id}')">✕</button>
-          </div>
-        </div>`).join("")}
-      </div>`:`<div style="color:var(--ink-soft);font-size:13px;margin-top:0">還沒有注意事項。</div>`}
-    </div></div>
     <div class="stat-grid">
       <div class="stat"><div class="label">目前狀態</div>
         <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;align-items:center">
@@ -708,60 +865,100 @@ function renderOverview(){
   `;
 }
 
-/* ---- 待辦事項 ---- */
-let hideDoneTasks=true;  // 待辦事項頁：是否隱藏已完成（預設隱藏；行事曆不受影響）
+/* ---- 事項（原「待辦事項」＋「注意事項」合併）---- */
+let hideDoneTasks=true;  // 是否隱藏已完成（預設隱藏；行事曆不受影響）
 function toggleHideDoneTasks(){hideDoneTasks=!hideDoneTasks;renderMonths();}
+
+/* 單筆事項的卡片 */
+function itemRow(p,m,idx,arr){
+  const subDone=(m.subtasks||[]).filter(s=>s.done).length,subTot=(m.subtasks||[]).length;
+  const hasDetail=(m.details&&m.details.trim())||subTot;
+  const urg=m.date?urgency(m.date):"";
+  return `<div class="task-wrap">
+    <div class="task ${m.done?"done":""} ${m.pin&&!m.done?"pinned":""}">
+      <div class="chk ${m.done?"on":""}" onclick="event.stopPropagation();toggleTask('${m.id}')"></div>
+      <button class="pin-btn ${m.pin?"on":""}" title="${m.pin?"已釘選在專案列表卡片，點一下取消":"釘選到專案列表卡片"}"
+        onclick="event.stopPropagation();toggleItemPin('${m.id}')">📌</button>
+      <div class="task-txt" onclick="toggleCard('task-${m.id}')" style="cursor:pointer">${esc(m.text)}
+        ${m.date
+          ?`<span class="date-badge editable ${m.done?"":urg}" title="點一下改日期" onclick="event.stopPropagation();openItemEdit('task','${p.id}','${m.id}')">${esc(m.date)}${m.done?"":" · "+dueLabel(m.date)}</span>`
+          :`<button class="date-add" onclick="event.stopPropagation();openItemEdit('task','${p.id}','${m.id}')">＋日期</button>`}
+        ${delayTag(m)}
+        ${subTot?`<span class="sub-count">細項 ${subDone}/${subTot}</span>`:""}
+      </div>
+      ${arr&&!m.date?`<span class="note-rank">
+        <button class="rank-btn" title="上移" onclick="event.stopPropagation();moveItem('${m.id}',-1)" ${idx===0?"disabled":""}>▲</button>
+        <button class="rank-btn" title="下移" onclick="event.stopPropagation();moveItem('${m.id}',1)" ${idx===arr.length-1?"disabled":""}>▼</button>
+      </span>`:""}
+      <button class="btn ghost sm" onclick="event.stopPropagation();openItemEdit('task','${p.id}','${m.id}')" title="編輯內容與日期">編輯</button>
+      <button class="btn ghost sm" onclick="toggleCard('task-${m.id}')" title="展開細節">${hasDetail?"細節":"＋細節"}</button>
+      <button class="del-x" onclick="delTask('${m.id}')">✕</button>
+    </div>
+    <div class="card-body task-detail" id="body-task-${m.id}" style="display:none;border:1px solid var(--line);border-top:none;border-radius:0 0 9px 9px;margin:-7px 0 7px;padding:14px 16px">
+      <div class="field" style="margin-bottom:12px"><label>備註 / 細節說明</label>
+        <textarea id="td-${m.id}" rows="3" placeholder="這件事的補充說明、要注意什麼…" onchange="setTaskDetails('${m.id}',this.value)">${esc(m.details||"")}</textarea></div>
+      <div class="sub-title">細項清單</div>
+      <div class="chip-list">
+        ${subTot?m.subtasks.map(sub=>`<div class="chip ${sub.done?"done":""}">
+          <div class="chk ${sub.done?"on":""}" onclick="toggleSubtask('${m.id}','${sub.id}')"></div>
+          <span class="txt">${esc(sub.text)}</span>
+          <button class="del-x" onclick="delSubtask('${m.id}','${sub.id}')">✕</button></div>`).join(""):
+          `<div style="color:var(--ink-soft);font-size:13.5px">尚無細項</div>`}
+      </div>
+      <div class="inline-add">
+        <input id="st-${m.id}" placeholder="新增細項，例：整理報表附件" style="flex:2;min-width:180px" onclick="event.stopPropagation()">
+        <button class="btn sm primary" onclick="addSubtask('${m.id}')">加入</button>
+      </div>
+    </div>
+  </div>`;
+}
+
 function renderMonths(){
   const p=proj();
-  const g={};p.months.forEach(m=>{(g[m.month]=g[m.month]||[]).push(m)});
-  const keys=Object.keys(g).sort();
-  const doneCount=p.months.filter(m=>m.done).length;  // 全部已完成筆數（用於提示）
+  const {undated,dated}=splitItems(p);
+  const doneCount=(p.months||[]).filter(m=>m.done).length;
+  const flt=a=>hideDoneTasks?a.filter(m=>!m.done):a;
+  const un=flt(undated), dt=flt(dated);
+
   document.getElementById("view-months").innerHTML=`
-    <div class="sec-head"><div><h2>待辦事項</h2><span class="hint">設定要完成的事，勾選以標記完成；點事項可展開登錄細節${doneCount?`（已完成 ${doneCount} 筆${hideDoneTasks?"已隱藏":""}，仍會顯示在行事曆）`:""}</span></div>
+    <div class="sec-head"><div><h2>事項</h2><span class="hint">沒填日期的＝注意事項，排在最上面；填了日期就會自動出現在行事曆${doneCount?`（已完成 ${doneCount} 筆${hideDoneTasks?"已隱藏":""}）`:""}</span></div>
       <div style="display:flex;gap:8px;align-items:center">
         ${doneCount?`<button class="btn sm" onclick="toggleHideDoneTasks()">${hideDoneTasks?"顯示已完成":"隱藏已完成"}</button>`:""}
         <button class="btn primary sm" onclick="openTaskModal()">＋ 新增事項</button>
       </div></div>
-    ${keys.length?keys.map(k=>{
-      const allItems=g[k];
-      const items=hideDoneTasks?allItems.filter(i=>!i.done):allItems;
-      if(!items.length)return "";  // 該月全部完成且隱藏中 → 不顯示此月區塊
-      const done=allItems.filter(i=>i.done).length;
-      return `<div class="month-block"><div class="month-label">${fmtMonth(k)} <span class="cnt">${done}/${allItems.length}</span></div>
-        ${items.map(m=>{
-          const subDone=(m.subtasks||[]).filter(s=>s.done).length,subTot=(m.subtasks||[]).length;
-          const hasDetail=(m.details&&m.details.trim())||subTot;
-          return `<div class="task-wrap">
-          <div class="task ${m.done?"done":""}">
-            <div class="chk ${m.done?"on":""}" onclick="event.stopPropagation();toggleTask('${m.id}')"></div>
-            <div class="task-txt" onclick="toggleCard('task-${m.id}')" style="cursor:pointer">${esc(m.text)}
-              ${m.date?`<span class="date-badge">${esc(m.date)}</span>`:`<button class="date-add" onclick="event.stopPropagation();setTaskDate('${m.id}')">＋日期</button>`}
-              ${subTot?`<span class="sub-count">細項 ${subDone}/${subTot}</span>`:""}
-            </div>
-            <button class="btn ghost sm" onclick="toggleCard('task-${m.id}')" title="展開細節">${hasDetail?"細節":"＋細節"}</button>
-            <button class="del-x" onclick="delTask('${m.id}')">✕</button>
-          </div>
-          <div class="card-body task-detail" id="body-task-${m.id}" style="display:none;border:1px solid var(--line);border-top:none;border-radius:0 0 9px 9px;margin:-7px 0 7px;padding:14px 16px">
-            <div class="field" style="margin-bottom:12px"><label>細節說明</label>
-              <textarea id="td-${m.id}" rows="3" placeholder="這件待辦的補充說明、注意事項…" onchange="setTaskDetails('${m.id}',this.value)">${esc(m.details||"")}</textarea></div>
-            <div class="sub-title">細項清單</div>
-            <div class="chip-list">
-              ${subTot?m.subtasks.map(s=>`<div class="chip ${s.done?"done":""}">
-                <div class="chk ${s.done?"on":""}" onclick="toggleSubtask('${m.id}','${s.id}')"></div>
-                <span class="txt">${esc(s.text)}</span>
-                <button class="del-x" onclick="delSubtask('${m.id}','${s.id}')">✕</button></div>`).join(""):
-                `<div style="color:var(--ink-soft);font-size:13.5px">尚無細項</div>`}
-            </div>
-            <div class="inline-add">
-              <input id="st-${m.id}" placeholder="新增細項，例：整理報表附件" style="flex:2;min-width:180px" onclick="event.stopPropagation()">
-              <button class="btn sm primary" onclick="addSubtask('${m.id}')">加入</button>
-            </div>
-          </div>
-          </div>`;
-        }).join("")}
-      </div>`;
-    }).join("")||`<div class="empty"><p>目前沒有未完成的待辦</p><span>已完成的都收起來了，點右上「顯示已完成」可展開</span></div>`:`<div class="empty"><p>還沒有待辦事項</p><span>點「＋ 新增事項」開始規劃</span></div>`}
+
+    <div class="item-group">
+      <div class="item-group-head">📌 未排日期 <span class="cnt">${un.length} 筆</span>
+        <span class="gh-note">— 這一區就是原本的「注意事項」，用 ▲▼ 排順序，📌 可釘到專案列表卡片</span></div>
+      ${un.length?un.map((m,i)=>itemRow(p,m,i,un)).join(""):`<div style="color:var(--ink-soft);font-size:13.5px;padding:4px 2px">目前沒有未排日期的事項。</div>`}
+      <div class="inline-add">
+        <input id="item-quick" placeholder="快速新增一筆（不填日期）" style="flex:2;min-width:200px" onkeydown="if(event.key==='Enter')quickAddItem()">
+        <button class="btn sm primary" onclick="quickAddItem()">＋ 新增</button>
+      </div>
+    </div>
+
+    <div class="item-group">
+      <div class="item-group-head">📅 已排日期 <span class="cnt">${dt.length} 筆</span>
+        <span class="gh-note">— 依日期由近到遠；這些會同時出現在行事曆</span></div>
+      ${dt.length?dt.map(m=>itemRow(p,m)).join(""):`<div style="color:var(--ink-soft);font-size:13.5px;padding:4px 2px">目前沒有排定日期的事項。</div>`}
+    </div>
   `;
+}
+function quickAddItem(){const p=proj();const t=val("item-quick");if(!t)return;
+  p.months=p.months||[];
+  p.months.unshift({id:uid(),month:"",date:"",text:t,details:"",done:false,pin:false,delayCount:0,subtasks:[]});
+  render();}
+function toggleItemPin(id){const m=proj().months.find(x=>x.id===id);if(m){m.pin=!m.pin;render();}}
+/* 未排日期事項的手動排序（只在未排日期的項目之間交換） */
+function moveItem(id,dir){
+  const arr=proj().months;
+  const idxs=arr.map((m,i)=>(!m.date&&(!hideDoneTasks||!m.done))?i:-1).filter(i=>i>=0);
+  const pos=idxs.findIndex(i=>arr[i].id===id);
+  if(pos<0)return;
+  const np=pos+dir; if(np<0||np>=idxs.length)return;
+  const a=idxs[pos],b=idxs[np];
+  const t=arr[a];arr[a]=arr[b];arr[b]=t;
+  render();
 }
 function setTaskDetails(id,v){proj().months.find(m=>m.id===id).details=v;save();}
 function addSubtask(mid){const m=proj().months.find(x=>x.id===mid);const t=val("st-"+mid);if(!t)return;
@@ -770,6 +967,48 @@ function toggleSubtask(mid,sid){const m=proj().months.find(x=>x.id===mid);
   m.subtasks.find(s=>s.id===sid).done^=1;render();keepOpen("task-"+mid);}
 function delSubtask(mid,sid){const m=proj().months.find(x=>x.id===mid);
   m.subtasks=m.subtasks.filter(s=>s.id!==sid);render();keepOpen("task-"+mid);}
+
+/* ── 事項／會計／自訂行程 共用的編輯視窗 ── */
+const KIND_LABEL={task:"專案事項",acct:"會計待處理",self:"自訂行程"};
+function getEnt(kind,pid,id){
+  if(kind==="self")return (db.standaloneEvents||[]).find(x=>x.id===id);
+  const p=P(pid); if(!p)return null;
+  if(kind==="acct")return (p.acctTodos||[]).find(x=>x.id===id);
+  return (p.months||[]).find(x=>x.id===id);
+}
+function openItemEdit(kind,pid,id){
+  if(READONLY)return;
+  const e=getEnt(kind,pid,id); if(!e)return;
+  const p=pid?P(pid):null;
+  const note=(kind==="task")?(e.details||""):(e.note||"");
+  openModal(`編輯${KIND_LABEL[kind]}${p?"｜"+p.name:""}`,`
+    <div class="field"><label>內容</label><textarea id="ie-text" rows="2">${esc(e.text||"")}</textarea></div>
+    <div class="field"><label>日期${e.date?`（目前 ${esc(e.date)}）`:"（選填，填了才會出現在行事曆）"}</label>
+      <input type="date" id="ie-date" value="${esc(e.date||"")}"></div>
+    <div class="field"><label>備註</label><textarea id="ie-note" rows="3" placeholder="補充說明（選填）">${esc(note)}</textarea></div>
+    ${kind==="task"?`<div class="field"><label style="display:flex;align-items:center;gap:7px;cursor:pointer">
+      <input type="checkbox" id="ie-pin" ${e.pin?"checked":""} style="width:auto;margin:0">釘選到專案列表卡片</label></div>`:""}
+    <p style="font-size:12.5px;color:var(--ink-soft);margin-bottom:12px">目前已延期 <b>${+e.delayCount||0}</b> 次。日期改到比原本更晚時，延期次數會 +1；往前挪不計。</p>
+    <button class="btn sm danger" style="color:var(--rose)" onclick="delItemFromModal('${kind}','${pid||""}','${id}')">🗑 刪除這一筆</button>`,
+  ()=>{
+    const t=val("ie-text"); if(!t){alert("請輸入內容");return;}
+    e.text=t;
+    const nv=val("ie-note");
+    if(kind==="task"){e.details=nv;const cb=document.getElementById("ie-pin");if(cb)e.pin=cb.checked;}
+    else e.note=nv;
+    applyNewDate(e,val("ie-date"));
+    closeModal();render();
+  });
+}
+function delItemFromModal(kind,pid,id){
+  if(!confirm("確定刪除這一筆？"))return;
+  if(kind==="self")db.standaloneEvents=(db.standaloneEvents||[]).filter(x=>x.id!==id);
+  else{const p=P(pid);if(p){
+    if(kind==="acct")p.acctTodos=(p.acctTodos||[]).filter(x=>x.id!==id);
+    else p.months=(p.months||[]).filter(x=>x.id!==id);
+  }}
+  closeModal();render();
+}
 
 /* ---- 工程項目 ---- */
 function renderWorks(){
@@ -957,25 +1196,35 @@ function renderBudget(){
       </div></div>`;
     })()}
 
-    <div class="sec-head" style="margin:26px 0 12px"><div><h2 style="font-size:16px">會計待處理 ${acctOpen?`<span style="font-weight:600;color:var(--rose);font-size:13px">（${acctOpen} 筆未解決）</span>`:""}</h2><span class="hint">你在幫廠商盯的會計問題，例如報表狀況、人事費轉帳、發票核銷</span></div></div>
+    <div class="sec-head" style="margin:26px 0 12px"><div><h2 style="font-size:16px">會計待處理 ${acctOpen?`<span style="font-weight:600;color:var(--rose);font-size:13px">（${acctOpen} 筆未解決）</span>`:""}</h2><span class="hint">你在幫廠商盯的會計問題；填了日期會自動排進行事曆，也會出現在總覽層的「會計」頁</span></div></div>
     <div class="card"><div style="padding:16px 18px">
       <div class="inline-add" style="margin-bottom:${(p.acctTodos||[]).length?"14px":"0"}">
         <input id="acct-new" placeholder="會計問題，例：8月人事費轉帳金額對不上" style="flex:2;min-width:220px" onkeydown="if(event.key==='Enter')addAcctTodo()">
+        <input type="date" id="acct-date" title="日期（選填，填了會排進行事曆）">
         <button class="btn sm primary" onclick="addAcctTodo()">＋ 新增</button>
       </div>
       ${(p.acctTodos||[]).length?`<div class="chip-list">
-        ${p.acctTodos.map(a=>`<div class="chip ${a.done?"done":""}">
+        ${p.acctTodos.map(a=>{const u=a.date?urgency(a.date):"";return `<div class="chip ${a.done?"done":""}">
           <div class="chk ${a.done?"on":""}" onclick="toggleAcctTodo('${a.id}')"></div>
-          <span class="txt">${esc(a.text)}</span>
+          <span class="txt">${esc(a.text)}${a.note?`<span style="color:var(--ink-soft);font-size:12px">　${esc(a.note)}</span>`:""}</span>
+          ${(+a.delayCount||0)?`<span class="ev-delay">延${a.delayCount}</span>`:""}
+          <span class="chip-date ${a.date?(u==="over"?"over":""):"none"}" title="點一下改日期與內容"
+            onclick="openItemEdit('acct','${p.id}','${a.id}')">${a.date?esc(a.date)+(a.done?"":" · "+dueLabel(a.date)):"＋日期"}</span>
           <button class="del-x" onclick="delAcctTodo('${a.id}')">✕</button>
-        </div>`).join("")}
+        </div>`;}).join("")}
       </div>`:`<div style="color:var(--ink-soft);font-size:13px">目前沒有待處理的會計問題。</div>`}
     </div></div>
   `;
 }
 
 
-/* ---- 專案列表（依狀態分類的方格卡片）---- */
+/* ---- 專案列表（可切換排序方式）---- */
+let projSort="stage";   // stage=依階段分組 / period=依執行期間
+try{projSort=localStorage.getItem("pm_proj_sort")||"stage";}catch(e){}
+function setProjSort(v){projSort=v;try{localStorage.setItem("pm_proj_sort",v);}catch(e){}renderProjects();}
+
+const PIN_MAX=3;   // 專案卡片最多顯示幾筆釘選事項
+
 function renderProjects(){
   const el=document.getElementById("view-projects");
   if(!db.projects.length){el.innerHTML=`<div class="sec-head"><h2>專案列表</h2><button class="btn primary sm" onclick="openProjModal()">＋ 新增專案</button></div><div class="empty"><p>還沒有任何專案</p><span>點「＋ 新增專案」開始</span></div>`;return;}
@@ -1011,22 +1260,64 @@ function renderProjects(){
   const line=(icon,label,d)=>`<div class="tk-line ${d.dim?"dim":""} ${d.warn?"warn":""} ${d.urg==="over"?"over":d.urg==="soon"?"soon":""}">
     <span class="tk-ico">${icon}</span><span class="tk-lab">${label}</span><span class="tk-txt">${esc(d.txt)}</span></div>`;
 
-  const tile=p=>{
-    const pins=(p.notes||[]).filter(n=>n.pin);
-    return `<div class="proj-tile" onclick="openProject('${p.id}')">
+  // 計畫執行期間 + 時間進度條
+  const periodBlock=p=>{
+    if(!p.startDate&&!p.endDate)
+      return `<div class="tile-period"><div class="tp-row"><span>執行期間未設定</span></div></div>`;
+    const pct=periodProgress(p);
+    const d=daysUntil(p.endDate);
+    const cls=(d===null)?"":(d<0?"over":(d<=30?"soon":""));
+    const left=(d===null)?"":(d<0?`已結束 ${-d} 天`:(d===0?"今天結束":`剩 ${d} 天`));
+    return `<div class="tile-period">
+      <div class="tp-row">
+        <span class="tp-date">${esc(p.startDate||"—")} ～ ${esc(p.endDate||"—")}</span>
+        <span class="tp-left ${cls}">${left}</span>
+      </div>
+      ${pct===null?"":`<div class="tp-bar ${cls==="over"?"over":""}"><span style="width:${pct}%"></span></div>
+      <div class="tp-row"><span>執行期間已過 ${pct}%</span></div>`}
+    </div>`;
+  };
+
+  // 卡片上可直接編輯的注意事項（＝釘選的事項）
+  const pinBlock=p=>{
+    const pins=(p.months||[]).filter(m=>m.pin&&!m.done);
+    const show=pins.slice(0,PIN_MAX);
+    return `<div class="tile-notes" onclick="event.stopPropagation()">
+      ${show.map(n=>`<div class="tile-note">
+        <div class="chk ${n.done?"on":""}" title="標記完成" onclick="event.stopPropagation();togglePinDone('${p.id}','${n.id}')"></div>
+        <input class="tn-in" value="${esc(n.text)}" placeholder="事項內容"
+          onclick="event.stopPropagation()" onchange="setPinText('${p.id}','${n.id}',this.value)">
+        ${n.date?`<span class="tn-date">${esc(n.date.slice(5))}</span>`:""}
+        ${(+n.delayCount||0)?`<span class="ev-delay">延${n.delayCount}</span>`:""}
+        <button class="tn-x" title="從卡片取消釘選（事項仍保留）" onclick="event.stopPropagation();unpinItem('${p.id}','${n.id}')">✕</button>
+      </div>`).join("")}
+      ${pins.length>PIN_MAX?`<div class="tile-more">還有 ${pins.length-PIN_MAX} 筆釘選事項，進入專案可看全部</div>`:""}
+      <div class="tile-noteadd">
+        <input id="pin-new-${p.id}" placeholder="＋ 新增注意事項（直接在這裡打）" autocomplete="off"
+          onclick="event.stopPropagation()"
+          onkeydown="event.stopPropagation();if(event.key==='Enter')addPinItem('${p.id}')">
+        <button onclick="event.stopPropagation();addPinItem('${p.id}')">＋</button>
+      </div>
+    </div>`;
+  };
+
+  const tile=p=>`<div class="proj-tile" onclick="openProject('${p.id}')">
       <button class="del-x tile-del" onclick="event.stopPropagation();delProject('${p.id}')" title="刪除專案">✕</button>
       <div class="tile-name">${esc(p.name)}</div>
-      <div class="tile-tags"><span class="tag t-cat">${CATEGORIES[p.category]||"個案"}</span></div>
+      <div class="tile-tags">
+        <span class="tag t-cat">${CATEGORIES[p.category]||"個案"}</span>
+        ${projSort==="period"?`<span class="tag ${STAGES[p.stage].cls}">${STAGES[p.stage].label}</span>`:""}
+      </div>
+      ${periodBlock(p)}
       <div class="tk-lines">
         ${line("🔧","工程",workLine(p))}
         ${line("📊","會計",acctLine(p))}
         ${line("📋","期中",midLine(p))}
       </div>
-      ${pins.length?`<div class="tile-notes">${pins.map(n=>`<div class="tile-note"><span class="t">📌 ${esc(n.title)}</span></div>`).join("")}</div>`:""}
+      ${pinBlock(p)}
     </div>`;
-  };
 
-  // 跨專案「本週該追什麼」：撈快到期/逾期日期 + 未解決會計
+  // 跨專案「本週該追什麼」：撈快到期/逾期日期
   const urgent=[];
   db.projects.forEach(p=>{
     const push=(dstr,label)=>{const u=urgency(dstr);if(u)urgent.push({proj:p.name,pid:p.id,label,date:dstr,d:daysUntil(dstr),u});};
@@ -1037,56 +1328,91 @@ function renderProjects(){
   });
   urgent.sort((a,b)=>(a.d||0)-(b.d||0));
 
-  const groups=STAGE_KEYS.map(k=>({key:k,label:STAGES[k].label,cls:STAGES[k].cls,projs:db.projects.filter(p=>p.stage===k)}));
-
-  el.innerHTML=`
-    <div class="sec-head"><div><h2>專案列表</h2><span class="hint">每張卡片顯示該案的工程、會計、期中三條追蹤線</span></div>
-      <button class="btn primary sm" onclick="openProjModal()">＋ 新增專案</button></div>
-
-    ${urgent.length?`<div class="focus-box">
-      <div class="focus-head">本週該追什麼<span class="focus-cnt">${urgent.length} 項</span></div>
-      <div class="focus-list">
-        ${urgent.slice(0,12).map(u=>`<div class="focus-item ${u.u==="over"?"over":u.u==="soon"?"soon":""}" onclick="openProject('${u.pid}')">
-          <span class="fi-proj">${esc(u.proj)}</span>
-          <span class="fi-label">${u.label}${u.text?"："+esc(u.text):""}</span>
-          <span class="fi-due">${u.u==="acct"?"未解決":u.date+" · "+dueLabel(u.date)}</span>
-        </div>`).join("")}
-      </div>
-    </div>`:""}
-
-    ${groups.map(g=>g.projs.length?`
+  // ── 主體：依排序方式產生 ──
+  let body="";
+  if(projSort==="stage"){
+    const groups=STAGE_KEYS.map(k=>({key:k,label:STAGES[k].label,cls:STAGES[k].cls,projs:db.projects.filter(p=>p.stage===k)}));
+    body=groups.map(g=>g.projs.length?`
       <div class="stage-group">
         <div class="stage-group-head">
           <span class="tag ${g.cls}" style="font-size:13px">${g.label}</span>
           <span class="gcnt">${g.projs.length} 個專案</span>
         </div>
         <div class="proj-grid">${g.projs.map(tile).join("")}</div>
-      </div>`:"").join("")}
+      </div>`:"").join("");
+  }else{
+    // 依執行期間：結束日近的在前，沒設結束日的排最後
+    const sorted=db.projects.slice().sort((a,b)=>{
+      const ae=a.endDate||"", be=b.endDate||"";
+      if(!ae&&!be)return (a.name||"").localeCompare(b.name||"");
+      if(!ae)return 1;
+      if(!be)return -1;
+      return ae.localeCompare(be);
+    });
+    body=`<div class="proj-grid">${sorted.map(tile).join("")}</div>`;
+  }
+
+  el.innerHTML=`
+    <div class="sec-head"><div><h2>專案列表</h2><span class="hint">卡片顯示執行期間與工程、會計、期中三條追蹤線；下方注意事項可直接編輯</span></div>
+      <button class="btn primary sm" onclick="openProjModal()">＋ 新增專案</button></div>
+
+    <div class="sec-head" style="margin-bottom:18px">
+      <div class="sort-bar">
+        <button class="sb ${projSort==="stage"?"on":""}" onclick="setProjSort('stage')">依目前階段</button>
+        <button class="sb ${projSort==="period"?"on":""}" onclick="setProjSort('period')">依執行期間</button>
+      </div>
+      <span class="hint">${projSort==="stage"?"照計畫書修正 → 簽約完成的階段分組":"結束日最近的排最前面，最急的先看"}</span>
+    </div>
+
+    ${urgent.length?`<div class="focus-box">
+      <div class="focus-head">本週該追什麼<span class="focus-cnt">${urgent.length} 項</span></div>
+      <div class="focus-list">
+        ${urgent.slice(0,12).map(u=>`<div class="focus-item ${u.u==="over"?"over":u.u==="soon"?"soon":""}" onclick="openProject('${u.pid}')">
+          <span class="fi-proj">${esc(u.proj)}</span>
+          <span class="fi-label">${u.label}</span>
+          <span class="fi-due">${u.date+" · "+dueLabel(u.date)}</span>
+        </div>`).join("")}
+      </div>
+    </div>`:""}
+
+    ${body}
   `;
 }
+/* 卡片上的注意事項操作 */
+function setPinText(pid,mid,v){const p=P(pid);if(!p)return;const m=(p.months||[]).find(x=>x.id===mid);if(!m)return;
+  const t=(v||"").trim();if(t){m.text=t;save();}else renderProjects();}
+function unpinItem(pid,mid){const p=P(pid);if(!p)return;const m=(p.months||[]).find(x=>x.id===mid);
+  if(m){m.pin=false;save();renderProjects();}}
+function togglePinDone(pid,mid){const p=P(pid);if(!p)return;const m=(p.months||[]).find(x=>x.id===mid);
+  if(m){m.done=!m.done;save();renderProjects();}}
+function addPinItem(pid){const p=P(pid);if(!p)return;const t=val("pin-new-"+pid);if(!t)return;
+  p.months=p.months||[];
+  p.months.unshift({id:uid(),month:"",date:"",text:t,details:"",done:false,pin:true,delayCount:0,subtasks:[]});
+  save();renderProjects();}
 
 /* ---- 行事曆（整月）---- */
 let calYear=new Date().getFullYear(), calMonth=new Date().getMonth(); // month:0-11
 function renderSchedule(){
   const el=document.getElementById("view-schedule");
 
-  // 蒐集所有事件：各專案有日期的待辦 + 重要日期 + 自訂獨立事項
+  // 蒐集所有事件：專案事項（有日期）＋ 會計待處理（有日期）＋ 重要日期 ＋ 自訂事項
   const byDate={};
   const push=(dstr,ev)=>{if(dstr)(byDate[dstr]=byDate[dstr]||[]).push(ev)};
   db.projects.forEach(p=>{
-    (p.months||[]).forEach(m=>{if(m.date)push(m.date,{type:"task",proj:p.name,text:m.text,done:m.done,pid:p.id,mid:m.id})});
-    if(p.midReportDue)push(p.midReportDue,{type:"milestone",proj:p.name,text:"期中報告繳交期限"});
-    if(p.midVisit)push(p.midVisit,{type:"milestone",proj:p.name,text:"期中查訪"});
-    if(p.finalVisit)push(p.finalVisit,{type:"milestone",proj:p.name,text:"期末查訪"});
-    if(p.startDate)push(p.startDate,{type:"milestone",proj:p.name,text:"計畫執行起始"});
-    if(p.endDate)push(p.endDate,{type:"milestone",proj:p.name,text:"計畫執行結束"});
+    (p.months||[]).forEach(m=>{if(m.date)push(m.date,{type:"task",proj:p.name,text:m.text,done:m.done,pid:p.id,id:m.id,delay:+m.delayCount||0})});
+    (p.acctTodos||[]).forEach(a=>{if(a.date)push(a.date,{type:"acct",proj:p.name,text:a.text,done:a.done,pid:p.id,id:a.id,delay:+a.delayCount||0})});
+    if(p.midReportDue)push(p.midReportDue,{type:"milestone",proj:p.name,text:"期中報告繳交期限",pid:p.id});
+    if(p.midVisit)push(p.midVisit,{type:"milestone",proj:p.name,text:"期中查訪",pid:p.id});
+    if(p.finalVisit)push(p.finalVisit,{type:"milestone",proj:p.name,text:"期末查訪",pid:p.id});
+    if(p.startDate)push(p.startDate,{type:"milestone",proj:p.name,text:"計畫執行起始",pid:p.id});
+    if(p.endDate)push(p.endDate,{type:"milestone",proj:p.name,text:"計畫執行結束",pid:p.id});
   });
-  (db.standaloneEvents||[]).forEach(e=>push(e.date,{type:"self",text:e.text,done:e.done,eid:e.id}));
+  (db.standaloneEvents||[]).forEach(e=>push(e.date,{type:"self",text:e.text,done:e.done,id:e.id,delay:+e.delayCount||0}));
 
   // 週日在最左：0=日,1=一,...,6=六
   const weekNames=["日","一","二","三","四","五","六"];
   const first=new Date(calYear,calMonth,1);
-  const startBlank=first.getDay();                 // 該月1號是星期幾（0=日）
+  const startBlank=first.getDay();
   const daysInMonth=new Date(calYear,calMonth+1,0).getDate();
   const todayStr=isoDate(new Date());
 
@@ -1097,7 +1423,7 @@ function renderSchedule(){
 
   el.innerHTML=`
     <div class="sec-head">
-      <div><h2>行事曆</h2><span class="hint">各專案有日期的待辦、重要日期會自動排入；也可自行新增與專案無關的事項</span></div>
+      <div><h2>行事曆</h2><span class="hint">專案事項、會計待處理、重要日期會自動排入；點事項本體可改日期與內容</span></div>
       <div style="display:flex;gap:6px;align-items:center">
         <button class="btn sm" onclick="shiftMonth(-1)">← 上個月</button>
         <button class="btn sm" onclick="shiftMonth(0)">本月</button>
@@ -1119,22 +1445,30 @@ function renderSchedule(){
             <button class="cal-add" title="新增事項" onclick="openSelfEventModal('${ds}')">＋</button></div>
           <div class="cal-evs">
             ${evs.map(ev=>{
-              if(ev.type==="milestone")return `<div class="ev ev-mile"><span class="ev-proj">${esc(ev.proj)}</span>${esc(ev.text)}</div>`;
-              if(ev.type==="self")return `<div class="ev ev-self ${ev.done?"done":""}">
-                <div class="chk ${ev.done?"on":""}" onclick="toggleSelfEvent('${ev.eid}')"></div>
-                <span class="ev-body">${esc(ev.text)}</span>
-                ${ev.done?"":`<button class="ev-move" title="移到別天" onclick="moveSelfEvent('${ev.eid}','${ds}')">📅</button>`}
-                <button class="ev-del" onclick="delSelfEvent('${ev.eid}')">✕</button></div>`;
+              const dly=ev.delay?`<span class="ev-delay">延${ev.delay}</span>`:"";
+              if(ev.type==="milestone")
+                return `<div class="ev ev-mile" title="重要日期，到「專案設定」修改" onclick="openProject('${ev.pid}');switchTab('settings')" style="cursor:pointer">
+                  <span class="ev-proj">${esc(ev.proj)}</span>${esc(ev.text)}</div>`;
+              if(ev.type==="self")
+                return `<div class="ev ev-self ${ev.done?"done":""}">
+                  <div class="chk ${ev.done?"on":""}" onclick="toggleSelfEvent('${ev.id}')"></div>
+                  <span class="ev-body" title="點一下改日期與內容" onclick="openItemEdit('self','','${ev.id}')">${esc(ev.text)}${dly}</span>
+                  <button class="ev-del" onclick="delSelfEvent('${ev.id}')">✕</button></div>`;
+              if(ev.type==="acct")
+                return `<div class="ev ev-acct ${ev.done?"done":""}">
+                  <div class="chk ${ev.done?"on":""}" onclick="toggleAcctById('${ev.pid}','${ev.id}')"></div>
+                  <div class="ev-body" title="會計待處理 · 點一下改日期與內容" onclick="openItemEdit('acct','${ev.pid}','${ev.id}')">
+                    <span class="ev-proj">📊 ${esc(ev.proj)}</span>${esc(ev.text)}${dly}</div></div>`;
               return `<div class="ev ev-task ${ev.done?"done":""}">
-                <div class="chk ${ev.done?"on":""}" onclick="toggleTaskById('${ev.pid}','${ev.mid}')"></div>
-                <div class="ev-body"><span class="ev-proj">${esc(ev.proj)}</span>${esc(ev.text)}</div>
-                ${ev.done?"":`<button class="ev-move" title="移到別天" onclick="moveTaskDate('${ev.pid}','${ev.mid}','${ds}')">📅</button>`}</div>`;
+                <div class="chk ${ev.done?"on":""}" onclick="toggleTaskById('${ev.pid}','${ev.id}')"></div>
+                <div class="ev-body" title="點一下改日期與內容" onclick="openItemEdit('task','${ev.pid}','${ev.id}')">
+                  <span class="ev-proj">${esc(ev.proj)}</span>${esc(ev.text)}${dly}</div></div>`;
             }).join("")}
           </div>
         </div>`;
       }).join("")}
     </div>
-    <p style="font-size:12.5px;color:var(--ink-soft);margin-top:14px">提示：專案待辦要顯示在行事曆，請到專案的「待辦事項」為該事項填上日期。點格子右上角「＋」可新增與專案無關的自訂事項。</p>
+    <p style="font-size:12.5px;color:var(--ink-soft);margin-top:14px">提示：專案事項要顯示在行事曆，請到該專案「事項」頁為它填上日期。灰底＝專案事項，橘底＝會計待處理，粉底＝自訂行程。「延 N」表示這件事被往後改過幾次。</p>
   `;
 }
 function shiftMonth(dir){
@@ -1143,35 +1477,19 @@ function shiftMonth(dir){
   renderSchedule();
 }
 function isoDate(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
-function toggleTaskById(pid,mid){const p=db.projects.find(x=>x.id===pid);const m=p.months.find(x=>x.id===mid);m.done^=1;save();renderSchedule();}
+function toggleTaskById(pid,mid){const p=P(pid);if(!p)return;const m=(p.months||[]).find(x=>x.id===mid);if(m){m.done^=1;save();render();}}
+function toggleAcctById(pid,aid){const p=P(pid);if(!p)return;const a=(p.acctTodos||[]).find(x=>x.id===aid);if(a){a.done=!a.done;save();render();}}
 /* 行事曆自訂事項 */
 function openSelfEventModal(date){
   openModal("新增行事曆事項",`
     <div class="field"><label>日期</label><input type="date" id="m-sedate" value="${date||today()}"></div>
-    <div class="field"><label>事項內容</label><textarea id="m-setext" rows="2" placeholder="例：拜訪客戶、繳交文件（與專案無關的行程也可）"></textarea></div>`,
+    <div class="field"><label>事項內容</label><textarea id="m-setext" rows="2" placeholder="例：拜訪客戶、繳交文件（與專案無關的行程也可）"></textarea></div>
+    <div class="field"><label>備註（選填）</label><textarea id="m-senote" rows="2"></textarea></div>`,
   ()=>{const text=val("m-setext"),date=val("m-sedate");if(!text){alert("請輸入事項內容");return;}
-    db.standaloneEvents.push({id:uid(),date,text,done:false});closeModal();save();renderSchedule();});
+    db.standaloneEvents.push({id:uid(),date,text,note:val("m-senote"),done:false,delayCount:0});closeModal();save();render();});
 }
-function toggleSelfEvent(id){const e=db.standaloneEvents.find(x=>x.id===id);if(e){e.done^=1;save();renderSchedule();}}
-function delSelfEvent(id){db.standaloneEvents=db.standaloneEvents.filter(e=>e.id!==id);save();renderSchedule();}
-/* 行事曆：把未完成事項移到別天 */
-function moveTaskDate(pid,mid,cur){
-  const p=db.projects.find(x=>x.id===pid);if(!p)return;const m=(p.months||[]).find(x=>x.id===mid);if(!m)return;
-  openModal("移到別天",`
-    <div class="field"><label>目前日期</label><div class="field-read">${esc(cur)}</div></div>
-    <div class="field"><label>改到哪一天</label><input type="date" id="m-movedate" value="${cur}"></div>`,
-  ()=>{const nd=val("m-movedate");if(!nd){alert("請選擇日期");return;}
-    m.date=nd; m.month=nd.slice(0,7);  // 日期與所屬年月一起更新，待辦頁分組才正確
-    closeModal();save();renderSchedule();});
-}
-function moveSelfEvent(id,cur){
-  const e=db.standaloneEvents.find(x=>x.id===id);if(!e)return;
-  openModal("移到別天",`
-    <div class="field"><label>目前日期</label><div class="field-read">${esc(cur)}</div></div>
-    <div class="field"><label>改到哪一天</label><input type="date" id="m-movedate" value="${cur}"></div>`,
-  ()=>{const nd=val("m-movedate");if(!nd){alert("請選擇日期");return;}
-    e.date=nd;closeModal();save();renderSchedule();});
-}
+function toggleSelfEvent(id){const e=db.standaloneEvents.find(x=>x.id===id);if(e){e.done^=1;save();render();}}
+function delSelfEvent(id){db.standaloneEvents=db.standaloneEvents.filter(e=>e.id!==id);save();render();}
 
 /* ---- 本公司交付項目：跨專案彙整所有工程項目的執行狀況（唯讀總覽）---- */
 function renderAI(){
@@ -1254,6 +1572,190 @@ const MR_CONFIDENCE = {
 };
 const MR_TYPE = { image:"圖片", data:"數據", file:"文件" };
 const MR_TYPE_CLS = { image:"t-role", data:"t-cat", file:"t-plan" };
+
+/* ═══ 跨專案：會計總覽 ═══ */
+function renderAcctAll(){
+  const el=document.getElementById("view-acct");
+  if(!db.projects.length){el.innerHTML=`<div class="empty"><p>還沒有任何專案</p><span>先建立專案，再到各案「經費」頁登錄會計問題</span></div>`;return;}
+
+  let openTot=0, consTot=0, budTot=0, spentTot=0;
+  db.projects.forEach(p=>{
+    openTot+=(p.acctTodos||[]).filter(a=>!a.done).length;
+    (p.budgetItems||[]).forEach(b=>{consTot+=(b.consNotes||[]).filter(c=>!c.done).length;});
+    budTot+=(+p.budget||0);
+    spentTot+=(p.budgetItems||[]).reduce((s,b)=>s+biSpentNew(b),0);
+  });
+  const ratio=budTot?Math.round(spentTot/budTot*100):0;
+
+  const block=p=>{
+    const open=(p.acctTodos||[]).filter(a=>!a.done);
+    const done=(p.acctTodos||[]).filter(a=>a.done);
+    const cons=[];
+    (p.budgetItems||[]).forEach(b=>(b.consNotes||[]).filter(c=>!c.done).forEach(c=>cons.push({b,c})));
+    const bud=+p.budget||0;
+    const sp=(p.budgetItems||[]).reduce((s,b)=>s+biSpentNew(b),0);
+    const pct=bud?Math.round(sp/bud*100):0;
+    const over=sp>bud&&bud>0;
+    const chip=a=>{
+      const u=a.date?urgency(a.date):"";
+      return `<div class="chip ${a.done?"done":""}">
+        <div class="chk ${a.done?"on":""}" onclick="toggleAcctById('${p.id}','${a.id}')"></div>
+        <span class="txt">${esc(a.text)}${a.note?`<span style="color:var(--ink-soft);font-size:12px">　${esc(a.note)}</span>`:""}</span>
+        <span class="chip-date ${a.date?(u==="over"?"over":""):"none"}" title="點一下改日期與內容"
+          onclick="openItemEdit('acct','${p.id}','${a.id}')">${a.date?esc(a.date)+(a.done?"":" · "+dueLabel(a.date)):"＋日期"}</span>
+        ${(+a.delayCount||0)?`<span class="ev-delay">延${a.delayCount}</span>`:""}
+        <button class="del-x" onclick="delAcctFor('${p.id}','${a.id}')">✕</button>
+      </div>`;
+    };
+    return `<div class="gp-block">
+      <div class="gp-head">
+        <span class="gp-name">${esc(p.name)}</span>
+        <span class="gp-meta">${open.length?`<b style="color:var(--rose)">${open.length} 筆未解決</b>`:"無待處理"}${cons.length?` · 耗材問題 ${cons.length} 筆`:""}</span>
+        <button class="btn sm ghost gp-go" onclick="openProject('${p.id}');switchTab('budget')">前往經費頁 →</button>
+      </div>
+      <div class="gp-body">
+        <div class="gp-sub">會計待處理</div>
+        ${open.length?`<div class="chip-list">${open.map(chip).join("")}</div>`:`<div class="gp-none">目前沒有未解決的會計問題。</div>`}
+        <div class="inline-add">
+          <input id="ga-new-${p.id}" placeholder="新增會計問題，例：8月人事費轉帳金額對不上" style="flex:2;min-width:220px"
+            onkeydown="if(event.key==='Enter')addAcctFor('${p.id}')">
+          <input type="date" id="ga-date-${p.id}" title="日期（選填，填了會排進行事曆）">
+          <button class="btn sm primary" onclick="addAcctFor('${p.id}')">＋ 新增</button>
+        </div>
+        ${done.length?`<div class="gp-sub">已解決 ${done.length} 筆</div><div class="chip-list">${done.map(chip).join("")}</div>`:""}
+        ${cons.length?`<div class="gp-sub">耗材待處理問題</div><div class="chip-list">
+          ${cons.map(({b,c})=>`<div class="chip">
+            <div class="chk" onclick="toggleConsNoteFor('${p.id}','${b.id}','${c.id}')"></div>
+            <span class="txt">${esc(c.text)} <span style="color:var(--ink-soft);font-size:12px">｜${esc(b.name)}</span></span>
+          </div>`).join("")}</div>`:""}
+        <div class="gp-sub">經費執行</div>
+        <div class="gp-stat">
+          <span>總經費 <b>${money(bud)}</b></span>
+          <span>已動支 <b class="${over?"bad":""}">${money(sp)}</b></span>
+          <span>執行率 <b class="${over?"bad":""}">${pct}%</b></span>
+        </div>
+        <div class="mini-bar ${over?"over":""}"><span style="width:${Math.min(pct,100)}%"></span></div>
+      </div>
+    </div>`;
+  };
+
+  // 未解決的排前面
+  const sorted=db.projects.slice().sort((a,b)=>
+    (b.acctTodos||[]).filter(x=>!x.done).length-(a.acctTodos||[]).filter(x=>!x.done).length);
+
+  el.innerHTML=`
+    <div class="sec-head"><div><h2>會計</h2><span class="hint">所有專案跟會計相關的待處理一次看完；填了日期的會同時出現在行事曆</span></div></div>
+    <div class="stat-grid">
+      <div class="stat"><div class="label">未解決會計問題</div><div class="num" style="${openTot?"color:var(--rose)":""}">${openTot}</div>
+        <div class="sub">跨 ${db.projects.length} 個專案</div></div>
+      <div class="stat"><div class="label">耗材待處理</div><div class="num">${consTot}</div>
+        <div class="sub">發票品名不符、規格要改等</div></div>
+      <div class="stat"><div class="label">整體經費執行率</div><div class="num">${ratio}%</div>
+        <div class="sub">已動支 ${money(spentTot)} / ${money(budTot)}</div>
+        <div class="bar"><span style="width:${Math.min(ratio,100)}%"></span></div></div>
+    </div>
+    ${sorted.map(block).join("")}
+  `;
+}
+function addAcctFor(pid){const p=P(pid);if(!p)return;const t=val("ga-new-"+pid);if(!t)return;
+  p.acctTodos=p.acctTodos||[];
+  p.acctTodos.push({id:uid(),text:t,done:false,date:val("ga-date-"+pid),note:"",delayCount:0});
+  render();}
+function delAcctFor(pid,aid){const p=P(pid);if(!p)return;p.acctTodos=(p.acctTodos||[]).filter(a=>a.id!==aid);render();}
+function toggleConsNoteFor(pid,bid,cid){const p=P(pid);if(!p)return;
+  const b=(p.budgetItems||[]).find(x=>x.id===bid);if(!b)return;
+  const cn=(b.consNotes||[]).find(x=>x.id===cid);if(cn){cn.done=!cn.done;render();}}
+
+/* ═══ 跨專案：期中報告總覽 ═══ */
+function renderMidAll(){
+  const el=document.getElementById("view-mid");
+  if(!db.projects.length){el.innerHTML=`<div class="empty"><p>還沒有任何專案</p><span>先建立專案，再到各案「期中報告」頁登錄查核點</span></div>`;return;}
+
+  // 跨專案待收資料
+  const pending=[];
+  db.projects.forEach(p=>(p.mrCheckpoints||[]).forEach(cp=>(cp.materials||[]).forEach(m=>{
+    if(!m.got)pending.push({p,cp,m});
+  })));
+  let cpTot=0,cpReady=0,riskTot=0;
+  db.projects.forEach(p=>{const cps=p.mrCheckpoints||[];cpTot+=cps.length;
+    cpReady+=cps.filter(c=>c.status==="ready").length;
+    riskTot+=cps.filter(c=>c.confidence==="risk"||c.confidence==="hard").length;});
+
+  const block=p=>{
+    const cps=p.mrCheckpoints||[];
+    const ready=cps.filter(c=>c.status==="ready").length;
+    const ok=cps.filter(c=>c.confidence==="ok").length;
+    const risk=cps.filter(c=>c.confidence==="risk").length;
+    const hard=cps.filter(c=>c.confidence==="hard").length;
+    let pend=0;cps.forEach(c=>(c.materials||[]).forEach(m=>{if(!m.got)pend++;}));
+    const u=p.midReportDue?urgency(p.midReportDue):"";
+    const pct=cps.length?Math.round(ready/cps.length*100):0;
+    return `<div class="gp-block">
+      <div class="gp-head">
+        <span class="gp-name">${esc(p.name)}</span>
+        <span class="gp-meta ${u==="over"?"warn-txt":""}">${p.midReportDue?`繳交期限 ${esc(p.midReportDue)}（${dueLabel(p.midReportDue)}）`:"未設定繳交期限"}${p.midVisit?` · 查訪 ${esc(p.midVisit)}`:""}</span>
+        <button class="btn sm ghost gp-go" onclick="openProject('${p.id}');switchTab('midreport')">前往編輯 →</button>
+      </div>
+      <div class="gp-body">
+        <div class="gp-stat">
+          <span>查核點 <b>${ready}/${cps.length}</b> 資料到齊</span>
+          <span>有把握 <b>${ok}</b>・有風險 <b class="${risk?"bad":""}">${risk}</b>・可能達不到 <b class="${hard?"bad":""}">${hard}</b></span>
+          <span>待收資料 <b class="${pend?"bad":""}">${pend}</b> 筆</span>
+        </div>
+        <div class="mini-bar"><span style="width:${pct}%"></span></div>
+        ${cps.length?`<div class="gp-sub">查核點狀態</div><div class="chip-list">
+          ${cps.map(cp=>{
+            const st=MR_STATUS[cp.status]||MR_STATUS.todo;
+            const cf=MR_CONFIDENCE[cp.confidence]||MR_CONFIDENCE.none;
+            const np=(cp.materials||[]).filter(m=>!m.got).length;
+            return `<div class="chip">
+              <span class="conf-dot" title="達成信心：${cf.label}" style="background:${cf.dot}"></span>
+              <span class="txt">${esc(cp.name)}</span>
+              ${np?`<span class="tag t-over">待收 ${np}</span>`:""}
+              <span class="tag ${st.cls}">${st.label}</span>
+            </div>`;}).join("")}
+        </div>`:`<div class="gp-none" style="margin-top:10px">尚未建立查核點。</div>`}
+      </div>
+    </div>`;
+  };
+
+  // 期限近的排前面，沒設期限的最後
+  const sorted=db.projects.slice().sort((a,b)=>{
+    const ad=a.midReportDue||"",bd=b.midReportDue||"";
+    if(!ad&&!bd)return 0; if(!ad)return 1; if(!bd)return -1;
+    return ad.localeCompare(bd);
+  });
+
+  el.innerHTML=`
+    <div class="sec-head"><div><h2>期中報告</h2><span class="hint">所有案子的期中報告進度一次看完；待收資料可直接在這裡標記收到</span></div></div>
+    <div class="stat-grid">
+      <div class="stat"><div class="label">查核點資料到齊</div><div class="num">${cpTot?Math.round(cpReady/cpTot*100):0}%</div>
+        <div class="sub">${cpReady} / ${cpTot} 個查核點</div>
+        <div class="bar"><span style="width:${cpTot?Math.round(cpReady/cpTot*100):0}%"></span></div></div>
+      <div class="stat"><div class="label">要注意的查核點</div><div class="num" style="${riskTot?"color:var(--rose)":""}">${riskTot}</div>
+        <div class="sub">有風險或可能達不到</div></div>
+      <div class="stat"><div class="label">跨專案待收資料</div><div class="num" style="${pending.length?"color:var(--rose)":""}">${pending.length}</div>
+        <div class="sub">${pending.length?"下面可直接標記收到":"全部到齊 ✓"}</div></div>
+    </div>
+
+    ${pending.length?`<div class="card"><div style="padding:16px 18px">
+      <div class="sub-title" style="margin-bottom:10px;color:var(--rose)">⚠ 待收資料催收清單（共 ${pending.length} 筆）</div>
+      <div class="chip-list">
+        ${pending.map(({p,cp,m})=>`<div class="chip">
+          <span class="tag ${MR_TYPE_CLS[m.type]}" style="flex-shrink:0">${MR_TYPE[m.type]}</span>
+          <span class="txt"><b>${esc(p.name)}</b>　${esc(m.name)}${m.who?` <span style="color:var(--ink-soft)">— 找 ${esc(m.who)}</span>`:""}
+            <span style="color:var(--ink-soft);font-size:12px">｜${esc(cp.name)}</span></span>
+          <button class="btn sm ghost" onclick="toggleMrMatFor('${p.id}','${cp.id}','${m.id}')" title="標記已收到">收到 ✓</button>
+        </div>`).join("")}
+      </div>
+    </div></div>`:""}
+
+    ${sorted.map(block).join("")}
+  `;
+}
+function toggleMrMatFor(pid,cid,mid){const p=P(pid);if(!p)return;
+  const c=(p.mrCheckpoints||[]).find(x=>x.id===cid);if(!c)return;
+  const m=(c.materials||[]).find(x=>x.id===mid);if(m){m.got=!m.got;render();}}
 
 function renderMidreport(){
   const p=proj();
@@ -1382,13 +1884,7 @@ function setMrStatus(cid,v){const c=proj().mrCheckpoints.find(x=>x.id===cid);c.s
 function renameMrCp(cid,v){const c=proj().mrCheckpoints.find(x=>x.id===cid);if(!c)return;const t=(v||"").trim();if(t)c.name=t;render();}
 function setMrConfidence(cid,v){const c=proj().mrCheckpoints.find(x=>x.id===cid);if(c){c.confidence=v;render();}}
 /* 注意事項（事項標題 + 備註 + 釘選） */
-function addNote(){const p=proj();const title=val("note-title");if(!title)return;
-  p.notes=p.notes||[];p.notes.push({id:uid(),title,note:"",pin:false});render();}
-function delNote(id){const p=proj();p.notes=(p.notes||[]).filter(n=>n.id!==id);render();}
-function toggleNotePin(id){const p=proj();const n=(p.notes||[]).find(x=>x.id===id);if(n)n.pin=!n.pin;render();}
-function setNoteTitle(id,v){const n=(proj().notes||[]).find(x=>x.id===id);if(n){n.title=v;save();}}
-function setNoteNote(id,v){const n=(proj().notes||[]).find(x=>x.id===id);if(n){n.note=v;save();}}
-function moveNote(id,dir){const p=proj();const arr=p.notes||[];const i=arr.findIndex(n=>n.id===id);if(i<0)return;const j=i+dir;if(j<0||j>=arr.length)return;[arr[i],arr[j]]=[arr[j],arr[i]];render();}
+/* 注意事項已併入「事項」清單，相關函式移至事項區段 */
 function setMrNote(cid,v){const c=proj().mrCheckpoints.find(x=>x.id===cid);c.note=v;save();}
 function addMrMat(cid){const c=proj().mrCheckpoints.find(x=>x.id===cid);
   const name=val("mrmat-name-"+cid);if(!name)return;
@@ -1508,11 +2004,7 @@ function toggleCard(id){const el=document.getElementById("body-"+id);el.style.di
 function keepOpen(id){const el=document.getElementById("body-"+id);if(el)el.style.display="block";}
 function toggleTask(id){proj().months.find(m=>m.id===id).done^=1;render();}
 function delTask(id){proj().months=proj().months.filter(m=>m.id!==id);render();}
-function setTaskDate(id){const m=proj().months.find(x=>x.id===id);
-  const d=prompt("輸入日期（格式 YYYY-MM-DD），填了會出現在行程表：",m.month+"-01");
-  if(d===null)return;const dd=d.trim();
-  if(dd&&!/^\d{4}-\d{2}-\d{2}$/.test(dd)){alert("格式不對，請用 YYYY-MM-DD");return;}
-  m.date=dd;if(dd)m.month=dd.slice(0,7);render();}
+function setTaskDate(id){openItemEdit("task",current,id);}
 
 /* 查核點 */
 function addCp(wid){const w=proj().works.find(x=>x.id===wid);const t=val("cp-"+wid);if(!t)return;
@@ -1555,7 +2047,8 @@ function editConsumable(bid,cid){const b=proj().budgetItems.find(x=>x.id===bid);
     <div class="field"><label>備註</label><input id="ce-note" value="${esc(c.note||"")}" placeholder="例：這項要改品項"></div>`,
   ()=>{c.name=val("ce-name")||c.name;c.budget=+val("ce-budget")||0;c.bought=+val("ce-bought")||0;c.note=val("ce-note");closeModal();render();});}
 /* 會計待處理 */
-function addAcctTodo(){const p=proj();const text=val("acct-new");if(!text)return;p.acctTodos=p.acctTodos||[];p.acctTodos.push({id:uid(),text,done:false});render();}
+function addAcctTodo(){const p=proj();const text=val("acct-new");if(!text)return;p.acctTodos=p.acctTodos||[];
+  p.acctTodos.push({id:uid(),text,done:false,date:val("acct-date"),note:"",delayCount:0});render();}
 function toggleAcctTodo(id){const a=(proj().acctTodos||[]).find(x=>x.id===id);if(a){a.done=!a.done;render();}}
 function delAcctTodo(id){proj().acctTodos=(proj().acctTodos||[]).filter(a=>a.id!==id);render();}
 /* 窗口 */
@@ -1598,21 +2091,23 @@ function openProjModal(id){
     <p style="font-size:12.5px;color:var(--ink-soft);margin-top:-4px">總經費＝補助＋自籌，自動計算。</p>`,
   ()=>{const name=val("m-name");const gov=+val("m-bgov")||0,self=+val("m-bself")||0;if(!name){alert("請輸入專案名稱");return;}
     if(p){p.name=name;p.budgetGov=gov;p.budgetSelf=self;p.budget=gov+self;}
-    else{const np={id:uid(),name,budgetGov:gov,budgetSelf:self,budget:gov+self,months:[],works:[],budgetItems:[],contacts:[],alerts:[],accounts:[],startDate:"",endDate:"",midReportDue:"",midVisit:"",finalVisit:"",stage:"plan",midReportNotes:"",midReportItems:[],notes:[],acctTodos:[],priorities:[],checklist:DEFAULT_CHECKLIST.map(t=>({id:uid(),text:t,done:false}))};db.projects.push(np);current=np.id;}
+    else{const np={id:uid(),name,budgetGov:gov,budgetSelf:self,budget:gov+self,months:[],works:[],budgetItems:[],contacts:[],alerts:[],accounts:[],startDate:"",endDate:"",midReportDue:"",midVisit:"",finalVisit:"",stage:"plan",midReportNotes:"",midReportItems:[],notes:[],acctTodos:[],mrCheckpoints:[],priorities:[],checklist:DEFAULT_CHECKLIST.map(t=>({id:uid(),text:t,done:false}))};db.projects.push(np);current=np.id;}
     closeModal();render();});
 }
 
 function openTaskModal(){
-  const now=new Date(),ym=now.getFullYear()+"-"+String(now.getMonth()+1).padStart(2,"0");
-  openModal("新增月度事項",`
-    <div class="field"><label>月份</label><input id="m-month" type="month" value="${ym}"></div>
-    <div class="field"><label>具體日期（選填）</label><input id="m-date" type="date">
-      <p style="font-size:12px;color:var(--ink-soft);margin-top:4px">填了日期，這件事就會出現在「行程表」的當天。</p></div>
-    <div class="field"><label>要完成的事項</label><textarea id="m-text" rows="2" placeholder="例：完成期中報告"></textarea></div>`,
-  ()=>{const month=val("m-month"),text=val("m-text"),date=val("m-date");if(!text){alert("請輸入事項內容");return;}
-    // 若填了日期，月份以日期為準，確保分組一致
-    const finalMonth=date?date.slice(0,7):month;
-    proj().months.push({id:uid(),month:finalMonth,date,text,done:false,details:"",subtasks:[]});closeModal();render();});
+  openModal("新增事項",`
+    <div class="field"><label>事項內容</label><textarea id="m-text" rows="2" placeholder="例：完成期中報告初稿"></textarea></div>
+    <div class="field"><label>日期（選填）</label><input id="m-date" type="date">
+      <p style="font-size:12px;color:var(--ink-soft);margin-top:4px">填了日期就會出現在行事曆當天；不填的話會留在「未排日期」區，也就是原本的注意事項。</p></div>
+    <div class="field"><label>備註（選填）</label><textarea id="m-note" rows="3" placeholder="補充說明、要注意什麼…"></textarea></div>
+    <div class="field"><label style="display:flex;align-items:center;gap:7px;cursor:pointer">
+      <input type="checkbox" id="m-pin" style="width:auto;margin:0">釘選到專案列表卡片</label></div>`,
+  ()=>{const text=val("m-text"),date=val("m-date");if(!text){alert("請輸入事項內容");return;}
+    const pin=document.getElementById("m-pin").checked;
+    const item={id:uid(),month:date?date.slice(0,7):"",date,text,done:false,details:val("m-note"),pin,delayCount:0,subtasks:[]};
+    if(date)proj().months.push(item); else proj().months.unshift(item);
+    closeModal();render();});
 }
 
 function openWorkModal(id){
@@ -1688,6 +2183,46 @@ function openAccountModal(id){
     if(a)Object.assign(a,obj);else proj().accounts.push({id:uid(),...obj});
     closeModal();render();});
 }
+
+/* ---- 快速切換專案（任何頁面都可用；Ctrl / ⌘ + K）---- */
+let jumpIdx=0, jumpHits=[];
+function openJump(){
+  if(!db.projects.length){alert("目前還沒有任何專案");return;}
+  jumpIdx=0;
+  document.getElementById("jumpBg").classList.add("show");
+  const inp=document.getElementById("jumpInput");
+  inp.value=""; renderJump("");
+  setTimeout(()=>inp.focus(),30);
+}
+function closeJump(){document.getElementById("jumpBg").classList.remove("show");}
+function renderJump(q){
+  q=(q||"").trim().toLowerCase();
+  jumpHits=db.projects.filter(p=>!q||(p.name||"").toLowerCase().indexOf(q)>=0);
+  if(jumpIdx>=jumpHits.length)jumpIdx=0;
+  document.getElementById("jumpList").innerHTML=jumpHits.length?jumpHits.map((p,i)=>{
+    const stg=STAGES[p.stage]?STAGES[p.stage].label:"";
+    const open=(p.months||[]).filter(m=>!m.done).length+(p.acctTodos||[]).filter(a=>!a.done).length;
+    return `<div class="jump-item ${i===jumpIdx?"on":""}" onclick="jumpTo('${p.id}')">
+      <span class="jn">${esc(p.name)}</span>
+      <span class="jm">${esc(stg)}${open?` · 未完成 ${open}`:""}</span>
+    </div>`;
+  }).join(""):`<div class="jump-empty">找不到符合的專案</div>`;
+}
+function jumpTo(id){closeJump();openProject(id);}
+(function(){
+  const inp=document.getElementById("jumpInput");
+  inp.addEventListener("input",function(){jumpIdx=0;renderJump(this.value);});
+  document.addEventListener("keydown",function(e){
+    const bg=document.getElementById("jumpBg");
+    const isOpen=bg.classList.contains("show");
+    if((e.ctrlKey||e.metaKey)&&(e.key==="k"||e.key==="K")){e.preventDefault();isOpen?closeJump():openJump();return;}
+    if(!isOpen)return;
+    if(e.key==="Escape"){e.preventDefault();closeJump();return;}
+    if(e.key==="ArrowDown"){e.preventDefault();jumpIdx=Math.min(jumpIdx+1,Math.max(jumpHits.length-1,0));renderJump(inp.value);return;}
+    if(e.key==="ArrowUp"){e.preventDefault();jumpIdx=Math.max(jumpIdx-1,0);renderJump(inp.value);return;}
+    if(e.key==="Enter"){e.preventDefault();if(jumpHits[jumpIdx])jumpTo(jumpHits[jumpIdx].id);return;}
+  });
+})();
 
 /* ---- 分享 / 匯出入 ---- */
 function makeShare(){
