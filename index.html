@@ -99,13 +99,11 @@ main{padding:64px 0 80px}
 .wi-sub-text{flex:1;min-width:150px;padding:6px 9px;border:1px solid transparent;border-radius:6px;
   background:transparent;font-family:inherit;font-size:13.5px;color:var(--ink)}
 .wi-sub-text:hover,.wi-sub-text:focus{border-color:var(--line);background:var(--paper)}
-.wi-num{width:62px;padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--paper);
-  font-family:inherit;font-size:13px;text-align:right}
-.wi-unit{width:52px;padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--paper);
-  font-family:inherit;font-size:13px}
-.wi-slash{color:var(--ink-soft);font-size:13px}
-.wi-sub-pct{font-size:12.5px;color:var(--ink-soft);min-width:40px;text-align:right;font-weight:700}
-.wi-sub-pct.ok{color:#6e8352}
+.wi-sub-text.done{color:var(--ink-soft);text-decoration:line-through}
+.phase-band{display:flex;align-items:center;gap:10px;margin:22px 0 12px;padding:9px 14px;border-radius:8px;
+  background:var(--accent-soft);color:var(--accent);font-weight:800;font-size:14px}
+.phase-band.final{background:var(--slate-soft);color:var(--slate)}
+.phase-btn{white-space:nowrap;font-size:12px;padding:4px 9px}
 .note-list{display:flex;flex-direction:column;gap:8px}
 .note-item2{display:flex;gap:10px;padding:10px 12px;background:var(--paper);border:1px solid var(--line);border-radius:8px}
 .note-item2.pinned{border-color:var(--accent);background:var(--accent-soft)}
@@ -674,12 +672,11 @@ function migrate(d){
       w.confidence=w.confidence||"none";
       w.note=w.note||"";              // 執行備註（落後原因、補救措施）
       w.reportNote=w.reportNote||"";  // 期中報告要怎麼呈現
-      w.subItems=w.subItems||[];      // 查核項目子項 {id,text,target,current,unit,done}
+      w.phase=w.phase||"";            // ""＝依完成日期自動判定；mid／final＝手動指定歸在期中或期末
+      w.subItems=w.subItems||[];      // 查核項目子項 {id,text,done}
       w.subItems.forEach(s=>{
-        s.text=s.text||"";
-        s.target=(s.target===""||s.target===undefined||s.target===null)?"":(+s.target||0);
-        s.current=(s.current===""||s.current===undefined||s.current===null)?"":(+s.current||0);
-        s.unit=s.unit||""; s.done=!!s.done;
+        s.text=s.text||""; s.done=!!s.done;
+        delete s.target; delete s.current; delete s.unit;
       });
       w.materials=w.materials||[];    // 待收資料 {id,name,type,who,got,month}
       w.materials.forEach(m=>{m.type=m.type||"file"; m.who=m.who||""; m.got=!!m.got; m.month=m.month||"";});
@@ -1009,17 +1006,17 @@ function rocDate(s){ // 2026-03-31 → 115/03/31
 
 /* 單一工作項目的完成比例 0~1（依子項量化數字；沒有子項就看狀態） */
 function wiPct(w){
-  if(w.status==="done")return 1;   // 手動標記完成 → 直接算滿，不受子項數字沒填影響
+  if(w.status==="done")return 1;
   const subs=w.subItems||[];
-  if(subs.length){
-    let s=0;
-    subs.forEach(x=>{
-      if(x.target!==""&&+x.target>0) s+=Math.min(1,(+x.current||0)/(+x.target));
-      else s+=x.done?1:0;
-    });
-    return s/subs.length;
-  }
-  return w.status==="done"?1:(w.status==="doing"?0.5:0);
+  if(subs.length)return subs.filter(s=>s.done).length/subs.length;
+  return w.status==="doing"?0.5:0;
+}
+/* 這個工作項目歸在期中還是期末：手動指定優先，否則看完成日期 */
+function phaseOf(p,w){
+  if(w.phase==="mid"||w.phase==="final")return w.phase;
+  const due=p.midReportDue||"";
+  if(!due)return "mid";
+  return (!w.dueDate||w.dueDate<=due)?"mid":"final";
 }
 
 /* 全案進度：預定（權重加總，以完成日期為準）／實際（保守：只算已完成）／細緻（依子項比例） */
@@ -1090,7 +1087,7 @@ function renderProgress(){
         <div class="sub">已到期的查核點權重加總</div>
         <div class="bar"><span style="width:${Math.min(100,st.planned)}%"></span></div></div>
       <div class="stat"><div class="label">實際進度</div><div class="num">${st.actual}%</div>
-        <div class="sub">細算子項約 ${st.detailed}%</div>
+        <div class="sub">${st.count?`${(p.workItems||[]).filter(w=>w.status==="done").length} / ${st.count} 個工作項目完成`:""}</div>
         <div class="bar"><span style="width:${Math.min(100,st.actual)}%"></span></div></div>
       <div class="stat"><div class="label">落差</div>
         <div class="num" style="${gapCls}">${st.gap>0?"+":""}${st.gap}%</div>
@@ -1171,7 +1168,6 @@ function wiCard(p,w,dim){
   const subs=w.subItems||[];
   const mats=w.materials||[];
   const gotCnt=mats.filter(m=>m.got).length;
-  const pct=Math.round(wiPct(w)*100);
   const overdue=w.dueDate&&w.status!=="done"&&w.dueDate<today();
   const linked=(p.works||[]).filter(x=>(x.workCode||"")===(w.code||"")&&w.code);
   return `<div class="card ${dim?"wi-dim":""}">
@@ -1201,22 +1197,14 @@ function wiCard(p,w,dim){
       </div>
 
       <div class="sub-block">
-        <div class="sub-title">查核項目（子項完成度 ${pct}%）</div>
-        ${subs.length?subs.map(s=>{
-          const has=s.target!==""&&+s.target>0;
-          const sp=has?Math.min(100,Math.round((+s.current||0)/(+s.target)*100)):(s.done?100:0);
-          return `<div class="wi-sub">
-            <div class="chk ${sp>=100?"on":""}" onclick="toggleWiSub('${w.id}','${s.id}')"></div>
-            <input class="wi-sub-text" value="${esc(s.text)}" onchange="setWiSub('${w.id}','${s.id}','text',this.value)">
-            <input class="wi-num" type="number" value="${s.current}" placeholder="現況" onchange="setWiSub('${w.id}','${s.id}','current',this.value)">
-            <span class="wi-slash">/</span>
-            <input class="wi-num" type="number" value="${s.target}" placeholder="目標" onchange="setWiSub('${w.id}','${s.id}','target',this.value)">
-            <input class="wi-unit" value="${esc(s.unit)}" placeholder="單位" onchange="setWiSub('${w.id}','${s.id}','unit',this.value)">
-            <span class="wi-sub-pct ${sp>=100?"ok":""}">${sp}%</span>
+        <div class="sub-title">查核項目${subs.length?`（已完成 ${subs.filter(s=>s.done).length} / ${subs.length}）`:""}</div>
+        ${subs.length?subs.map(s=>`<div class="wi-sub">
+            <div class="chk ${s.done?"on":""}" onclick="toggleWiSub('${w.id}','${s.id}')"></div>
+            <input class="wi-sub-text ${s.done?"done":""}" value="${esc(s.text)}" onchange="setWiSub('${w.id}','${s.id}','text',this.value)">
             <button class="del-x" onclick="delWiSub('${w.id}','${s.id}')">✕</button>
-          </div>`;}).join(""):`<div style="color:var(--ink-soft);font-size:13px;margin-bottom:8px">尚未列出查核項目。計畫書「預定查核點說明」那一欄的 1. 2. 3. 就是這裡要填的內容。</div>`}
+          </div>`).join(""):`<div style="color:var(--ink-soft);font-size:13px;margin-bottom:8px">尚未列出查核項目。計畫書「預定查核點說明」那一欄的 1. 2. 3. 原文照抄進來即可。</div>`}
         <div class="inline-add">
-          <input id="wisub-${w.id}" placeholder="例：完成數位化建檔 ≥ 30 種產品（會自動抓出目標數字）" style="flex:2;min-width:220px" onkeydown="if(event.key==='Enter')addWiSub('${w.id}')">
+          <input id="wisub-${w.id}" placeholder="例：完成數位化建檔 ≥ 30 種產品" style="flex:2;min-width:220px" onkeydown="if(event.key==='Enter')addWiSub('${w.id}')">
           <button class="btn sm primary" onclick="addWiSub('${w.id}')">加入</button>
         </div>
       </div>
@@ -1278,11 +1266,10 @@ function addWiSub(wid){
   const w=findWi(wid);const raw=val("wisub-"+wid);if(!raw)return;
   w.subItems.push(parseSubItem(raw));render();}
 function setWiSub(wid,sid,k,v){const w=findWi(wid);const s=w.subItems.find(x=>x.id===sid);if(!s)return;
-  s[k]=(k==="current"||k==="target")?(v===""?"":(+v||0)):v;render();}
+  s[k]=v;render();}
 function toggleWiSub(wid,sid){const w=findWi(wid);const s=w.subItems.find(x=>x.id===sid);if(!s)return;
-  if(s.target!==""&&+s.target>0){ s.current=(+s.current||0)>=+s.target?0:+s.target; }
-  else s.done=!s.done;
-  render();}
+  s.done=!s.done;render();}
+function setWiPhase(id,ph){const w=findWi(id);if(!w)return;w.phase=(w.phase===ph)?"":ph;render();}
 function delWiSub(wid,sid){const w=findWi(wid);w.subItems=w.subItems.filter(x=>x.id!==sid);render();}
 function addWiMat(wid){
   const w=findWi(wid);const name=val("wimat-name-"+wid);if(!name)return;
@@ -1295,15 +1282,7 @@ function delWiMat(wid,mid){const w=findWi(wid);w.materials=w.materials.filter(x=
 
 /* 從「完成數位化建檔 ≥ 30 種產品」抓出 target=30、unit=種 */
 function parseSubItem(raw){
-  const t=String(raw).trim().replace(/^\d+[.、)]\s*/,"");
-  const m=t.match(/[≥>＞]=?\s*([\d,]+(?:\.\d+)?)\s*([^\s,，。;；(（]{0,4})/);
-  if(m){
-    const num=+m[1].replace(/,/g,"");
-    let unit=(m[2]||"").replace(/[^\u4e00-\u9fa5A-Za-z%]/g,"");
-    if(unit.length>3)unit=unit.slice(0,3);
-    return {id:uid(),text:t,target:num,current:0,unit,done:false};
-  }
-  return {id:uid(),text:t,target:"",current:"",unit:"",done:false};
+  return {id:uid(),text:String(raw).trim().replace(/^\d+[.、)]\s*/,""),done:false};
 }
 
 /* ---- 分項名稱編輯 ---- */
@@ -2262,13 +2241,18 @@ function renderMidreport(){
   const p=proj();
   const all=p.workItems||[];
   const due=p.midReportDue||"";
-  // 期中只看繳交期限前該完成的查核點（沒設期限就全看）
-  const cps=due?all.filter(c=>!c.dueDate||c.dueDate<=due):all;
-  const later=due?all.length-cps.length:0;
+  const byDate=(a,b)=>(a.dueDate||"9999").localeCompare(b.dueDate||"9999");
+  // 分區：手動指定優先，其次看完成日期是否在繳交期限前
+  const cps=all.filter(c=>phaseOf(p,c)==="mid").sort(byDate);
+  const laterCps=all.filter(c=>phaseOf(p,c)==="final").sort(byDate);
+  const later=laterCps.length;
+  const moved=all.filter(c=>c.phase).length;
 
   const doneCnt=cps.filter(c=>c.status==="done").length;
   const wSum=cps.reduce((s,c)=>s+(+c.weight||0),0);
   const wDone=cps.filter(c=>c.status==="done").reduce((s,c)=>s+(+c.weight||0),0);
+  // 計畫書原本（純依完成日期）該在期中達成的權重，作為對照基準
+  const wPlan=due?all.filter(c=>!c.dueDate||c.dueDate<=due).reduce((s,c)=>s+(+c.weight||0),0):wSum;
   let pending=[];
   cps.forEach(cp=>(cp.materials||[]).forEach(m=>{ if(!m.got) pending.push({cp,m}); }));
   const pImg=pending.filter(x=>x.m.type==="image").length;
@@ -2284,8 +2268,8 @@ function renderMidreport(){
     <div class="stat-grid" style="margin-bottom:20px">
       <div class="stat"><div class="label">期中應完成查核點</div><div class="num">${cps.length}</div>
         <div class="sub">${doneCnt} 個已完成${later?` · 另有 ${later} 個排在期中之後`:""}</div></div>
-      <div class="stat"><div class="label">期中應達進度</div><div class="num">${wSum}%</div>
-        <div class="sub">實際 ${wDone}%${wDone<wSum?`，落後 ${wSum-wDone}%`:""}</div>
+      <div class="stat"><div class="label">目前排入期中的權重</div><div class="num" style="${wSum<wPlan?"color:var(--rose)":""}">${wSum}%</div>
+        <div class="sub">計畫書原訂 ${wPlan}%${wSum!==wPlan?`（已手動調整 ${wSum>wPlan?"+":""}${wSum-wPlan}%）`:""}・已完成 ${wDone}%</div>
         <div class="bar ${wDone<wSum?"over":""}"><span style="width:${wSum?Math.min(100,Math.round(wDone/wSum*100)):0}%"></span></div></div>
       <div class="stat"><div class="label">達成信心</div>
         ${(()=>{const risk=cps.filter(c=>c.confidence==="risk").length,hard=cps.filter(c=>c.confidence==="hard").length,ok=cps.filter(c=>c.confidence==="ok").length;
@@ -2307,9 +2291,18 @@ function renderMidreport(){
       </div>
     </div></div>`:""}
 
-    <div class="sec-head" style="margin:22px 0 12px"><div><h2 style="font-size:16px">查核點呈現方式</h2></div></div>
-    ${cps.length?cps.slice().sort((a,b)=>(a.dueDate||"9").localeCompare(b.dueDate||"9")).map(cp=>mrCheckpointCard(cp)).join(""):
-      `<div class="empty"><p>還沒有查核點</p><span>到「執行進度」把計畫書的工作項目與預定查核點帶進來，這裡就會自動出現</span>
+    <div class="sec-head" style="margin:22px 0 12px"><div>
+      <h2 style="font-size:16px">工作項目分區</h2>
+      <span class="hint">預設依完成日期${due?`（期中報告繳交期限 ${rocDate(due)}）`:""}分區。期中有做不完的，可以把期末的項目往上拉來補${moved?`　·　目前有 ${moved} 個手動調整過`:""}</span></div>
+      ${moved?`<button class="btn sm ghost" onclick="resetPhases()">全部還原成依日期</button>`:""}</div>
+    ${all.length?`
+      <div class="phase-band">期中報告　${cps.length} 個項目　權重 ${wSum}%</div>
+      ${cps.length?cps.map(cp=>mrCheckpointCard(cp,p,"mid")).join(""):
+        `<div class="card"><div style="padding:13px 18px;font-size:13px;color:var(--ink-soft)">期中區沒有任何項目。從下面把要納入的項目移上來。</div></div>`}
+      <div class="phase-band final">期末報告　${later} 個項目　權重 ${laterCps.reduce((s,c)=>s+(+c.weight||0),0)}%</div>
+      ${later?laterCps.map(cp=>mrCheckpointCard(cp,p,"final")).join(""):
+        `<div class="card"><div style="padding:13px 18px;font-size:13px;color:var(--ink-soft)">期末區沒有項目。</div></div>`}
+    `:`<div class="empty"><p>還沒有查核點</p><span>到「執行進度」把計畫書的工作項目與預定查核點帶進來，這裡就會自動出現</span>
        <div style="margin-top:14px"><button class="btn primary" onclick="switchTab('progress')">前往執行進度</button></div></div>`}
 
     <div class="card" style="margin-top:20px"><div style="padding:16px 18px">
@@ -2319,8 +2312,9 @@ function renderMidreport(){
   `;
 }
 
-function mrCheckpointCard(cp){
+function mrCheckpointCard(cp,p,phase){
   const open = !!mrOpen[cp.id];
+  const auto = !cp.phase;
   const st = WI_STATUS[cp.status]||WI_STATUS.todo;
   const mats = cp.materials||[];
   const gotCnt = mats.filter(m=>m.got).length;
@@ -2332,7 +2326,11 @@ function mrCheckpointCard(cp){
       <span class="conf-dot" title="達成信心：${(MR_CONFIDENCE[cp.confidence]||MR_CONFIDENCE.none).label}" style="background:${(MR_CONFIDENCE[cp.confidence]||MR_CONFIDENCE.none).dot}"></span>
       <span class="card-title" style="flex:1;min-width:120px">${esc(cp.name)}</span>
       <span style="font-size:12.5px;color:var(--ink-soft)">${cp.dueDate?rocDate(cp.dueDate):""}</span>
+      <span style="font-size:12.5px;color:var(--ink-soft)">${cp.weight||0}%</span>
       <span style="font-size:12.5px;color:var(--ink-soft)">${mats.length?`資料 ${gotCnt}/${mats.length}`:"無資料"}</span>
+      ${auto?"":`<span class="tag t-cat" title="已手動指定分區">手動</span>`}
+      <button class="btn sm ghost phase-btn" onclick="event.stopPropagation();setWiPhase('${cp.id}','${phase==="mid"?"final":"mid"}')"
+        title="${phase==="mid"?"這項期中做不完，移到期末":"把這項拉上來補期中"}">${phase==="mid"?"移到期末 ↓":"↑ 移到期中"}</button>
       <span style="color:var(--ink-soft);font-size:13px">${open?"▲":"▼"}</span>
     </div>
     ${open?`<div class="card-body" style="padding-top:14px">
@@ -2348,16 +2346,13 @@ function mrCheckpointCard(cp){
       </div>
 
       ${subs.length?`<div class="sub-block">
-        <div class="sub-title">查核項目達成情形（報告要寫的數字）</div>
+        <div class="sub-title">查核項目（已完成 ${subs.filter(s=>s.done).length} / ${subs.length}）</div>
         <div class="chip-list">
-          ${subs.map(s=>{const has=s.target!==""&&+s.target>0;
-            const sp=has?Math.min(100,Math.round((+s.current||0)/(+s.target)*100)):(s.done?100:0);
-            return `<div class="chip ${sp>=100?"done":""}">
+          ${subs.map(s=>`<div class="chip ${s.done?"done":""}">
+              <div class="chk ${s.done?"on":""}" onclick="toggleWiSub('${cp.id}','${s.id}')"></div>
               <span class="txt">${esc(s.text)}</span>
-              <span class="tag ${sp>=100?"t-done":"t-bid"}">${has?`${s.current||0} / ${s.target} ${esc(s.unit)}`:(s.done?"已完成":"未完成")}</span>
-            </div>`;}).join("")}
+            </div>`).join("")}
         </div>
-        <div style="font-size:12.5px;color:var(--ink-soft);margin-top:8px">數字要改請到「執行進度」頁</div>
       </div>`:""}
 
       <div class="sub-block">
@@ -2394,6 +2389,7 @@ function toggleMrOpen(id){mrOpen[id]=!mrOpen[id];render();}
 function setMrStatus(cid,v){const c=findWi(cid);if(c){c.status=v;render();}}
 function setMrConfidence(cid,v){const c=findWi(cid);if(c){c.confidence=v;render();}}
 function setMrNote(cid,v){const c=findWi(cid);if(c){c.reportNote=v;save();}}
+function resetPhases(){(proj().workItems||[]).forEach(w=>w.phase="");render();}
 
 /* ---- 專案設定（日期＋系統帳密）---- */
 function renderSettings(){
