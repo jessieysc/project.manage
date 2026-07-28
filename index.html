@@ -74,6 +74,38 @@ main{padding:64px 0 80px}
 .t-over{background:var(--rose-soft);color:var(--rose)}
 .t-role{background:var(--accent-soft);color:var(--accent)}
 .t-cat{background:var(--slate-soft);color:var(--slate)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg-btn{padding:7px 14px;border:none;background:var(--panel);color:var(--ink-soft);font-family:inherit;
+  font-size:13.5px;font-weight:700;cursor:pointer}
+.seg-btn:hover{color:var(--ink)}
+.seg-btn.on{background:var(--accent-soft);color:var(--accent)}
+.wi-group{margin-bottom:26px}
+.wi-group-head{display:flex;align-items:center;gap:10px;padding:6px 2px 10px;border-bottom:2px solid var(--line);
+  margin-bottom:12px;flex-wrap:wrap}
+.wi-group-head.now{border-bottom-color:var(--accent)}
+.wi-code-big{font-weight:800;font-size:17px;color:var(--accent);min-width:22px}
+.wi-group-name{font-weight:800;font-size:15px}
+.wi-group-w{margin-left:auto;font-size:13px;color:var(--ink-soft)}
+.wi-sub-label{font-size:12.5px;font-weight:700;color:var(--ink-soft);margin:12px 0 7px 2px}
+.wi-code{font-family:ui-monospace,Menlo,monospace;font-size:13px;font-weight:700;color:var(--accent);
+  min-width:28px;flex-shrink:0}
+.wi-dim{opacity:.72}
+.wi-fields{display:flex;flex-wrap:wrap;gap:12px}
+.wi-fields .field{flex:1;min-width:120px;margin:0}
+.wi-fields input,.wi-fields select,.wi-fields textarea{width:100%;padding:8px 11px;border:1px solid var(--line);
+  border-radius:8px;background:var(--paper);font-family:inherit;font-size:14px}
+.wi-sub{display:flex;align-items:center;gap:7px;padding:7px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.wi-sub:last-of-type{border-bottom:none}
+.wi-sub-text{flex:1;min-width:150px;padding:6px 9px;border:1px solid transparent;border-radius:6px;
+  background:transparent;font-family:inherit;font-size:13.5px;color:var(--ink)}
+.wi-sub-text:hover,.wi-sub-text:focus{border-color:var(--line);background:var(--paper)}
+.wi-num{width:62px;padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--paper);
+  font-family:inherit;font-size:13px;text-align:right}
+.wi-unit{width:52px;padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--paper);
+  font-family:inherit;font-size:13px}
+.wi-slash{color:var(--ink-soft);font-size:13px}
+.wi-sub-pct{font-size:12.5px;color:var(--ink-soft);min-width:40px;text-align:right;font-weight:700}
+.wi-sub-pct.ok{color:#6e8352}
 .note-list{display:flex;flex-direction:column;gap:8px}
 .note-item2{display:flex;gap:10px;padding:10px 12px;background:var(--paper);border:1px solid var(--line);border-radius:8px}
 .note-item2.pinned{border-color:var(--accent);background:var(--accent-soft)}
@@ -507,6 +539,7 @@ body.readonly .date-badge.editable{pointer-events:none}
     <div class="tabs" id="tabsProject" style="display:none">
       <span class="tab-scope" id="tabScopeName"></span>
       <button class="tab" data-view="overview" onclick="switchTab('overview')">總覽</button>
+      <button class="tab" data-view="progress" onclick="switchTab('progress')">執行進度</button>
       <button class="tab" data-view="months" onclick="switchTab('months')">事項</button>
       <button class="tab" data-view="works" onclick="switchTab('works')">工程項目</button>
       <button class="tab" data-view="budget" onclick="switchTab('budget')">經費</button>
@@ -523,6 +556,7 @@ body.readonly .date-badge.editable{pointer-events:none}
   <section class="view" id="view-acct"></section>
   <section class="view" id="view-mid"></section>
   <section class="view" id="view-overview"></section>
+  <section class="view" id="view-progress"></section>
   <section class="view" id="view-months"></section>
   <section class="view" id="view-works"></section>
   <section class="view" id="view-budget"></section>
@@ -616,6 +650,40 @@ function migrate(d){
       cp.materials=cp.materials||[];    // 待收資料
       cp.materials.forEach(mt=>{ mt.type=mt.type||"file"; mt.who=mt.who||""; mt.got=!!mt.got; });
     });
+    // 計畫架構：分項（A/B/C…）只存代碼與名稱，工作項目靠 code 開頭字母自動歸組
+    p.sections=p.sections||[];
+    (p.sections||[]).forEach(s=>{s.code=(s.code||"").toUpperCase(); s.name=s.name||"";});
+    // 工作項目 = 計畫書「計畫架構」+「預定查核點」合併後的主檔（執行進度／期中報告共用同一份）
+    p.workItems=p.workItems||[];
+    // 舊版 mrCheckpoints 一次性轉為工作項目（避免同一件事存兩份）
+    if(!p.workItems.length && (p.mrCheckpoints||[]).length){
+      p.workItems=p.mrCheckpoints.map(cp=>({
+        id:cp.id||uid(), code:"", name:cp.name||"", owner:"", weight:0, dueDate:"", startMonth:"",
+        status:cp.status==="ready"?"done":(cp.status==="collecting"?"doing":"todo"),
+        confidence:cp.confidence||"none", subItems:[],
+        materials:(cp.materials||[]).map(m=>({...m,month:m.month||""})),
+        note:"", reportNote:cp.note||""
+      }));
+    }
+    (p.workItems||[]).forEach(w=>{
+      w.code=(w.code||"").toUpperCase(); w.name=w.name||""; w.owner=w.owner||"";
+      w.weight=+w.weight||0;
+      w.dueDate=w.dueDate||"";        // 計畫書的「完成日期」
+      w.startMonth=w.startMonth||"";  // 這項工作何時開始推進（空＝計畫起始月）
+      w.status=w.status||"todo";      // todo未開始 / doing進行中 / done完成
+      w.confidence=w.confidence||"none";
+      w.note=w.note||"";              // 執行備註（落後原因、補救措施）
+      w.reportNote=w.reportNote||"";  // 期中報告要怎麼呈現
+      w.subItems=w.subItems||[];      // 查核項目子項 {id,text,target,current,unit,done}
+      w.subItems.forEach(s=>{
+        s.text=s.text||"";
+        s.target=(s.target===""||s.target===undefined||s.target===null)?"":(+s.target||0);
+        s.current=(s.current===""||s.current===undefined||s.current===null)?"":(+s.current||0);
+        s.unit=s.unit||""; s.done=!!s.done;
+      });
+      w.materials=w.materials||[];    // 待收資料 {id,name,type,who,got,month}
+      w.materials.forEach(m=>{m.type=m.type||"file"; m.who=m.who||""; m.got=!!m.got; m.month=m.month||"";});
+    });
     // 帳密簡化為 {id,user,pass}
     p.accounts.forEach(a=>{a.user=a.user||""; a.pass=a.pass||""; delete a.system; delete a.url;});
     // 窗口固定兩個：計畫辦公室、會計事務所，各含 phone/ext/person
@@ -650,6 +718,7 @@ function migrate(d){
       w.status=w.status||"none";        // 手動狀態：未開始/進行中/完成
       w.steps=w.steps||[];              // 執行步驟 {id,text,date,done}
       w.dataNeeded=w.dataNeeded||"";    // 要收集的資料（AI 類項目用）
+      w.workCode=(w.workCode||"").toUpperCase(); // 對應計畫書工作項目代碼（A1/B2…），空＝未歸屬
       w.progress=w.progress||"";        // 目前進度（卡片顯示用）
       w.progressAt=w.progressAt||"";    // 進度更新時間戳（排序用）
       w.steps.forEach(s=>{s.date=s.date||""; s.done=!!s.done;});
@@ -798,7 +867,7 @@ function render(){
   if(activeTab==="acct"){renderAcctAll();save();wrapTables();return;}
   if(activeTab==="mid"){renderMidAll();save();wrapTables();return;}
   if(!proj()){document.getElementById("view-"+activeTab).innerHTML=`<div class="empty"><p>還沒有任何專案</p><span>點右上角「＋ 新專案」開始建立</span></div>`;return;}
-  ({overview:renderOverview,months:renderMonths,works:renderWorks,budget:renderBudget,midreport:renderMidreport,settings:renderSettings}[activeTab])();
+  ({overview:renderOverview,progress:renderProgress,months:renderMonths,works:renderWorks,budget:renderBudget,midreport:renderMidreport,settings:renderSettings}[activeTab])();
   save();
   wrapTables();
 }
@@ -911,6 +980,438 @@ function itemRow(p,m,idx,arr){
       </div>
     </div>
   </div>`;
+}
+
+/* ==================== 執行進度（計畫書工作項目 / 查核點主檔） ==================== */
+const WI_STATUS={
+  todo:{label:"未開始",cls:"t-plan"},
+  doing:{label:"進行中",cls:"t-run"},
+  done:{label:"完成",cls:"t-done"},
+};
+let progressView="section";   // section 依分項 / month 依月份
+let wiOpen={};                // 工作項目展開狀態
+
+/* 計畫期間的月份清單 ["2026-01", ...] */
+function planMonths(p){
+  if(!p.startDate||!p.endDate)return [];
+  let d=new Date(p.startDate+"T00:00:00");const e=new Date(p.endDate+"T00:00:00");
+  if(isNaN(d)||isNaN(e)||e<d)return [];
+  d=new Date(d.getFullYear(),d.getMonth(),1);
+  const out=[];let guard=0;
+  while(d<=e&&guard++<72){out.push(d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0"));d=new Date(d.getFullYear(),d.getMonth()+1,1);}
+  return out;
+}
+function monthLabel(m){const a=m.split("-");return `${a[0]} 年 ${+a[1]} 月`;}
+function rocDate(s){ // 2026-03-31 → 115/03/31
+  if(!s)return "";const a=s.split("-");if(a.length<3)return s;
+  return `${(+a[0])-1911}/${a[1]}/${a[2]}`;
+}
+
+/* 單一工作項目的完成比例 0~1（依子項量化數字；沒有子項就看狀態） */
+function wiPct(w){
+  if(w.status==="done")return 1;   // 手動標記完成 → 直接算滿，不受子項數字沒填影響
+  const subs=w.subItems||[];
+  if(subs.length){
+    let s=0;
+    subs.forEach(x=>{
+      if(x.target!==""&&+x.target>0) s+=Math.min(1,(+x.current||0)/(+x.target));
+      else s+=x.done?1:0;
+    });
+    return s/subs.length;
+  }
+  return w.status==="done"?1:(w.status==="doing"?0.5:0);
+}
+
+/* 全案進度：預定（權重加總，以完成日期為準）／實際（保守：只算已完成）／細緻（依子項比例） */
+function progressStats(p,asOf){
+  const items=p.workItems||[];
+  const day=asOf||today();
+  const total=items.reduce((s,w)=>s+(+w.weight||0),0);
+  const planned=items.filter(w=>w.dueDate&&w.dueDate<=day).reduce((s,w)=>s+(+w.weight||0),0);
+  const actual=items.filter(w=>w.status==="done").reduce((s,w)=>s+(+w.weight||0),0);
+  const detailed=items.reduce((s,w)=>s+(+w.weight||0)*wiPct(w),0);
+  return {total,planned,actual,detailed:Math.round(detailed*10)/10,gap:actual-planned,count:items.length};
+}
+
+function sectionNameOf(p,code){const s=(p.sections||[]).find(x=>x.code===code);return s?s.name:"";}
+function sectionWeight(items){return items.reduce((s,w)=>s+(+w.weight||0),0);}
+
+function groupBySection(p){
+  const map={};
+  (p.workItems||[]).forEach(w=>{const k=((w.code||"").charAt(0)||"—").toUpperCase();(map[k]=map[k]||[]).push(w);});
+  return Object.keys(map).sort().map(k=>({
+    code:k,name:sectionNameOf(p,k),
+    items:map[k].slice().sort((a,b)=>(a.code||"").localeCompare(b.code||"")),
+  }));
+}
+
+/* 某個月：到期的、要推進的、要收的資料 */
+function monthBuckets(p,m){
+  const items=p.workItems||[];
+  const due=items.filter(w=>w.dueDate&&w.dueDate.slice(0,7)===m);
+  const active=items.filter(w=>{
+    if(!w.dueDate||w.dueDate.slice(0,7)<=m)return false;
+    if(w.status==="done")return false;
+    if(w.startMonth)return w.startMonth<=m;
+    return monthDiff(m,w.dueDate.slice(0,7))<=2;   // 沒填起始月：到期前兩個月開始提醒
+  });
+  const mats=[];
+  items.forEach(w=>(w.materials||[]).forEach(mt=>{if(mt.month===m&&!mt.got)mats.push({w,mt});}));
+  return {due,active,mats};
+}
+function monthDiff(a,b){ // b - a，以月為單位
+  const x=a.split("-"),y=b.split("-");
+  return (+y[0]-+x[0])*12+(+y[1]-+x[1]);
+}
+
+/* ---- 主畫面 ---- */
+function renderProgress(){
+  const p=proj();
+  const items=p.workItems||[];
+  const st=progressStats(p);
+  const gapCls=st.gap<0?"color:var(--rose)":"";
+  const noDates=!p.startDate||!p.endDate;
+
+  document.getElementById("view-progress").innerHTML=`
+    <div class="sec-head">
+      <div><h2>執行進度</h2><span class="hint">${esc(p.name)}${p.startDate&&p.endDate?` · ${rocDate(p.startDate)} – ${rocDate(p.endDate)}`:""} · 計畫書的工作項目與預定查核點</span></div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <div class="seg">
+          <button class="seg-btn ${progressView==="section"?"on":""}" onclick="setProgressView('section')">依分項</button>
+          <button class="seg-btn ${progressView==="month"?"on":""}" onclick="setProgressView('month')">依月份</button>
+        </div>
+        <button class="btn sm" onclick="openWiImport()">貼上計畫書匯入</button>
+      </div>
+    </div>
+
+    ${items.length?`
+    <div class="stat-grid" style="margin-bottom:22px">
+      <div class="stat"><div class="label">預定進度（至今天）</div><div class="num">${st.planned}%</div>
+        <div class="sub">已到期的查核點權重加總</div>
+        <div class="bar"><span style="width:${Math.min(100,st.planned)}%"></span></div></div>
+      <div class="stat"><div class="label">實際進度</div><div class="num">${st.actual}%</div>
+        <div class="sub">細算子項約 ${st.detailed}%</div>
+        <div class="bar"><span style="width:${Math.min(100,st.actual)}%"></span></div></div>
+      <div class="stat"><div class="label">落差</div>
+        <div class="num" style="${gapCls}">${st.gap>0?"+":""}${st.gap}%</div>
+        <div class="sub">${st.gap<0?"落後，期中／期末報告要寫原因":"進度正常"}</div></div>
+      <div class="stat"><div class="label">工作項目</div><div class="num">${st.count}</div>
+        <div class="sub">權重合計 ${st.total}%${st.total!==100&&st.total?`（計畫書應為 100）`:""}</div></div>
+    </div>`:""}
+
+    ${noDates&&items.length?`<div class="card"><div style="padding:14px 18px;font-size:13.5px;color:var(--amber)">
+      尚未設定計畫執行起訖日，「依月份」檢視會是空的。到「專案設定」補上起訖日期即可。</div></div>`:""}
+
+    ${items.length?(progressView==="section"?progressBySection(p):progressByMonth(p)):`
+      <div class="empty"><p>還沒有工作項目</p>
+        <span>把計畫書「計畫架構」與「預定查核點說明」兩張表的內容帶進來，執行進度與期中報告就會共用同一份資料。</span>
+        <div style="margin-top:14px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+          <button class="btn primary" onclick="openWiImport()">貼上計畫書匯入</button>
+          <button class="btn" onclick="addWi()">手動新增一筆</button>
+          ${/福伸/.test(p.name)?`<button class="btn" onclick="loadFusengSample()">載入福伸計畫書（11 筆）</button>`:""}
+        </div>
+      </div>`}
+
+    ${items.length?`<div class="inline-add" style="margin:16px 0 26px">
+      <button class="btn sm" onclick="addWi()">＋ 新增工作項目</button>
+      <button class="btn sm ghost" onclick="openSectionEdit()">編輯分項名稱</button>
+    </div>`:""}
+  `;
+}
+
+function setProgressView(v){progressView=v;render();}
+
+/* ---- 檢視一：依分項 ---- */
+function progressBySection(p){
+  return groupBySection(p).map(g=>`
+    <div class="wi-group">
+      <div class="wi-group-head">
+        <span class="wi-code-big">${esc(g.code)}</span>
+        <span class="wi-group-name">${esc(g.name||"（未命名分項）")}</span>
+        <span class="wi-group-w">權重 ${sectionWeight(g.items)}%</span>
+      </div>
+      ${g.items.map(w=>wiCard(p,w)).join("")}
+    </div>`).join("");
+}
+
+/* ---- 檢視二：依月份 ---- */
+function progressByMonth(p){
+  const ms=planMonths(p);
+  if(!ms.length)return `<div class="empty"><p>沒有月份可以顯示</p><span>請先到「專案設定」填寫計畫執行起訖日</span></div>`;
+  const nowM=today().slice(0,7);
+  return ms.map(m=>{
+    const {due,active,mats}=monthBuckets(p,m);
+    const empty=!due.length&&!active.length&&!mats.length;
+    const isNow=m===nowM;
+    return `<div class="wi-group">
+      <div class="wi-group-head ${isNow?"now":""}">
+        <span class="wi-group-name">${monthLabel(m)}${isNow?` <span class="tag t-run" style="margin-left:6px">本月</span>`:""}</span>
+        <span class="wi-group-w">${due.length?`${due.length} 個查核點到期`:"無查核點到期"}</span>
+      </div>
+      ${due.length?`<div class="wi-sub-label">本月到期</div>${due.map(w=>wiCard(p,w)).join("")}`:""}
+      ${active.length?`<div class="wi-sub-label">要推進（尚未到期）</div>${active.map(w=>wiCard(p,w,true)).join("")}`:""}
+      ${mats.length?`<div class="wi-sub-label">本月要收的資料</div>
+        <div class="card"><div style="padding:14px 18px"><div class="chip-list">
+        ${mats.map(({w,mt})=>`<div class="chip">
+          <div class="chk" onclick="toggleWiMat('${w.id}','${mt.id}')"></div>
+          <span class="tag ${MR_TYPE_CLS[mt.type]||"t-cat"}" style="flex-shrink:0">${MR_TYPE[mt.type]||"文件"}</span>
+          <span class="txt">${esc(mt.name)}${mt.who?` <span style="color:var(--ink-soft)">— 找 ${esc(mt.who)}</span>`:""}
+            <span style="color:var(--ink-soft);font-size:12px">｜${esc(w.code||"")} ${esc(w.name)}</span></span>
+        </div>`).join("")}
+        </div></div></div>`:""}
+      ${empty?`<div class="card"><div style="padding:13px 18px;font-size:13px;color:var(--ink-soft)">這個月沒有到期的查核點，也沒有排定要收的資料。</div></div>`:""}
+    </div>`;
+  }).join("");
+}
+
+/* ---- 工作項目卡片 ---- */
+function wiCard(p,w,dim){
+  const open=!!wiOpen[w.id];
+  const st=WI_STATUS[w.status]||WI_STATUS.todo;
+  const subs=w.subItems||[];
+  const mats=w.materials||[];
+  const gotCnt=mats.filter(m=>m.got).length;
+  const pct=Math.round(wiPct(w)*100);
+  const overdue=w.dueDate&&w.status!=="done"&&w.dueDate<today();
+  const linked=(p.works||[]).filter(x=>(x.workCode||"")===(w.code||"")&&w.code);
+  return `<div class="card ${dim?"wi-dim":""}">
+    <div class="card-head" onclick="toggleWiOpen('${w.id}')">
+      <span class="wi-code">${esc(w.code||"—")}</span>
+      <span class="card-title" style="flex:1;min-width:120px">${esc(w.name||"（未命名）")}</span>
+      ${w.owner?`<span class="tag t-cat">${esc(w.owner)}</span>`:""}
+      <span style="font-size:12.5px;${overdue?"color:var(--rose);font-weight:700":"color:var(--ink-soft)"}">${w.dueDate?rocDate(w.dueDate):"未定日期"}</span>
+      <span class="tag ${st.cls}">${st.label}</span>
+      <span style="font-size:13px;color:var(--ink-soft);min-width:52px;text-align:right">${w.weight||0}%</span>
+      <span style="color:var(--ink-soft);font-size:13px">${open?"▲":"▼"}</span>
+    </div>
+    ${open?`<div class="card-body" style="padding-top:14px">
+      <div class="wi-fields">
+        <div class="field"><label>代碼</label><input value="${esc(w.code)}" placeholder="A1" onchange="setWi('${w.id}','code',this.value)"></div>
+        <div class="field" style="flex:2"><label>工作項目名稱</label><input value="${esc(w.name)}" onchange="setWi('${w.id}','name',this.value)"></div>
+        <div class="field"><label>執行單位</label><input value="${esc(w.owner)}" placeholder="福伸／寶公" onchange="setWi('${w.id}','owner',this.value)"></div>
+        <div class="field"><label>權重(%)</label><input type="number" value="${w.weight||0}" onchange="setWi('${w.id}','weight',this.value)"></div>
+        <div class="field"><label>完成日期</label><input type="date" value="${esc(w.dueDate)}" onchange="setWi('${w.id}','dueDate',this.value)"></div>
+        <div class="field"><label>開始推進月份</label><input type="month" value="${esc(w.startMonth)}" onchange="setWi('${w.id}','startMonth',this.value)"></div>
+        <div class="field"><label>狀態</label><select onchange="setWi('${w.id}','status',this.value)">
+          ${Object.entries(WI_STATUS).map(([k,v])=>`<option value="${k}" ${w.status===k?"selected":""}>${v.label}</option>`).join("")}
+        </select></div>
+        <div class="field"><label>達成信心</label><select onchange="setWi('${w.id}','confidence',this.value)">
+          ${Object.entries(MR_CONFIDENCE).map(([k,v])=>`<option value="${k}" ${w.confidence===k?"selected":""}>${v.label}</option>`).join("")}
+        </select></div>
+      </div>
+
+      <div class="sub-block">
+        <div class="sub-title">查核項目（子項完成度 ${pct}%）</div>
+        ${subs.length?subs.map(s=>{
+          const has=s.target!==""&&+s.target>0;
+          const sp=has?Math.min(100,Math.round((+s.current||0)/(+s.target)*100)):(s.done?100:0);
+          return `<div class="wi-sub">
+            <div class="chk ${sp>=100?"on":""}" onclick="toggleWiSub('${w.id}','${s.id}')"></div>
+            <input class="wi-sub-text" value="${esc(s.text)}" onchange="setWiSub('${w.id}','${s.id}','text',this.value)">
+            <input class="wi-num" type="number" value="${s.current}" placeholder="現況" onchange="setWiSub('${w.id}','${s.id}','current',this.value)">
+            <span class="wi-slash">/</span>
+            <input class="wi-num" type="number" value="${s.target}" placeholder="目標" onchange="setWiSub('${w.id}','${s.id}','target',this.value)">
+            <input class="wi-unit" value="${esc(s.unit)}" placeholder="單位" onchange="setWiSub('${w.id}','${s.id}','unit',this.value)">
+            <span class="wi-sub-pct ${sp>=100?"ok":""}">${sp}%</span>
+            <button class="del-x" onclick="delWiSub('${w.id}','${s.id}')">✕</button>
+          </div>`;}).join(""):`<div style="color:var(--ink-soft);font-size:13px;margin-bottom:8px">尚未列出查核項目。計畫書「預定查核點說明」那一欄的 1. 2. 3. 就是這裡要填的內容。</div>`}
+        <div class="inline-add">
+          <input id="wisub-${w.id}" placeholder="例：完成數位化建檔 ≥ 30 種產品（會自動抓出目標數字）" style="flex:2;min-width:220px" onkeydown="if(event.key==='Enter')addWiSub('${w.id}')">
+          <button class="btn sm primary" onclick="addWiSub('${w.id}')">加入</button>
+        </div>
+      </div>
+
+      <div class="sub-block">
+        <div class="sub-title">要收的資料${mats.length?`（${gotCnt}/${mats.length} 已到）`:""}</div>
+        <div class="chip-list">
+          ${mats.length?mats.map(m=>`<div class="chip ${m.got?"done":""}">
+            <div class="chk ${m.got?"on":""}" onclick="toggleWiMat('${w.id}','${m.id}')"></div>
+            <span class="tag ${MR_TYPE_CLS[m.type]||"t-cat"}" style="flex-shrink:0">${MR_TYPE[m.type]||"文件"}</span>
+            <span class="txt">${esc(m.name)}${m.who?` <span style="color:var(--ink-soft)">— 找 ${esc(m.who)}</span>`:""}${m.month?` <span style="color:var(--ink-soft);font-size:12px">｜${esc(m.month)}</span>`:""}</span>
+            <button class="del-x" onclick="delWiMat('${w.id}','${m.id}')">✕</button>
+          </div>`).join(""):`<div style="color:var(--ink-soft);font-size:13px">還沒列出佐證資料。列進來之後，「依月份」檢視就會提醒你那個月要跟誰要什麼。</div>`}
+        </div>
+        <div class="inline-add">
+          <input id="wimat-name-${w.id}" placeholder="資料名稱，例：製程紀錄表彙整檔" style="flex:2;min-width:170px">
+          <select id="wimat-type-${w.id}" style="flex:0 0 auto">
+            <option value="image">圖片</option><option value="data">數據</option><option value="file" selected>文件</option>
+          </select>
+          <input id="wimat-who-${w.id}" placeholder="跟誰要" style="flex:1;min-width:100px">
+          <input id="wimat-month-${w.id}" type="month" style="flex:0 0 auto" title="預計哪個月收">
+          <button class="btn sm primary" onclick="addWiMat('${w.id}')">加入</button>
+        </div>
+      </div>
+
+      ${linked.length?`<div class="sub-block">
+        <div class="sub-title">關聯的工程項目</div>
+        <div class="chip-list">${linked.map(x=>`<div class="chip"><span class="txt">${esc(x.name)}</span>
+          <span class="tag ${(WORK_STATUS[x.status]||WORK_STATUS.none).cls}">${(WORK_STATUS[x.status]||WORK_STATUS.none).label}</span></div>`).join("")}</div>
+      </div>`:""}
+
+      <div class="wi-fields" style="margin-top:14px">
+        <div class="field" style="flex:1;min-width:240px"><label>執行備註（落後原因、補救措施）</label>
+          <textarea rows="3" onchange="setWi('${w.id}','note',this.value)" placeholder="這個月卡在哪、怎麼補">${esc(w.note)}</textarea></div>
+        <div class="field" style="flex:1;min-width:240px"><label>期中／期末報告怎麼呈現</label>
+          <textarea rows="3" onchange="setWi('${w.id}','reportNote',this.value)" placeholder="要放哪張表、哪張截圖、怎麼寫">${esc(w.reportNote)}</textarea></div>
+      </div>
+
+      <div style="margin-top:12px"><button class="btn sm ghost" onclick="delWi('${w.id}')" style="color:var(--rose)">刪除這個工作項目</button></div>
+    </div>`:""}
+  </div>`;
+}
+
+/* ---- 編輯 ---- */
+function toggleWiOpen(id){wiOpen[id]=!wiOpen[id];render();}
+function addWi(){
+  const p=proj();p.workItems=p.workItems||[];
+  const id=uid();
+  p.workItems.push({id,code:"",name:"",owner:"",weight:0,dueDate:"",startMonth:"",status:"todo",confidence:"none",subItems:[],materials:[],note:"",reportNote:""});
+  wiOpen[id]=true;render();
+}
+function delWi(id){if(!confirm("刪除這個工作項目？底下的查核項目與資料清單也會一起移除。"))return;
+  const p=proj();p.workItems=p.workItems.filter(w=>w.id!==id);render();}
+function findWi(id){return (proj().workItems||[]).find(w=>w.id===id);}
+function setWi(id,k,v){const w=findWi(id);if(!w)return;
+  w[k]=(k==="weight")?(+v||0):((k==="code")?String(v||"").toUpperCase().trim():v);
+  render();}
+function addWiSub(wid){
+  const w=findWi(wid);const raw=val("wisub-"+wid);if(!raw)return;
+  w.subItems.push(parseSubItem(raw));render();}
+function setWiSub(wid,sid,k,v){const w=findWi(wid);const s=w.subItems.find(x=>x.id===sid);if(!s)return;
+  s[k]=(k==="current"||k==="target")?(v===""?"":(+v||0)):v;render();}
+function toggleWiSub(wid,sid){const w=findWi(wid);const s=w.subItems.find(x=>x.id===sid);if(!s)return;
+  if(s.target!==""&&+s.target>0){ s.current=(+s.current||0)>=+s.target?0:+s.target; }
+  else s.done=!s.done;
+  render();}
+function delWiSub(wid,sid){const w=findWi(wid);w.subItems=w.subItems.filter(x=>x.id!==sid);render();}
+function addWiMat(wid){
+  const w=findWi(wid);const name=val("wimat-name-"+wid);if(!name)return;
+  const type=(document.getElementById("wimat-type-"+wid)||{}).value||"file";
+  const who=val("wimat-who-"+wid);
+  const month=(document.getElementById("wimat-month-"+wid)||{}).value||"";
+  w.materials.push({id:uid(),name,type,who,month,got:false});render();}
+function toggleWiMat(wid,mid){const w=findWi(wid);const m=(w.materials||[]).find(x=>x.id===mid);if(m){m.got=!m.got;render();}}
+function delWiMat(wid,mid){const w=findWi(wid);w.materials=w.materials.filter(x=>x.id!==mid);render();}
+
+/* 從「完成數位化建檔 ≥ 30 種產品」抓出 target=30、unit=種 */
+function parseSubItem(raw){
+  const t=String(raw).trim().replace(/^\d+[.、)]\s*/,"");
+  const m=t.match(/[≥>＞]=?\s*([\d,]+(?:\.\d+)?)\s*([^\s,，。;；(（]{0,4})/);
+  if(m){
+    const num=+m[1].replace(/,/g,"");
+    let unit=(m[2]||"").replace(/[^\u4e00-\u9fa5A-Za-z%]/g,"");
+    if(unit.length>3)unit=unit.slice(0,3);
+    return {id:uid(),text:t,target:num,current:0,unit,done:false};
+  }
+  return {id:uid(),text:t,target:"",current:"",unit:"",done:false};
+}
+
+/* ---- 分項名稱編輯 ---- */
+function openSectionEdit(){
+  const p=proj();
+  const codes=[...new Set((p.workItems||[]).map(w=>(w.code||"").charAt(0).toUpperCase()).filter(Boolean))].sort();
+  openModal("分項名稱",`<div style="font-size:13px;color:var(--ink-soft);margin-bottom:12px">計畫書「計畫架構」那張表的分項名稱，例：A 分項計畫 — 鎖具產品數位資產化與規格標準化</div>
+    ${codes.map(c=>`<div class="field"><label>${c} 分項</label>
+      <input id="secname-${c}" value="${esc(sectionNameOf(p,c))}" placeholder="分項名稱"></div>`).join("")||`<div style="font-size:13px;color:var(--ink-soft)">還沒有任何工作項目代碼。</div>`}`,
+  ()=>{
+    p.sections=codes.map(c=>({code:c,name:val("secname-"+c)}));
+    closeModal();render();
+  });
+}
+
+/* ---- 貼上計畫書匯入 ---- */
+function openWiImport(){
+  const sample=`A1\t產品資料盤點與數位化\t8\t115/03/31\t福伸
+1. 完成歷史產品盤點 ≥ 30 種
+2. 完成數位化建檔 ≥ 30 種產品
+3. 累計掃描圖檔 ≥ 200 張
+
+A2\t產品規格標準化\t7\t115/04/30\t福伸
+1. 完成 BOM 結構建置 ≥ 30 種產品`;
+  openModal("貼上計畫書匯入",`
+    <div style="font-size:13px;color:var(--ink-soft);line-height:1.75;margin-bottom:12px">
+      每個工作項目一行，欄位用 Tab 或直線 <b>|</b> 分隔：<br>
+      <span style="font-family:monospace;font-size:12.5px">代碼　工作項目名稱　權重　完成日期　執行單位</span><br>
+      下面接查核項目，一行一項（開頭 1. 2. 3. 會自動去掉）。空行分隔不同工作項目。<br>
+      日期民國、西元都可以。含「≥ 數字」的查核項目會自動抓成目標值。
+    </div>
+    <div class="field"><label>貼上內容</label>
+      <textarea id="wi-import" rows="12" placeholder="${esc(sample)}" style="font-family:monospace;font-size:12.5px;line-height:1.7"></textarea></div>
+    <label style="display:flex;align-items:center;gap:8px;font-size:13.5px">
+      <input type="checkbox" id="wi-import-replace" style="width:auto;margin:0">匯入前先清空現有工作項目</label>
+  `,()=>{
+    const txt=(document.getElementById("wi-import")||{}).value||"";
+    const parsed=parseWiPaste(txt);
+    if(!parsed.length){alert("沒有解析到任何工作項目，請確認格式。");return;}
+    const p=proj();
+    if((document.getElementById("wi-import-replace")||{}).checked)p.workItems=[];
+    p.workItems=(p.workItems||[]).concat(parsed);
+    closeModal();render();
+    alert(`匯入 ${parsed.length} 個工作項目，權重合計 ${parsed.reduce((s,w)=>s+w.weight,0)}%`);
+  });
+}
+
+function parseWiPaste(txt){
+  const out=[];let cur=null;
+  String(txt).split(/\r?\n/).forEach(line=>{
+    const raw=line.trim();
+    if(!raw){cur=null;return;}
+    const cols=raw.split(/\t+|\s*\|\s*/).map(s=>s.trim()).filter(s=>s!=="");
+    const isHead=cols.length>=2&&/^[A-Za-z]\d{1,2}$/.test(cols[0]);
+    if(isHead){
+      cur={id:uid(),code:cols[0].toUpperCase(),name:cols[1]||"",
+        weight:+(String(cols[2]||"").replace(/[^\d.]/g,""))||0,
+        dueDate:normDate(cols[3]||""),owner:cols[4]||"",
+        startMonth:"",status:"todo",confidence:"none",subItems:[],materials:[],note:"",reportNote:""};
+      out.push(cur);return;
+    }
+    if(cur){
+      raw.split(/(?=\d+[.、]\s*完成)|(?=\d+[.、]\s*建立)|(?=\d+[.、]\s*累計)/).map(s=>s.trim()).filter(Boolean)
+        .forEach(part=>{ if(part.length>1) cur.subItems.push(parseSubItem(part)); });
+    }
+  });
+  return out;
+}
+function normDate(s){
+  const t=String(s).trim().replace(/[年月]/g,"/").replace(/日/g,"");
+  const m=t.match(/(\d{2,4})\s*[\/\-.]\s*(\d{1,2})\s*[\/\-.]\s*(\d{1,2})/);
+  if(!m)return "";
+  let y=+m[1];if(y<1911)y+=1911;   // 民國轉西元
+  return `${y}-${String(+m[2]).padStart(2,"0")}-${String(+m[3]).padStart(2,"0")}`;
+}
+
+/* ---- 福伸計畫書範例資料（一鍵載入，方便先看到實際樣子） ---- */
+const FUSENG_SECTIONS=[
+  {code:"A",name:"鎖具產品數位資產化與規格標準化"},
+  {code:"B",name:"製程數據湖建置與知識圖譜工程"},
+  {code:"C",name:"生成式 AI 製程推論模型研發"},
+  {code:"D",name:"AI 製程驗證與人機協作機制建構"},
+  {code:"E",name:"新產品市場推廣與行銷布局"},
+];
+const FUSENG_ITEMS=[
+  ["A1","產品資料盤點與數位化",8,"2026-03-31","福伸",["完成歷史產品盤點 ≥ 30 種","完成數位化建檔 ≥ 30 種產品","累計掃描圖檔 ≥ 200 張","規格文件 ≥ 50 份"]],
+  ["A2","產品規格標準化",7,"2026-04-30","福伸",["完成 BOM 結構建置 ≥ 30 種產品（階層 ≥ 3 階）","產品特徵標籤庫 ≥ 20 類標籤","完成標準化建檔產品 ≥ 30 種，資料正確率 ≥ 95%"]],
+  ["B1","製程數據整合與智慧化基礎建構",12,"2026-05-31","福伸",["完成 AI 伺服器與儲存設備建置（儲存容量 ≥ 20TB）","完成製程作業紀錄彙整 ≥ 1500 筆","完成資料三級分類與權限管控制度建置"]],
+  ["B2","製造知識數位化與語意建模",8,"2026-06-30","福伸",["完成製程技術文件數位化 ≥ 15 份","完成歷史異常案例彙整 ≥ 200 件","製程特徵標籤 ≥ 15 類","知識圖譜因果規則 ≥ 30 條"]],
+  ["C1","製程知識導向之生成式推理架構",15,"2026-06-30","寶公",["完成 RAG 系統地端部署上線","完成領域知識嵌入模型微調","AI 對話回應時間 ≤ 5 秒/次","系統測試問答 ≥ 30 題，來源標註率 100%"]],
+  ["E1","行銷素材開發",8,"2026-09-30","福伸",["完成產品宣傳影片 1 支（片長 3-5 分鐘）","完成多語系產品型錄 1 套（中／英／德文）","完成產品專業攝影 ≥ 30 款"]],
+  ["C2","製程參數智慧化最佳化模型",15,"2026-10-30","寶公",["完成製程特徵工程，定義特徵變數 ≥ 10 項","完成多目標最佳化預測模型訓練","完成遷移學習機制建置","模型預測準確率 ≥ 75%"]],
+  ["E2","企業官網建置",7,"2026-11-30","福伸",["完成多語系官網上線（中／英／德文）","完成 SEO 關鍵字佈局與優化設定","完成網站 RWD 響應式設計"]],
+  ["D1","智慧製程模型實務驗證",8,"2026-11-30","福伸",["完成代表性產品試產驗證 ≥ 30 組","試產材料耗用減少 ≥ 5%","試產良率提升 ≥ 2 個百分點","完成效益分析報告 1 份"]],
+  ["D3","資訊安全管理與系統長期維運機制建構",5,"2026-12-31","福伸",["完成全廠資料三級分類盤點","建置防火牆與資安防護機制","完成備份機制建置與災難復原演練 ≥ 1 次","完成 AI 模型版本管理制度與長期維運計畫 1 份"]],
+  ["D2","製程決策支援與人機協作機制",7,"2026-12-31","福伸",["完成 AI 人機協作 SOP 1 份","辦理系統操作教育訓練 ≥ 1 場","完成現場使用者滿意度調查，有效回收 ≥ 10 份"]],
+];
+function loadFusengSample(){
+  const p=proj();
+  if((p.workItems||[]).length&&!confirm("這會覆蓋目前的工作項目，確定嗎？"))return;
+  p.sections=FUSENG_SECTIONS.map(s=>({...s}));
+  p.workItems=FUSENG_ITEMS.map(([code,name,weight,dueDate,owner,subs])=>({
+    id:uid(),code,name,weight,dueDate,owner,startMonth:"",status:"todo",confidence:"none",
+    subItems:subs.map(t=>parseSubItem(t)),materials:[],note:"",reportNote:"",
+  }));
+  if(!p.startDate)p.startDate="2026-01-01";
+  if(!p.endDate)p.endDate="2026-12-31";
+  render();
 }
 
 function renderMonths(){
@@ -1245,8 +1746,8 @@ function renderProjects(){
     return {txt:`${open.length} 筆待處理：${open[0].text}`,dim:false,warn:true};
   };
   const midLine=p=>{
-    const cps=p.mrCheckpoints||[];
-    const ready=cps.filter(c=>c.status==="ready").length;
+    const cps=p.workItems||[];
+    const ready=cps.filter(c=>c.status==="done").length;
     let pend=0; cps.forEach(c=>(c.materials||[]).forEach(m=>{if(!m.got)pend++;}));
     const parts=[];
     let urg="";
@@ -1673,17 +2174,17 @@ function renderMidAll(){
 
   // 跨專案待收資料
   const pending=[];
-  db.projects.forEach(p=>(p.mrCheckpoints||[]).forEach(cp=>(cp.materials||[]).forEach(m=>{
+  db.projects.forEach(p=>(p.workItems||[]).forEach(cp=>(cp.materials||[]).forEach(m=>{
     if(!m.got)pending.push({p,cp,m});
   })));
   let cpTot=0,cpReady=0,riskTot=0;
-  db.projects.forEach(p=>{const cps=p.mrCheckpoints||[];cpTot+=cps.length;
-    cpReady+=cps.filter(c=>c.status==="ready").length;
+  db.projects.forEach(p=>{const cps=p.workItems||[];cpTot+=cps.length;
+    cpReady+=cps.filter(c=>c.status==="done").length;
     riskTot+=cps.filter(c=>c.confidence==="risk"||c.confidence==="hard").length;});
 
   const block=p=>{
-    const cps=p.mrCheckpoints||[];
-    const ready=cps.filter(c=>c.status==="ready").length;
+    const cps=p.workItems||[];
+    const ready=cps.filter(c=>c.status==="done").length;
     const ok=cps.filter(c=>c.confidence==="ok").length;
     const risk=cps.filter(c=>c.confidence==="risk").length;
     const hard=cps.filter(c=>c.confidence==="hard").length;
@@ -1705,7 +2206,7 @@ function renderMidAll(){
         <div class="mini-bar"><span style="width:${pct}%"></span></div>
         ${cps.length?`<div class="gp-sub">查核點狀態</div><div class="chip-list">
           ${cps.map(cp=>{
-            const st=MR_STATUS[cp.status]||MR_STATUS.todo;
+            const st=WI_STATUS[cp.status]||WI_STATUS.todo;
             const cf=MR_CONFIDENCE[cp.confidence]||MR_CONFIDENCE.none;
             const np=(cp.materials||[]).filter(m=>!m.got).length;
             return `<div class="chip">
@@ -1754,60 +2255,64 @@ function renderMidAll(){
   `;
 }
 function toggleMrMatFor(pid,cid,mid){const p=P(pid);if(!p)return;
-  const c=(p.mrCheckpoints||[]).find(x=>x.id===cid);if(!c)return;
+  const c=(p.workItems||[]).find(x=>x.id===cid);if(!c)return;
   const m=(c.materials||[]).find(x=>x.id===mid);if(m){m.got=!m.got;render();}}
 
 function renderMidreport(){
   const p=proj();
-  const cps=p.mrCheckpoints||[];
+  const all=p.workItems||[];
+  const due=p.midReportDue||"";
+  // 期中只看繳交期限前該完成的查核點（沒設期限就全看）
+  const cps=due?all.filter(c=>!c.dueDate||c.dueDate<=due):all;
+  const later=due?all.length-cps.length:0;
 
-  // 統計
-  const readyCnt = cps.filter(c=>c.status==="ready").length;
-  let pending=[]; // 所有未收到的資料（跨查核點）
+  const doneCnt=cps.filter(c=>c.status==="done").length;
+  const wSum=cps.reduce((s,c)=>s+(+c.weight||0),0);
+  const wDone=cps.filter(c=>c.status==="done").reduce((s,c)=>s+(+c.weight||0),0);
+  let pending=[];
   cps.forEach(cp=>(cp.materials||[]).forEach(m=>{ if(!m.got) pending.push({cp,m}); }));
   const pImg=pending.filter(x=>x.m.type==="image").length;
   const pData=pending.filter(x=>x.m.type==="data").length;
   const pFile=pending.filter(x=>x.m.type==="file").length;
 
   document.getElementById("view-midreport").innerHTML=`
-    <div class="sec-head"><div><h2>期中報告</h2><span class="hint">${esc(p.name)} · 確認每個查核點如何呈現、追蹤佐證資料是否到齊</span></div></div>
+    <div class="sec-head"><div><h2>期中報告</h2>
+      <span class="hint">${esc(p.name)} · 跟「執行進度」是同一份查核點，這裡只看怎麼呈現、佐證資料到齊了沒</span></div>
+      <button class="btn sm ghost" onclick="switchTab('progress')">去執行進度編輯 →</button></div>
 
-    <!-- 總覽 -->
+    ${all.length?`
     <div class="stat-grid" style="margin-bottom:20px">
-      <div class="stat"><div class="label">查核點</div><div class="num">${cps.length}</div><div class="sub">${readyCnt} 個資料已到齊</div></div>
+      <div class="stat"><div class="label">期中應完成查核點</div><div class="num">${cps.length}</div>
+        <div class="sub">${doneCnt} 個已完成${later?` · 另有 ${later} 個排在期中之後`:""}</div></div>
+      <div class="stat"><div class="label">期中應達進度</div><div class="num">${wSum}%</div>
+        <div class="sub">實際 ${wDone}%${wDone<wSum?`，落後 ${wSum-wDone}%`:""}</div>
+        <div class="bar ${wDone<wSum?"over":""}"><span style="width:${wSum?Math.min(100,Math.round(wDone/wSum*100)):0}%"></span></div></div>
       <div class="stat"><div class="label">達成信心</div>
         ${(()=>{const risk=cps.filter(c=>c.confidence==="risk").length,hard=cps.filter(c=>c.confidence==="hard").length,ok=cps.filter(c=>c.confidence==="ok").length;
           return `<div class="num" style="font-size:22px;${(risk+hard)?"color:var(--rose)":""}">${risk+hard?`${risk+hard} 個要注意`:`${ok} 個有把握`}</div>
           <div class="sub">${cps.length?`有把握 ${ok}・有風險 ${risk}・可能達不到 ${hard}`:"尚未評估"}</div>`;})()}</div>
       <div class="stat"><div class="label">待收資料</div><div class="num" style="${pending.length?"color:var(--rose)":""}">${pending.length}</div>
         <div class="sub">${pending.length?`圖片 ${pImg}・數據 ${pData}・文件 ${pFile}`:"全部到齊 ✓"}</div></div>
-    </div>
+    </div>`:""}
 
-    <!-- 待收資料彙整（催收） -->
     ${pending.length?`<div class="card"><div style="padding:16px 18px">
       <div class="sub-title" style="margin-bottom:10px;color:var(--rose)">⚠ 待收資料彙整（共 ${pending.length} 筆）</div>
       <div class="chip-list">
         ${pending.map(({cp,m})=>`<div class="chip">
-          <span class="tag ${MR_TYPE_CLS[m.type]}" style="flex-shrink:0">${MR_TYPE[m.type]}</span>
+          <span class="tag ${MR_TYPE_CLS[m.type]||"t-cat"}" style="flex-shrink:0">${MR_TYPE[m.type]||"文件"}</span>
           <span class="txt">${esc(m.name)}${m.who?` <span style="color:var(--ink-soft)">— 找 ${esc(m.who)}</span>`:""}
-            <span style="color:var(--ink-soft);font-size:12px">｜${esc(cp.name)}</span></span>
-          <button class="btn sm ghost" onclick="toggleMrMat('${cp.id}','${m.id}')" title="標記已收到">收到 ✓</button>
+            <span style="color:var(--ink-soft);font-size:12px">｜${esc(cp.code||"")} ${esc(cp.name)}</span></span>
+          <button class="btn sm ghost" onclick="toggleWiMat('${cp.id}','${m.id}')" title="標記已收到">收到 ✓</button>
         </div>`).join("")}
       </div>
     </div></div>`:""}
 
-    <!-- 查核點清單 -->
-    <div class="sec-head" style="margin:22px 0 12px"><div><h2 style="font-size:16px">查核點</h2></div></div>
-    ${cps.length?cps.map(cp=>mrCheckpointCard(cp)).join(""):
-      `<div class="empty"><p>還沒有查核點</p><span>把這個計畫案的查核點逐項列進來，追蹤每個查核點的資料準備狀況</span></div>`}
+    <div class="sec-head" style="margin:22px 0 12px"><div><h2 style="font-size:16px">查核點呈現方式</h2></div></div>
+    ${cps.length?cps.slice().sort((a,b)=>(a.dueDate||"9").localeCompare(b.dueDate||"9")).map(cp=>mrCheckpointCard(cp)).join(""):
+      `<div class="empty"><p>還沒有查核點</p><span>到「執行進度」把計畫書的工作項目與預定查核點帶進來，這裡就會自動出現</span>
+       <div style="margin-top:14px"><button class="btn primary" onclick="switchTab('progress')">前往執行進度</button></div></div>`}
 
-    <div class="inline-add" style="margin-bottom:26px">
-      <input id="mr-cp-new" placeholder="新增查核點，例：AI 對話回應時間 ≤ 5 秒" style="flex:2;min-width:220px">
-      <button class="btn sm primary" onclick="addMrCp()">＋ 新增查核點</button>
-    </div>
-
-    <!-- 整體筆記 -->
-    <div class="card"><div style="padding:16px 18px">
+    <div class="card" style="margin-top:20px"><div style="padding:16px 18px">
       <div class="sub-title" style="margin-bottom:8px">報告內容 / 筆記</div>
       <textarea id="mr-notes" rows="8" style="width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:8px;background:var(--paper);resize:vertical;font-family:inherit;font-size:14px;line-height:1.7" placeholder="跨查核點的整體想法、報告架構、要點…" onchange="setMrNotes(this.value)">${esc(p.midReportNotes||"")}</textarea>
     </div></div>
@@ -1816,59 +2321,69 @@ function renderMidreport(){
 
 function mrCheckpointCard(cp){
   const open = !!mrOpen[cp.id];
-  const st = MR_STATUS[cp.status]||MR_STATUS.todo;
+  const st = WI_STATUS[cp.status]||WI_STATUS.todo;
   const mats = cp.materials||[];
   const gotCnt = mats.filter(m=>m.got).length;
+  const subs = cp.subItems||[];
   return `<div class="card">
     <div class="card-head" onclick="toggleMrOpen('${cp.id}')">
+      <span class="wi-code">${esc(cp.code||"—")}</span>
       <span class="tag ${st.cls}">${st.label}</span>
       <span class="conf-dot" title="達成信心：${(MR_CONFIDENCE[cp.confidence]||MR_CONFIDENCE.none).label}" style="background:${(MR_CONFIDENCE[cp.confidence]||MR_CONFIDENCE.none).dot}"></span>
-      <span class="card-title" style="flex:1">${esc(cp.name)}</span>
+      <span class="card-title" style="flex:1;min-width:120px">${esc(cp.name)}</span>
+      <span style="font-size:12.5px;color:var(--ink-soft)">${cp.dueDate?rocDate(cp.dueDate):""}</span>
       <span style="font-size:12.5px;color:var(--ink-soft)">${mats.length?`資料 ${gotCnt}/${mats.length}`:"無資料"}</span>
-      <button class="del-x" onclick="event.stopPropagation();delMrCp('${cp.id}')">✕</button>
       <span style="color:var(--ink-soft);font-size:13px">${open?"▲":"▼"}</span>
     </div>
     ${open?`<div class="card-body" style="padding-top:14px">
-      <div class="field" style="margin-bottom:14px">
-        <label>查核點名稱</label>
-        <input value="${esc(cp.name)}" onchange="renameMrCp('${cp.id}',this.value)" placeholder="查核點名稱" style="width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--paper);font-family:inherit;font-size:14px">
+      <div class="wi-fields" style="margin-bottom:14px">
+        <div class="field"><label>狀態</label>
+          <select onchange="setMrStatus('${cp.id}',this.value)">
+            ${Object.entries(WI_STATUS).map(([k,v])=>`<option value="${k}" ${cp.status===k?"selected":""}>${v.label}</option>`).join("")}
+          </select></div>
+        <div class="field"><label>達成信心</label>
+          <select onchange="setMrConfidence('${cp.id}',this.value)">
+            ${Object.entries(MR_CONFIDENCE).map(([k,v])=>`<option value="${k}" ${cp.confidence===k?"selected":""}>${v.label}</option>`).join("")}
+          </select></div>
       </div>
-      <div class="field" style="margin-bottom:14px">
-        <label>狀態</label>
-        <select onchange="setMrStatus('${cp.id}',this.value)" style="max-width:220px">
-          ${Object.entries(MR_STATUS).map(([k,v])=>`<option value="${k}" ${cp.status===k?"selected":""}>${v.label}</option>`).join("")}
-        </select>
-      </div>
-      <div class="field" style="margin-bottom:14px">
-        <label>達成信心（這個查核點做不做得到、能不能呈現）</label>
-        <select onchange="setMrConfidence('${cp.id}',this.value)" style="max-width:220px">
-          ${Object.entries(MR_CONFIDENCE).map(([k,v])=>`<option value="${k}" ${cp.confidence===k?"selected":""}>${v.label}</option>`).join("")}
-        </select>
-      </div>
+
+      ${subs.length?`<div class="sub-block">
+        <div class="sub-title">查核項目達成情形（報告要寫的數字）</div>
+        <div class="chip-list">
+          ${subs.map(s=>{const has=s.target!==""&&+s.target>0;
+            const sp=has?Math.min(100,Math.round((+s.current||0)/(+s.target)*100)):(s.done?100:0);
+            return `<div class="chip ${sp>=100?"done":""}">
+              <span class="txt">${esc(s.text)}</span>
+              <span class="tag ${sp>=100?"t-done":"t-bid"}">${has?`${s.current||0} / ${s.target} ${esc(s.unit)}`:(s.done?"已完成":"未完成")}</span>
+            </div>`;}).join("")}
+        </div>
+        <div style="font-size:12.5px;color:var(--ink-soft);margin-top:8px">數字要改請到「執行進度」頁</div>
+      </div>`:""}
 
       <div class="sub-block">
         <div class="sub-title">佐證資料（圖片／數據／文件）</div>
         <div class="chip-list">
           ${mats.length?mats.map(m=>`<div class="chip ${m.got?"done":""}">
-            <div class="chk ${m.got?"on":""}" onclick="toggleMrMat('${cp.id}','${m.id}')"></div>
-            <span class="tag ${MR_TYPE_CLS[m.type]}" style="flex-shrink:0">${MR_TYPE[m.type]}</span>
+            <div class="chk ${m.got?"on":""}" onclick="toggleWiMat('${cp.id}','${m.id}')"></div>
+            <span class="tag ${MR_TYPE_CLS[m.type]||"t-cat"}" style="flex-shrink:0">${MR_TYPE[m.type]||"文件"}</span>
             <span class="txt">${esc(m.name)}${m.who?` <span style="color:var(--ink-soft)">— 找 ${esc(m.who)}</span>`:""}</span>
-            <button class="del-x" onclick="delMrMat('${cp.id}','${m.id}')">✕</button>
+            <button class="del-x" onclick="delWiMat('${cp.id}','${m.id}')">✕</button>
           </div>`).join(""):`<div style="color:var(--ink-soft);font-size:13px">尚無資料，把這個查核點需要的圖片／數據／文件列進來。</div>`}
         </div>
         <div class="inline-add">
-          <input id="mrmat-name-${cp.id}" placeholder="資料名稱，例：破壞測試數據表" style="flex:2;min-width:160px">
-          <select id="mrmat-type-${cp.id}" style="flex:0 0 auto">
+          <input id="wimat-name-${cp.id}" placeholder="資料名稱，例：破壞測試數據表" style="flex:2;min-width:160px">
+          <select id="wimat-type-${cp.id}" style="flex:0 0 auto">
             <option value="image">圖片</option><option value="data">數據</option><option value="file" selected>文件</option>
           </select>
-          <input id="mrmat-who-${cp.id}" placeholder="跟誰要（選填）" style="flex:1;min-width:120px">
-          <button class="btn sm primary" onclick="addMrMat('${cp.id}')">加入</button>
+          <input id="wimat-who-${cp.id}" placeholder="跟誰要（選填）" style="flex:1;min-width:120px">
+          <input id="wimat-month-${cp.id}" type="month" style="flex:0 0 auto" title="預計哪個月收">
+          <button class="btn sm primary" onclick="addWiMat('${cp.id}')">加入</button>
         </div>
       </div>
 
       <div class="field" style="margin-top:14px;margin-bottom:0">
-        <label>備註（怎麼呈現、達成方式等）</label>
-        <textarea rows="3" style="width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--paper);resize:vertical;font-family:inherit;font-size:14px" placeholder="這個查核點打算怎麼呈現…" onchange="setMrNote('${cp.id}',this.value)">${esc(cp.note||"")}</textarea>
+        <label>這個查核點在報告裡怎麼呈現</label>
+        <textarea rows="3" style="width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--paper);resize:vertical;font-family:inherit;font-size:14px" placeholder="要放哪張表、哪張截圖、怎麼寫…" onchange="setMrNote('${cp.id}',this.value)">${esc(cp.reportNote||"")}</textarea>
       </div>
     </div>`:""}
   </div>`;
@@ -1876,25 +2391,9 @@ function mrCheckpointCard(cp){
 
 function setMrNotes(v){proj().midReportNotes=v;save();}
 function toggleMrOpen(id){mrOpen[id]=!mrOpen[id];render();}
-function addMrCp(){const t=val("mr-cp-new");if(!t)return;proj().mrCheckpoints=proj().mrCheckpoints||[];
-  const id=uid();proj().mrCheckpoints.push({id,name:t,status:"todo",note:"",materials:[]});mrOpen[id]=true;render();}
-function delMrCp(id){if(!confirm("刪除這個查核點？底下的資料也會一起移除。"))return;
-  proj().mrCheckpoints=proj().mrCheckpoints.filter(c=>c.id!==id);render();}
-function setMrStatus(cid,v){const c=proj().mrCheckpoints.find(x=>x.id===cid);c.status=v;render();}
-function renameMrCp(cid,v){const c=proj().mrCheckpoints.find(x=>x.id===cid);if(!c)return;const t=(v||"").trim();if(t)c.name=t;render();}
-function setMrConfidence(cid,v){const c=proj().mrCheckpoints.find(x=>x.id===cid);if(c){c.confidence=v;render();}}
-/* 注意事項（事項標題 + 備註 + 釘選） */
-/* 注意事項已併入「事項」清單，相關函式移至事項區段 */
-function setMrNote(cid,v){const c=proj().mrCheckpoints.find(x=>x.id===cid);c.note=v;save();}
-function addMrMat(cid){const c=proj().mrCheckpoints.find(x=>x.id===cid);
-  const name=val("mrmat-name-"+cid);if(!name)return;
-  const type=(document.getElementById("mrmat-type-"+cid)||{}).value||"file";
-  const who=val("mrmat-who-"+cid);
-  c.materials.push({id:uid(),name,type,who,got:false});render();}
-function toggleMrMat(cid,mid){const c=proj().mrCheckpoints.find(x=>x.id===cid);
-  const m=c.materials.find(x=>x.id===mid);m.got=!m.got;render();}
-function delMrMat(cid,mid){const c=proj().mrCheckpoints.find(x=>x.id===cid);
-  c.materials=c.materials.filter(x=>x.id!==mid);render();}
+function setMrStatus(cid,v){const c=findWi(cid);if(c){c.status=v;render();}}
+function setMrConfidence(cid,v){const c=findWi(cid);if(c){c.confidence=v;render();}}
+function setMrNote(cid,v){const c=findWi(cid);if(c){c.reportNote=v;save();}}
 
 /* ---- 專案設定（日期＋系統帳密）---- */
 function renderSettings(){
@@ -2091,7 +2590,7 @@ function openProjModal(id){
     <p style="font-size:12.5px;color:var(--ink-soft);margin-top:-4px">總經費＝補助＋自籌，自動計算。</p>`,
   ()=>{const name=val("m-name");const gov=+val("m-bgov")||0,self=+val("m-bself")||0;if(!name){alert("請輸入專案名稱");return;}
     if(p){p.name=name;p.budgetGov=gov;p.budgetSelf=self;p.budget=gov+self;}
-    else{const np={id:uid(),name,budgetGov:gov,budgetSelf:self,budget:gov+self,months:[],works:[],budgetItems:[],contacts:[],alerts:[],accounts:[],startDate:"",endDate:"",midReportDue:"",midVisit:"",finalVisit:"",stage:"plan",midReportNotes:"",midReportItems:[],notes:[],acctTodos:[],mrCheckpoints:[],priorities:[],checklist:DEFAULT_CHECKLIST.map(t=>({id:uid(),text:t,done:false}))};db.projects.push(np);current=np.id;}
+    else{const np={id:uid(),name,budgetGov:gov,budgetSelf:self,budget:gov+self,months:[],works:[],budgetItems:[],contacts:[],alerts:[],accounts:[],startDate:"",endDate:"",midReportDue:"",midVisit:"",finalVisit:"",stage:"plan",midReportNotes:"",midReportItems:[],notes:[],acctTodos:[],mrCheckpoints:[],sections:[],workItems:[],priorities:[],checklist:DEFAULT_CHECKLIST.map(t=>({id:uid(),text:t,done:false}))};db.projects.push(np);current=np.id;}
     closeModal();render();});
 }
 
@@ -2119,6 +2618,10 @@ function openWorkModal(id){
         ${Object.entries(WORK_STATUS).map(([k,v])=>`<option value="${k}" ${w&&w.status===k?"selected":(!w&&k==="none"?"selected":"")}>${v.label}</option>`).join("")}
       </select></div>
       <div class="field"><label>負責工程師 / 發包單位</label><input id="m-wowner" value="${w?esc(w.owner):""}" placeholder="例：王工程師 / OO營造"></div>
+      <div class="field"><label>對應計畫書工作項目</label><select id="m-wcode">
+        <option value="">未歸屬</option>
+        ${(proj().workItems||[]).map(x=>`<option value="${esc(x.code)}" ${w&&w.workCode===x.code?"selected":""}>${esc(x.code)} ${esc(x.name)}</option>`).join("")}
+      </select></div>
     </div>
     <div class="field"><label>項目內容</label><textarea id="m-wcontent" rows="3" placeholder="這個工程項目的說明、範圍、工作內容">${w?esc(w.content):""}</textarea></div>
     <div class="field"><label>要收集的資料（選填，AI 系統類項目適用）</label><textarea id="m-wdata" rows="2" placeholder="需要客戶提供或蒐集哪些資料，例：歷史配方數據、產線影像">${w?esc(w.dataNeeded):""}</textarea></div>
@@ -2129,11 +2632,12 @@ function openWorkModal(id){
       <p style="font-size:12px;color:var(--ink-soft);margin-top:4px">建立後可在卡片展開處自由增刪修改步驟。查核點、採購清單也在展開處新增。</p>`}`,
   ()=>{const name=val("m-wname");if(!name){alert("請輸入項目名稱");return;}
     const content=val("m-wcontent"),owner=val("m-wowner"),status=val("m-wstatus"),dataNeeded=val("m-wdata");
-    if(w){w.name=name;w.content=content;w.owner=owner;w.status=status;w.dataNeeded=dataNeeded;}
+    const workCode=val("m-wcode");
+    if(w){w.name=name;w.content=content;w.owner=owner;w.status=status;w.dataNeeded=dataNeeded;w.workCode=workCode;}
     else{
       const tpl=val("m-wtpl");
       const steps=tpl&&STEP_TEMPLATES[tpl]?STEP_TEMPLATES[tpl].steps.map(t=>({id:uid(),text:t,date:"",done:false})):[];
-      proj().works.push({id:uid(),name,content,owner,status,dataNeeded,checkpoints:[],items:[],steps});
+      proj().works.push({id:uid(),name,content,owner,status,dataNeeded,workCode,checkpoints:[],items:[],steps});
     }
     closeModal();render();});
 }
