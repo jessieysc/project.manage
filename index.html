@@ -549,6 +549,19 @@ body.readonly .date-badge.editable{pointer-events:none}
 .rc-chk.on{color:var(--ink-soft);font-weight:500}
 .rc-chk input{width:auto;margin:0;cursor:pointer}
 
+/* ═══ 合約與期款 ═══ */
+.ct-card{margin-bottom:12px}
+.ct-head{display:flex;align-items:flex-end;gap:10px;flex-wrap:wrap;margin-bottom:4px}
+.ct-sum{margin-left:auto;font-size:12.5px;font-weight:700;text-align:right;white-space:nowrap;line-height:1.4}
+.ct-sum span{font-weight:500;color:var(--ink-soft)}
+.ct-in{width:100%;padding:5px 8px;border:1px solid var(--line);border-radius:7px;
+  background:var(--paper);font-family:inherit;font-size:13px}
+.ct-due{font-size:11.5px;color:var(--ink-soft);margin-top:2px}
+.ct-due.over{color:var(--rose);font-weight:700}
+.ct-due.soon{font-weight:600}
+.rc-alert{background:rgba(220,38,38,.08);border:1px solid var(--rose);border-radius:9px;
+  padding:9px 13px;margin-bottom:12px;font-size:13px;color:var(--rose);line-height:1.6}
+
 /* ═══════════ 週報：截圖友善的直式版面 ═══════════ */
 .wk-sheet{max-width:680px;margin:0 auto 26px;background:var(--paper);border:1px solid var(--line);
   border-radius:14px;padding:26px 28px 30px}
@@ -556,70 +569,89 @@ body.readonly .date-badge.editable{pointer-events:none}
 .wk-title{font-size:24px;font-weight:800;letter-spacing:1px}
 .wk-date{font-size:13.5px;color:var(--ink-soft);margin-top:4px}
 .wk-lead{font-size:16px;line-height:1.6;padding:12px 16px;border-radius:10px;
-  background:var(--line);margin-bottom:20px}
+  background:var(--line);margin-bottom:18px}
 .wk-lead.alert{background:rgba(220,38,38,.09)}
 .wk-lead b{font-size:19px}
-.wk-sec{font-size:15px;font-weight:800;margin:24px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--line)}
-.wk-item{border:1px solid var(--line);border-left:4px solid var(--line);border-radius:9px;
-  padding:11px 14px;margin-bottom:9px}
-.wk-item.urgent{border-left-color:var(--rose);background:rgba(220,38,38,.045)}
-.wk-item-top{display:flex;align-items:center;gap:7px;margin-bottom:5px;flex-wrap:wrap}
-.wk-proj{font-size:13px;font-weight:800}
-.wk-delay{font-size:11.5px;font-weight:700;color:#fff;background:var(--rose);
-  padding:1px 8px;border-radius:20px}
-.wk-tag-urgent{font-size:11.5px;font-weight:700;color:var(--rose);
-  border:1px solid var(--rose);padding:0 7px;border-radius:20px}
-.wk-x{margin-left:auto;border:none;background:none;color:var(--ink-soft);cursor:pointer;font-size:13px;padding:0 3px}
-.wk-text{font-size:15.5px;font-weight:600;line-height:1.5}
-.wk-why{font-size:13px;color:var(--ink-soft);line-height:1.6;margin-top:4px}
+.wk-sec{font-size:15px;font-weight:800;margin:22px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+/* 一案一塊 */
+.wk-block{border:1px solid var(--line);border-left:4px solid var(--line);border-radius:10px;
+  padding:12px 15px;margin-bottom:11px}
+.wk-block.urgent{border-left-color:var(--rose)}
+.wk-b-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px;
+  padding-bottom:7px;border-bottom:1px dashed var(--line)}
+.wk-b-name{font-size:16px;font-weight:800}
+.wk-b-cnt{margin-left:auto;font-size:12.5px;color:var(--ink-soft);font-weight:600;white-space:nowrap}
+.wk-b-cnt.hot{color:var(--rose);font-weight:800}
+.wk-b-row{display:flex;gap:10px;align-items:flex-start;margin-bottom:6px}
+.wk-b-lab{flex:0 0 44px;font-size:12px;font-weight:700;color:var(--ink-soft);padding-top:2px}
+.wk-b-body{flex:1;min-width:0;font-size:14px;line-height:1.55}
+.wk-b-stats{color:var(--ink-soft);font-size:13.5px}
+.wk-b-stats b{color:var(--ink);font-size:14px}
+.wk-b-near{font-size:13.5px;color:var(--ink-soft)}
+.wk-b-near .hot{color:var(--rose);font-weight:700}
+.wk-todo{margin-bottom:5px;padding-left:13px;position:relative}
+.wk-todo:before{content:"•";position:absolute;left:2px;color:var(--ink-soft)}
+.wk-todo.urgent:before{content:"▸";color:var(--rose);font-weight:800}
+.wk-todo-t{font-weight:600}
+.wk-todo.urgent .wk-todo-t{color:var(--rose)}
+.wk-why{font-size:12.5px;color:var(--ink-soft);line-height:1.5;margin-top:1px}
+.wk-delay{font-size:11px;font-weight:700;color:#fff;background:var(--rose);
+  padding:1px 7px;border-radius:20px;margin-left:6px;white-space:nowrap}
+.wk-x{border:none;background:none;color:var(--ink-soft);cursor:pointer;font-size:12px;padding:0 4px}
+.wk-quiet{font-size:13px;color:var(--ink-soft);line-height:1.7;padding:10px 14px;
+  border:1px dashed var(--line);border-radius:9px;margin-top:4px}
+.wk-quiet b{color:var(--ink)}
 .wk-empty{font-size:14px;color:var(--ink-soft);padding:10px 2px}
-.wk-carry{display:flex;align-items:center;gap:9px;flex-wrap:wrap;padding:8px 12px;
-  border:1px dashed var(--line);border-radius:8px;margin-bottom:7px;font-size:14px}
-.wk-carry-text{flex:1;min-width:160px}
+.wk-note{width:100%;padding:5px 10px;border:1px solid var(--line);
+  border-radius:7px;background:var(--paper);font-family:inherit;font-size:13.5px}
+.wk-note-print{display:none}
+/* 表格 */
 .wk-table{width:100%;border-collapse:collapse;font-size:13.5px}
 .wk-table th{text-align:left;font-size:12.5px;color:var(--ink-soft);font-weight:700;
   padding:7px 8px;border-bottom:1.5px solid var(--line)}
-.wk-table td{padding:8px;border-bottom:1px solid var(--line)}
-.wk-table th.c,.wk-table td.c{text-align:center}
+.wk-table td{padding:8px;border-bottom:1px solid var(--line);vertical-align:top}
 .wk-table td.num,.wk-table th.num{text-align:right}
 .wk-table tr.minor td{color:var(--ink-soft)}
 .wk-tname{font-weight:700}
+.rc-line{margin-bottom:4px;display:flex;gap:5px;flex-wrap:wrap;align-items:center}
+.rc-line:last-child{margin-bottom:0}
+.rc-party{font-size:12px;font-weight:700;color:var(--ink-soft);margin-right:2px}
+.rc-pill{font-size:12px;padding:2px 8px;border-radius:20px;border:1px solid var(--line);
+  white-space:nowrap;display:inline-flex;align-items:center;gap:4px}
+.rc-pill.ok{color:var(--ink-soft);opacity:.75}
+.rc-pill.no{color:var(--rose);border-color:var(--rose);font-weight:700}
+.rc-pill.soon{color:var(--rose);border-color:var(--rose);font-weight:700;background:rgba(220,38,38,.07)}
+.rc-pill.over{color:#fff;background:var(--rose);border-color:var(--rose);font-weight:800}
+.rc-due{font-size:10.5px;opacity:.85}
 .rc-ok{color:var(--ink-soft);font-weight:600}
 .rc-no{color:var(--rose);font-weight:800}
-.rc-na{color:var(--ink-soft);opacity:.5}
-.wk-proj-row{padding:12px 0;border-bottom:1px solid var(--line)}
-.wk-pr-head{display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap}
-.wk-pr-name{font-size:15.5px;font-weight:800}
-.wk-pr-stats{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--ink-soft)}
-.wk-pr-stats b{color:var(--ink);font-size:14px}
-.wk-note{width:100%;margin-top:8px;padding:7px 11px;border:1px solid var(--line);
-  border-radius:8px;background:var(--paper);font-family:inherit;font-size:13.5px}
-.wk-note-print{display:none;margin-top:7px;font-size:14px;line-height:1.6;
-  padding-left:10px;border-left:3px solid var(--line)}
+.rc-na{color:var(--ink-soft);opacity:.6}
 @media(max-width:680px){
   .wk-sheet{padding:20px 16px 24px;border-radius:10px}
   .wk-title{font-size:21px}
-  .wk-pr-stats{gap:10px;font-size:12.5px}
+  .wk-b-row{gap:7px}
+  .wk-b-lab{flex:0 0 38px;font-size:11.5px}
+  .wk-b-body{font-size:13.5px}
   .win-fields .field{min-width:100%}
   .win-no{display:none}
+  .ct-sum{margin-left:0}
 }
-/* ═══ 列印：只印週報，一案一頁 ═══ */
+/* ═══ 列印：只印週報，分兩頁 ═══ */
 @media print{
   @page{size:A4;margin:14mm}
-  header,.ro-banner,.no-print,.sec-head.no-print{display:none!important}
+  header,.ro-banner,.no-print{display:none!important}
   body{background:#fff}
   main.wrap{padding:0;max-width:none}
   .view{display:none!important}
   .view.active{display:block!important}
   .wk-sheet{max-width:none;border:none;border-radius:0;padding:0;margin:0}
-  .wk-sheet.page2{page-break-before:always;padding-top:0}
-  .wk-item,.wk-proj-row,.wk-carry,.wk-table tr{page-break-inside:avoid}
+  .wk-sheet.page2{page-break-before:always}
+  .wk-block,.wk-table tr,.wk-quiet{page-break-inside:avoid}
   .wk-note{display:none}
-  .wk-note-print{display:block}
+  .wk-note-print{display:inline}
   .wk-lead{background:#f1f1f1!important}
-  .wk-item.urgent{background:#fbeaea!important}
+  .rc-pill.over{background:#c62828!important;color:#fff!important}
 }
-
 /* ═══ 新增樣式結束 ═══ */
 </style>
 </head>
@@ -837,12 +869,24 @@ function migrate(d){
     p.finalVisitDone=!!p.finalVisitDone;
     p.endDateDone=!!p.endDateDone;
 
-    // 我們公司的收款：三期固定 {amount,got}
-    p.receipts=p.receipts||{};
-    RECEIPT_KEYS.forEach(k=>{
-      const r=p.receipts[k];
-      p.receipts[k]=(r&&typeof r==="object")?{amount:+r.amount||0,got:!!r.got}:{amount:0,got:false};
+    // 我們公司的收款：一個專案可以有多份合約，每份合約自己決定分幾期
+    // p.contracts=[{id,party請款單位,name合約名稱,installments:[{id,label,amount,due,got}]}]
+    if(!p.contracts){
+      const old=p.receipts||{};
+      const ins=DEFAULT_INSTALLMENTS.map(lb=>{
+        const k={"簽約款":"sign","期中款":"mid","結案款":"final"}[lb];
+        const r=(k&&old[k])||{};
+        return {id:uid(),label:lb,amount:+r.amount||0,due:"",got:!!r.got};
+      });
+      p.contracts=[{id:uid(),party:"",name:"",installments:ins}];
+    }
+    p.contracts.forEach(c=>{
+      c.id=c.id||uid(); c.party=c.party||""; c.name=c.name||"";
+      c.installments=c.installments||[];
+      c.installments.forEach(i=>{i.id=i.id||uid(); i.label=i.label||"";
+        i.amount=+i.amount||0; i.due=i.due||""; i.got=!!i.got;});
     });
+    delete p.receipts; // 舊的固定三期結構已改為合約制
 
     // 本週進度說明（週報第 2 頁用）
     p.weeklyNote=p.weeklyNote||"";
@@ -908,13 +952,27 @@ const CATEGORIES={
   managed:"納管／特登",
   case:"個案",
 };
-// 我們公司向客戶收款的三期（固定期別）
-const RECEIPTS={
-  sign:{label:"簽約款"},
-  mid:{label:"期中款"},
-  final:{label:"結案款"},
-};
-const RECEIPT_KEYS=Object.keys(RECEIPTS);
+// 我們公司向客戶收款：新合約預設帶的期別（之後可自由增刪改名）
+const DEFAULT_INSTALLMENTS=["簽約款","期中款","結案款"];
+/* 把一個專案底下所有合約的期款攤平成 [{c,i}] */
+function allInstallments(p){
+  const out=[];
+  (p.contracts||[]).forEach(c=>(c.installments||[]).forEach(i=>out.push({c,i})));
+  return out;
+}
+/* 專案的收款統計 */
+function recvStats(p){
+  const all=allInstallments(p);
+  const got=all.filter(x=>x.i.got).reduce((s,x)=>s+(+x.i.amount||0),0);
+  const total=all.reduce((s,x)=>s+(+x.i.amount||0),0);
+  const unpaid=all.filter(x=>!x.i.got);
+  const unpaidAmt=unpaid.reduce((s,x)=>s+(+x.i.amount||0),0);
+  const overdue=unpaid.filter(x=>x.i.due&&daysUntil(x.i.due)<0);
+  const soon=unpaid.filter(x=>x.i.due&&daysUntil(x.i.due)>=0&&daysUntil(x.i.due)<=14);
+  return {all,got,total,unpaid,unpaidAmt,overdue,soon,pct:total?Math.round(got/total*100):null};
+}
+/* 期款顯示名稱：單位 ＋ 期別 */
+function insName(c,i){return (c.party?esc(c.party)+" ":"")+esc(i.label||"期款");}
 // 採購品項狀態（六段）
 const ITEM_STATUS={
   none:{label:"未採購",cls:"t-plan"},
@@ -1068,8 +1126,7 @@ function renderOverview(){
   const spent=p.budgetItems.reduce((s,b)=>s+biSpentNew(b),0);
   const allocated=p.budgetItems.reduce((s,b)=>s+(+b.budget||0),0);
   const over=spent>totalBudget&&totalBudget>0;
-  const rGot=RECEIPT_KEYS.filter(k=>p.receipts[k].got).reduce((s,k)=>s+(+p.receipts[k].amount||0),0);
-  const rAll=RECEIPT_KEYS.reduce((s,k)=>s+(+p.receipts[k].amount||0),0);
+  const rc=recvStats(p);
   // 查核點統計
   let cpT=0,cpD=0;
   p.works.forEach(w=>{cpT+=w.checkpoints.length;cpD+=w.checkpoints.filter(c=>c.done).length;});
@@ -1085,9 +1142,9 @@ function renderOverview(){
         <div class="sub" style="margin-top:8px">${p.stage===SIGNED_STAGE?"已完成簽約":`簽約準備 ${p.checklist.filter(c=>c.done).length}/${p.checklist.length}`}</div></div>
       <div class="stat"><div class="label">待辦事項</div><div class="num">${taskPct}%</div>
         <div class="sub">${tD} / ${tT} 項已完成</div><div class="bar"><span style="width:${taskPct}%"></span></div></div>
-      <div class="stat"><div class="label">請款狀態</div><div class="num" style="font-size:22px;${rGot<rAll?"color:var(--rose)":""}">${rAll?Math.round(rGot/rAll*100)+"%":"—"}</div>
-        <div class="sub">已收 ${money(rGot)} / 應收 ${money(rAll)}</div>
-        <div style="margin-top:6px;display:flex;gap:5px;flex-wrap:wrap">${RECEIPT_KEYS.map(k=>`<span class="tag ${p.receipts[k].got?"t-done":"t-plan"}" style="font-size:11.5px">${RECEIPTS[k].label}${p.receipts[k].got?" ✓":""}</span>`).join("")}</div></div>
+      <div class="stat"><div class="label">請款狀態</div><div class="num" style="font-size:22px;${rc.unpaidAmt?"color:var(--rose)":""}">${rc.pct===null?"—":rc.pct+"%"}</div>
+        <div class="sub">已收 ${money(rc.got)} / 應收 ${money(rc.total)}${rc.overdue.length?` · ${rc.overdue.length} 期逾期`:""}</div>
+        <div style="margin-top:6px;display:flex;gap:5px;flex-wrap:wrap">${rc.all.slice(0,6).map(x=>`<span class="tag ${x.i.got?"t-done":"t-plan"}" style="font-size:11.5px">${insName(x.c,x.i)}${x.i.got?" ✓":""}</span>`).join("")||`<span style="font-size:12.5px;color:var(--ink-soft)">尚未建立合約</span>`}</div></div>
       <div class="stat"><div class="label">工程項目查核點</div><div class="num">${cpPct}%</div>
         <div class="sub">${p.works.length} 項工程 · 查核點 ${cpD}/${cpT}</div></div>
     </div>
@@ -1799,31 +1856,54 @@ function renderBudget(){
   const totalGov=p.budgetItems.reduce((s,b)=>s+(+b.gov||0),0);
   const totalSelf=p.budgetItems.reduce((s,b)=>s+(+b.self||0),0);
   const allocated=totalGov+totalSelf;
-  const rGot=RECEIPT_KEYS.filter(k=>p.receipts[k].got).reduce((s,k)=>s+(+p.receipts[k].amount||0),0);
-  const rAll=RECEIPT_KEYS.reduce((s,k)=>s+(+p.receipts[k].amount||0),0);
+  const rc=recvStats(p);
   const consOpen=[];
   p.budgetItems.forEach(b=>(b.consNotes||[]).forEach(cn=>{if(!cn.done)consOpen.push({bid:b.id,...cn});}));
 
   document.getElementById("view-budget").innerHTML=`
     <div class="sec-head"><div><h2>經費與請款</h2><span class="hint">上面是要動作的（請款、待處理），最下面是計畫書經費表，備查用</span></div></div>
 
-    <div class="sec-head" style="margin:4px 0 12px"><div><h2 style="font-size:16px">請款狀態</h2><span class="hint">我們公司向客戶收的三期款。收到款才好安排後續工程進度</span></div>
-      <span style="font-size:13px;color:var(--ink-soft)">已收 ${money(rGot)} ／ 應收 ${money(rAll)}</span></div>
-    <div class="card"><div style="padding:6px 2px"><table class="budget-table">
-      <thead><tr><th>期別</th><th class="num">金額</th><th>狀態</th></tr></thead>
-      <tbody>
-        ${RECEIPT_KEYS.map(k=>{const r=p.receipts[k];return `<tr>
-          <td><b>${RECEIPTS[k].label}</b></td>
-          <td class="num"><input type="number" class="mv-cell" value="${r.amount||""}" placeholder="0" onchange="setReceipt('${k}','amount',this.value)"></td>
-          <td><label class="rc-chk ${r.got?"on":""}">
-            <input type="checkbox" ${r.got?"checked":""} onchange="setReceipt('${k}','got',this.checked)">${r.got?"已收款":"尚未請款"}
-          </label></td>
-        </tr>`;}).join("")}
-      </tbody>
-      <tfoot><tr style="border-top:2px solid var(--line);font-weight:800">
-        <td>合計</td><td class="num money">${money(rAll)}</td>
-        <td style="font-weight:600;color:${rGot<rAll?"var(--rose)":"var(--ink-soft)"}">${rGot<rAll?`尚有 ${money(rAll-rGot)} 未收`:"全數收訖 ✓"}</td></tr></tfoot>
-    </table></div></div>
+    <div class="sec-head" style="margin:4px 0 12px"><div><h2 style="font-size:16px">請款狀態</h2>
+      <span class="hint">一個專案可以有多份合約。填了應收日期，到期前會自動提醒並排進行事曆</span></div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span style="font-size:13px;color:var(--ink-soft)">已收 ${money(rc.got)} ／ 應收 ${money(rc.total)}</span>
+        <button class="btn sm primary" onclick="addContract()">＋ 新增合約</button>
+      </div></div>
+    ${rc.overdue.length?`<div class="rc-alert">⚠ 有 ${rc.overdue.length} 期款已過應收日期還沒收到：${rc.overdue.map(x=>`${insName(x.c,x.i)}（${dueLabel(x.i.due)}）`).join("、")}</div>`:""}
+    ${(p.contracts||[]).map(c=>{
+      const cGot=(c.installments||[]).filter(i=>i.got).reduce((s,i)=>s+(+i.amount||0),0);
+      const cAll=(c.installments||[]).reduce((s,i)=>s+(+i.amount||0),0);
+      return `<div class="card ct-card"><div style="padding:14px 16px 6px">
+        <div class="ct-head">
+          <div class="field" style="flex:1.2;min-width:150px;margin-bottom:0"><label>請款單位</label>
+            <input value="${esc(c.party)}" placeholder="例：金屬中心、計畫辦公室" onchange="setContract('${c.id}','party',this.value)"></div>
+          <div class="field" style="flex:1.6;min-width:170px;margin-bottom:0"><label>合約名稱／備註（選填）</label>
+            <input value="${esc(c.name)}" placeholder="例：114 年度輔導案" onchange="setContract('${c.id}','name',this.value)"></div>
+          <div class="ct-sum">已收 ${money(cGot)}<br><span>／ ${money(cAll)}</span></div>
+          <button class="del-x" title="刪除這份合約" onclick="delContract('${c.id}')">✕</button>
+        </div>
+        <table class="budget-table" style="margin-top:6px">
+          <thead><tr><th style="width:26%">期別</th><th class="num" style="width:22%">金額</th><th style="width:26%">應收日期</th><th>狀態</th><th style="width:34px"></th></tr></thead>
+          <tbody>
+            ${(c.installments||[]).length?c.installments.map(i=>{
+              const u=(!i.got&&i.due)?urgency(i.due):"";
+              return `<tr>
+                <td><input class="ct-in" value="${esc(i.label)}" placeholder="期別名稱" onchange="setIns('${c.id}','${i.id}','label',this.value)"></td>
+                <td class="num"><input type="number" class="mv-cell" value="${i.amount||""}" placeholder="0" onchange="setIns('${c.id}','${i.id}','amount',this.value)"></td>
+                <td><input type="date" class="ct-in ${i.got?"date-done":""}" value="${esc(i.due)}" onchange="setIns('${c.id}','${i.id}','due',this.value)">
+                  ${(i.due&&!i.got)?`<div class="ct-due ${u==="over"?"over":(u==="soon"?"soon":"")}">${dueLabel(i.due)}</div>`:""}</td>
+                <td><label class="rc-chk ${i.got?"on":""}">
+                  <input type="checkbox" ${i.got?"checked":""} onchange="setIns('${c.id}','${i.id}','got',this.checked)">${i.got?"已收款":"尚未請款"}
+                </label></td>
+                <td class="num"><button class="del-x" onclick="delIns('${c.id}','${i.id}')">✕</button></td>
+              </tr>`;}).join(""):`<tr><td colspan="5" style="color:var(--ink-soft);font-size:13px">這份合約還沒有期款，點下方「＋ 新增期別」加入。</td></tr>`}
+          </tbody>
+        </table>
+        <div class="inline-add" style="padding:8px 0 10px">
+          <input id="ct-new-${c.id}" placeholder="期別名稱，例：第二期款、驗收款" style="flex:2;min-width:180px" onkeydown="if(event.key==='Enter')addIns('${c.id}')">
+          <button class="btn sm" onclick="addIns('${c.id}')">＋ 新增期別</button>
+        </div>
+      </div></div>`;}).join("")||`<div class="empty"><p>還沒有合約</p><span>點「＋ 新增合約」開始，會自動帶入簽約款／期中款／結案款三期</span></div>`}
 
     <div class="sec-head" style="margin:26px 0 12px"><div><h2 style="font-size:16px">待處理 ${acctOpen+consOpen.length?`<span style="font-weight:600;color:var(--rose);font-size:13px">（${acctOpen+consOpen.length} 筆未解決）</span>`:""}</h2><span class="hint">會計問題與耗材採購問題；填了日期會排進行事曆，也會出現在總覽層的「會計」頁</span></div></div>
     <div class="card"><div style="padding:16px 18px">
@@ -1887,10 +1967,38 @@ function renderBudget(){
     `:""}
   `;
 }
-/* 請款 */
-function setReceipt(k,field,v){
-  const r=proj().receipts[k];
-  if(field==="got")r.got=!!v; else r.amount=Math.max(0,+v||0);
+/* 請款：合約與期款 */
+function findContract(cid){return (proj().contracts||[]).find(c=>c.id===cid);}
+function addContract(){
+  const p=proj();p.contracts=p.contracts||[];
+  p.contracts.push({id:uid(),party:"",name:"",
+    installments:DEFAULT_INSTALLMENTS.map(lb=>({id:uid(),label:lb,amount:0,due:"",got:false}))});
+  save();render();
+}
+function delContract(cid){
+  const c=findContract(cid);if(!c)return;
+  const hasData=(c.installments||[]).some(i=>i.amount||i.got||i.due)||c.party||c.name;
+  if(hasData&&!confirm(`刪除「${c.party||"未命名"}」這份合約？底下 ${(c.installments||[]).length} 期款會一起移除。`))return;
+  const p=proj();p.contracts=p.contracts.filter(x=>x.id!==cid);save();render();
+}
+function setContract(cid,field,v){const c=findContract(cid);if(c){c[field]=(v||"").trim();save();}}
+function addIns(cid){
+  const c=findContract(cid);if(!c)return;
+  const lb=val("ct-new-"+cid)||`第 ${(c.installments||[]).length+1} 期款`;
+  c.installments.push({id:uid(),label:lb,amount:0,due:"",got:false});save();render();
+}
+function delIns(cid,iid){
+  const c=findContract(cid);if(!c)return;
+  const i=(c.installments||[]).find(x=>x.id===iid);
+  if(i&&(i.amount||i.got)&&!confirm(`刪除「${i.label}」這一期？`))return;
+  c.installments=c.installments.filter(x=>x.id!==iid);save();render();
+}
+function setIns(cid,iid,field,v){
+  const c=findContract(cid);if(!c)return;
+  const i=(c.installments||[]).find(x=>x.id===iid);if(!i)return;
+  if(field==="got")i.got=!!v;
+  else if(field==="amount")i.amount=Math.max(0,+v||0);
+  else i[field]=(v||"").trim();
   save();render();
 }
 /* 計畫書經費表：預設收合 */
@@ -1982,24 +2090,27 @@ function parseBudgetPaste(txt){
 
 
 /* ═══════════════ 週報（給老闆看的行動清單）═══════════════ */
-/* 兩週內 = 未來重大事件的視窗 */
-const WEEKLY_EVENT_DAYS=14;
+const WEEKLY_EVENT_DAYS=14;   // 「近期」與第二頁事件表的時間視窗
 
-/* 產生自動偵測的「需要老闆處理」事項。每筆有穩定的 key，用來跨週追蹤延期 */
+/* 自動偵測「需要老闆處理」的事項。每筆有穩定的 key，用來跨週追蹤延期 */
 function weeklyAutoItems(){
   const out=[];
   const add=(p,key,text,why,urgent)=>out.push({key:p.id+"|"+key,pid:p.id,proj:p.name,text,why,urgent:!!urgent,auto:true});
   db.projects.forEach(p=>{
-    const r=p.receipts||{};
-    const midDays=daysUntil(p.midReportDue), visitDays=daysUntil(p.midVisit), endDays=daysUntil(p.endDate);
+    const rc=recvStats(p);
+    const midDays=daysUntil(p.midReportDue), visitDays=daysUntil(p.midVisit);
 
     // ── 請款 ──
-    if(r.sign&&!r.sign.got&&p.stage===SIGNED_STAGE)
-      add(p,"rc-sign","簽約款尚未請款"+((+r.sign.amount)?`（${money(r.sign.amount)}）`:""),"專案已簽約完成，可以開始請簽約款",true);
-    if(r.mid&&!r.mid.got&&midDays!==null&&midDays<=45&&!p.midReportDueDone)
-      add(p,"rc-mid","期中款尚未請款"+((+r.mid.amount)?`（${money(r.mid.amount)}）`:""),`期中報告 ${p.midReportDue} 到期（${dueLabel(p.midReportDue)}），請款流程要跑一段時間`,midDays<=21);
-    if(r.final&&!r.final.got&&endDays!==null&&endDays<0)
-      add(p,"rc-final","結案款尚未請款"+((+r.final.amount)?`（${money(r.final.amount)}）`:""),`計畫已於 ${p.endDate} 結束`,true);
+    rc.unpaid.forEach(x=>{
+      const nm=insName(x.c,x.i), amt=(+x.i.amount)?`（${money(x.i.amount)}）`:"";
+      if(x.i.due){
+        const d=daysUntil(x.i.due);
+        if(d<0)add(p,"rc-"+x.i.id,`${nm}逾期未收${amt}`,`應收日 ${x.i.due}，已過 ${-d} 天`,true);
+        else if(d<=14)add(p,"rc-"+x.i.id,`${nm}即將到期${amt}`,`應收日 ${x.i.due}（${dueLabel(x.i.due)}）`,d<=7);
+      }else if(midDays!==null&&midDays<=45&&!p.midReportDueDone&&(+x.i.amount)){
+        add(p,"rc-"+x.i.id,`${nm}尚未請款${amt}`,`期中報告 ${p.midReportDue} 到期（${dueLabel(p.midReportDue)}），還沒設應收日期`,midDays<=21);
+      }
+    });
 
     // ── 設備採購 ──
     const notBought=[];
@@ -2014,9 +2125,8 @@ function weeklyAutoItems(){
       add(p,"mat-fmt",`${noFmt} 份資料的格式還沒定義`,`期中報告 ${dueLabel(p.midReportDue)}，格式沒定就沒辦法開始收資料`,midDays<=14);
 
     // ── 逾期的重要日期 ──
-    const dl=[["midReportDue","midReportDueDone","期中報告繳交"],["midVisit","midVisitDone","期中查訪"],
-              ["finalVisit","finalVisitDone","期末查訪"],["endDate","endDateDone","計畫執行結束"]];
-    dl.forEach(([f,df,label])=>{
+    [["midReportDue","midReportDueDone","期中報告繳交"],["midVisit","midVisitDone","期中查訪"],
+     ["finalVisit","finalVisitDone","期末查訪"],["endDate","endDateDone","計畫執行結束"]].forEach(([f,df,label])=>{
       if(p[f]&&!p[df]&&daysUntil(p[f])<0)
         add(p,"od-"+f,`${label}已逾期`,`原訂 ${p[f]}，已過 ${-daysUntil(p[f])} 天，仍未標記完成`,true);
     });
@@ -2028,42 +2138,40 @@ function weeklyAutoItems(){
   });
   return out;
 }
-/* 手動加的事項也納入同一份清單 */
+/* 自動 ＋ 手動，並算出已延幾週 */
 function weeklyAllItems(){
   const manual=(db.weeklyManual||[]).filter(x=>!x.done).map(x=>{
     const p=P(x.pid);
     return {key:"manual|"+x.id,id:x.id,pid:x.pid,proj:p?p.name:"（不分專案）",text:x.text,why:"",urgent:false,auto:false};
   });
   const all=weeklyAutoItems().concat(manual);
-  // 已延幾週：從定版快照裡的首次出現日期算
   const seen=(db.weekly&&db.weekly.seen)||{};
   all.forEach(it=>{
     const f=seen[it.key]&&seen[it.key].first;
-    it.weeks=f?Math.floor((daysUntil(f)*-1)/7):0;
-    if(it.weeks<0)it.weeks=0;
+    it.weeks=f?Math.max(0,Math.floor((daysUntil(f)*-1)/7)):0;
   });
-  all.sort((a,b)=>(b.weeks-a.weeks)||((b.urgent?1:0)-(a.urgent?1:0)));
   return all;
 }
 /* 未來兩週的重大事件 */
 function weeklyEvents(){
   const evs=[];
   db.projects.forEach(p=>{
-    const push=(d,label,done)=>{if(!d||done)return;const n=daysUntil(d);if(n===null||n<0||n>WEEKLY_EVENT_DAYS)return;
-      evs.push({date:d,d:n,proj:p.name,label,pid:p.id});};
-    push(p.midReportDue,"期中報告繳交",p.midReportDueDone);
-    push(p.midVisit,"期中查訪",p.midVisitDone);
-    push(p.finalVisit,"期末查訪",p.finalVisitDone);
-    push(p.endDate,"計畫執行結束",p.endDateDone);
-    (p.months||[]).forEach(m=>{if(!m.date||m.done)return;const n=daysUntil(m.date);
-      if(n!==null&&n>=0&&n<=WEEKLY_EVENT_DAYS)evs.push({date:m.date,d:n,proj:p.name,label:m.text,pid:p.id,minor:true});});
+    const push=(d,label,done,pri)=>{if(!d||done)return;const n=daysUntil(d);
+      if(n===null||n<0||n>WEEKLY_EVENT_DAYS)return;
+      evs.push({date:d,d:n,proj:p.name,label,pid:p.id,minor:!pri});};
+    push(p.midReportDue,"期中報告繳交",p.midReportDueDone,true);
+    push(p.midVisit,"期中查訪",p.midVisitDone,true);
+    push(p.finalVisit,"期末查訪",p.finalVisitDone,true);
+    push(p.endDate,"計畫執行結束",p.endDateDone,true);
+    allInstallments(p).forEach(x=>push(x.i.due,"應收 "+insName(x.c,x.i),x.i.got,true));
+    (p.months||[]).forEach(m=>push(m.date,m.text,m.done,false));
   });
   evs.sort((a,b)=>a.d-b.d||a.proj.localeCompare(b.proj));
   return evs;
 }
-/* 單一專案的一行摘要數字 */
+/* 單一專案的進度數字 */
 function weeklyProjStats(p){
-  let items=[],mats=[];
+  const items=[],mats=[];
   (p.works||[]).forEach(w=>(w.items||[]).forEach(it=>items.push(it)));
   (p.workItems||[]).forEach(w=>(w.materials||[]).forEach(m=>mats.push(m)));
   const arrived=items.filter(i=>["arrived","setup","accepted","cleared"].includes(i.status||"none")).length;
@@ -2071,26 +2179,41 @@ function weeklyProjStats(p){
   const collected=withTarget.reduce((s,m)=>s+(+m.collected||0),0);
   const target=withTarget.reduce((s,m)=>s+(+m.target||0),0);
   const cps=p.workItems||[];
-  const cpDone=cps.filter(c=>c.status==="done").length;
-  return {
-    equip:items.length?`${arrived}/${items.length}`:"—",
-    fmt:mats.length?`${mats.filter(m=>m.formatReady).length}/${mats.length}`:"—",
-    data:target?`${collected}/${target}`:(mats.length?`${mats.filter(m=>m.got).length}/${mats.length} 份`:"—"),
-    cp:cps.length?`${cpDone}/${cps.length}`:"—",
-    midLeft:p.midReportDue?(p.midReportDueDone?"已完成":dueLabel(p.midReportDue)):"—",
-  };
+  const parts=[];
+  if(items.length)parts.push(`設備到貨 <b>${arrived}/${items.length}</b>`);
+  if(target)parts.push(`資料收集 <b>${collected}/${target}</b>`);
+  else if(mats.length)parts.push(`資料到齊 <b>${mats.filter(m=>m.got).length}/${mats.length}</b>`);
+  if(cps.length)parts.push(`查核點 <b>${cps.filter(c=>c.status==="done").length}/${cps.length}</b>`);
+  if(p.midReportDue)parts.push(`期中報告 <b>${p.midReportDueDone?"已完成":dueLabel(p.midReportDue)}</b>`);
+  return parts;
 }
 
 function renderWeekly(){
   const items=weeklyAllItems();
+  const byProj={};
+  items.forEach(it=>{(byProj[it.pid]=byProj[it.pid]||[]).push(it);});
+  // 不分專案的手動事項另外收
+  const loose=byProj[""]||[];
+  // 有事的專案：依急件、延期週數排序；沒事的集中到最後一行
+  const active=[],quiet=[];
+  db.projects.forEach(p=>{
+    const list=(byProj[p.id]||[]).sort((a,b)=>(b.weeks-a.weeks)||((b.urgent?1:0)-(a.urgent?1:0)));
+    (list.length?active:quiet).push({p,list});
+  });
+  active.sort((a,b)=>{
+    const sc=x=>Math.max(...x.list.map(i=>(i.urgent?100:0)+i.weeks*10))+x.list.length;
+    return sc(b)-sc(a);
+  });
   const urgentCnt=items.filter(i=>i.urgent||i.weeks>=1).length;
   const evs=weeklyEvents();
   const pub=db.weekly.publishedAt;
-  const carried=items.filter(i=>i.weeks>=1);
+  // 未收款摘要
+  const unpaidRows=db.projects.map(p=>({p,rc:recvStats(p)})).filter(x=>x.rc.unpaid.some(u=>+u.i.amount>0||u.i.due));
+  const unpaidTot=unpaidRows.reduce((s,x)=>s+x.rc.unpaidAmt,0);
 
   document.getElementById("view-weekly").innerHTML=`
     <div class="sec-head no-print"><div><h2>週報</h2>
-      <span class="hint">給老闆看的行動清單。畫面已調整成截圖友善的直式版面，兩張圖就是完整週報${pub?`　·　上次定版：${esc(pub)}`:""}</span></div>
+      <span class="hint">一案一塊，急的排前面。兩張截圖就是完整週報${pub?`　·　上次定版：${esc(pub)}`:""}</span></div>
       <div style="display:flex;gap:6px">
         <button class="btn sm" onclick="window.print()">🖨 列印／存 PDF</button>
         <button class="btn primary sm" onclick="publishWeekly()">📌 定版本週週報</button>
@@ -2107,20 +2230,56 @@ function renderWeekly(){
         本週 <b>${items.length}</b> 件需要你處理${urgentCnt?`，其中 <b>${urgentCnt}</b> 件是急件或已經延過`:"，目前沒有急件"}
       </div>
 
-      <div class="wk-sec">需要老闆處理</div>
-      ${items.length?items.map(it=>`
-        <div class="wk-item ${it.urgent?"urgent":""}">
-          <div class="wk-item-top">
-            <span class="wk-proj">${esc(it.proj)}</span>
-            ${it.weeks>=1?`<span class="wk-delay">已延 ${it.weeks} 週</span>`:""}
-            ${it.urgent?`<span class="wk-tag-urgent">急</span>`:""}
-            ${!it.auto?`<button class="wk-x no-print" title="移除這筆手動事項" onclick="delWeeklyManual('${it.id}')">✕</button>`:""}
+      ${active.map(({p,list})=>{
+        const rc=recvStats(p);
+        const stats=weeklyProjStats(p);
+        const near=weeklyEvents().filter(e=>e.pid===p.id&&!e.minor).slice(0,2);
+        const urg=list.filter(i=>i.urgent||i.weeks>=1).length;
+        return `<div class="wk-block ${urg?"urgent":""}">
+          <div class="wk-b-head">
+            <span class="wk-b-name">${esc(p.name)}</span>
+            <span class="tag ${STAGES[p.stage].cls}" style="font-size:11px">${STAGES[p.stage].label}</span>
+            <span class="wk-b-cnt ${urg?"hot":""}">${urg?"⚠ ":""}${list.length} 件</span>
           </div>
-          <div class="wk-text">${esc(it.text)}</div>
-          ${it.why?`<div class="wk-why">${esc(it.why)}</div>`:""}
-        </div>`).join(""):`<div class="wk-empty">目前沒有需要老闆處理的事項。</div>`}
+          <div class="wk-b-row">
+            <span class="wk-b-lab">要處理</span>
+            <div class="wk-b-body">
+              ${list.map(it=>`<div class="wk-todo ${it.urgent?"urgent":""}">
+                <span class="wk-todo-t">${esc(it.text)}</span>
+                ${it.weeks>=1?`<span class="wk-delay">已延 ${it.weeks} 週</span>`:""}
+                ${!it.auto?`<button class="wk-x no-print" onclick="delWeeklyManual('${it.id}')">✕</button>`:""}
+                ${it.why?`<div class="wk-why">${esc(it.why)}</div>`:""}
+              </div>`).join("")}
+            </div>
+          </div>
+          ${stats.length?`<div class="wk-b-row"><span class="wk-b-lab">進度</span>
+            <div class="wk-b-body wk-b-stats">${stats.join("　·　")}</div></div>`:""}
+          <div class="wk-b-row"><span class="wk-b-lab">說明</span>
+            <div class="wk-b-body">
+              <input class="wk-note no-print" value="${esc(p.weeklyNote||"")}" placeholder="這週的一句話進度說明（會印在報表上）" onchange="setWeeklyNote('${p.id}',this.value)">
+              <span class="wk-note-print">${p.weeklyNote?esc(p.weeklyNote):"—"}</span>
+            </div></div>
+          ${near.length?`<div class="wk-b-row"><span class="wk-b-lab">近期</span>
+            <div class="wk-b-body wk-b-near">${near.map(e=>`<span class="${e.d<=3?"hot":""}">${esc(e.date.slice(5))} ${esc(e.label)}（${e.d===0?"今天":`剩 ${e.d} 天`}）</span>`).join("　")}</div></div>`:""}
+        </div>`;}).join("")||`<div class="wk-empty">目前沒有需要老闆處理的事項。</div>`}
 
-      <div class="inline-add no-print" style="margin-top:12px">
+      ${loose.length?`<div class="wk-block">
+        <div class="wk-b-head"><span class="wk-b-name">不分專案</span><span class="wk-b-cnt">${loose.length} 件</span></div>
+        <div class="wk-b-row"><span class="wk-b-lab">要處理</span>
+          <div class="wk-b-body">${loose.map(it=>`<div class="wk-todo">
+            <span class="wk-todo-t">${esc(it.text)}</span>
+            ${it.weeks>=1?`<span class="wk-delay">已延 ${it.weeks} 週</span>`:""}
+            <button class="wk-x no-print" onclick="delWeeklyManual('${it.id}')">✕</button></div>`).join("")}</div></div>
+      </div>`:""}
+
+      ${quiet.length?`<div class="wk-quiet">
+        <b>本週無待處理事項：</b>${quiet.map(x=>{
+          const st=weeklyProjStats(x.p);
+          return `${esc(x.p.name)}${x.p.weeklyNote?`（${esc(x.p.weeklyNote)}）`:""}`;
+        }).join("、")}
+      </div>`:""}
+
+      <div class="inline-add no-print" style="margin-top:14px">
         <select id="wk-pid" style="flex:0 0 auto">
           <option value="">（不分專案）</option>
           ${db.projects.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join("")}
@@ -2128,56 +2287,39 @@ function renderWeekly(){
         <input id="wk-new" placeholder="自己加一件要老闆處理的事" style="flex:2;min-width:200px" onkeydown="if(event.key==='Enter')addWeeklyManual()">
         <button class="btn sm primary" onclick="addWeeklyManual()">＋ 加入</button>
       </div>
-
-      ${carried.length?`<div class="wk-sec">上週交辦，還沒完成</div>
-        ${carried.map(it=>`<div class="wk-carry">
-          <span class="wk-proj">${esc(it.proj)}</span>
-          <span class="wk-carry-text">${esc(it.text)}</span>
-          <span class="wk-delay">已延 ${it.weeks} 週</span>
-        </div>`).join("")}`:""}
-
-      <div class="wk-sec">收款狀態</div>
-      <table class="wk-table">
-        <thead><tr><th>專案</th>${RECEIPT_KEYS.map(k=>`<th class="c">${RECEIPTS[k].label}</th>`).join("")}<th class="num">未收金額</th></tr></thead>
-        <tbody>
-          ${db.projects.map(p=>{
-            const un=RECEIPT_KEYS.filter(k=>!p.receipts[k].got).reduce((s,k)=>s+(+p.receipts[k].amount||0),0);
-            return `<tr>
-              <td class="wk-tname">${esc(p.name)}</td>
-              ${RECEIPT_KEYS.map(k=>{const r=p.receipts[k];
-                return `<td class="c">${r.got?`<span class="rc-ok">已收</span>`:((+r.amount)?`<span class="rc-no">未收</span>`:`<span class="rc-na">—</span>`)}</td>`;}).join("")}
-              <td class="num ${un?"rc-no":""}">${un?money(un):"—"}</td>
-            </tr>`;}).join("")}
-        </tbody>
-      </table>
     </div>
 
     <div class="wk-sheet page2">
       <div class="wk-head">
-        <div class="wk-title">各案進度一覽</div>
+        <div class="wk-title">收款與行程</div>
         <div class="wk-date">${today()}</div>
       </div>
 
-      ${db.projects.map(p=>{const s=weeklyProjStats(p);return `
-        <div class="wk-proj-row">
-          <div class="wk-pr-head">
-            <span class="wk-pr-name">${esc(p.name)}</span>
-            <span class="tag ${STAGES[p.stage].cls}" style="font-size:11.5px">${STAGES[p.stage].label}</span>
-          </div>
-          <div class="wk-pr-stats">
-            <span>設備到貨 <b>${s.equip}</b></span>
-            <span>資料格式 <b>${s.fmt}</b></span>
-            <span>資料收集 <b>${s.data}</b></span>
-            <span>期中查核點 <b>${s.cp}</b></span>
-            <span>期中報告 <b>${s.midLeft}</b></span>
-          </div>
-          <input class="wk-note no-print" value="${esc(p.weeklyNote||"")}" placeholder="這週的一句話進度說明（會印在報表上）" onchange="setWeeklyNote('${p.id}',this.value)">
-          ${p.weeklyNote?`<div class="wk-note-print">${esc(p.weeklyNote)}</div>`:""}
-        </div>`;}).join("")}
+      <div class="wk-sec">收款狀態${unpaidTot?`　<span style="font-weight:600;color:var(--rose);font-size:13px">未收合計 ${money(unpaidTot)}</span>`:""}</div>
+      <table class="wk-table">
+        <thead><tr><th style="width:26%">專案</th><th>合約與期款</th><th class="num" style="width:110px">未收金額</th></tr></thead>
+        <tbody>
+          ${db.projects.map(p=>{
+            const rc=recvStats(p);
+            if(!rc.all.length)return `<tr><td class="wk-tname">${esc(p.name)}</td><td class="rc-na">尚未建立合約</td><td class="num rc-na">—</td></tr>`;
+            return `<tr>
+              <td class="wk-tname">${esc(p.name)}</td>
+              <td>${(p.contracts||[]).map(c=>`<div class="rc-line">
+                ${c.party?`<span class="rc-party">${esc(c.party)}</span>`:""}
+                ${(c.installments||[]).map(i=>{
+                  const od=!i.got&&i.due&&daysUntil(i.due)<0;
+                  const soon=!i.got&&i.due&&daysUntil(i.due)>=0&&daysUntil(i.due)<=14;
+                  return `<span class="rc-pill ${i.got?"ok":(od?"over":(soon?"soon":"no"))}">${esc(i.label)}${i.got?" ✓":((+i.amount)?" "+money(i.amount):"")}${(!i.got&&i.due)?`<span class="rc-due">${esc(i.due.slice(5))}${od?" 逾期":""}</span>`:""}</span>`;
+                }).join("")}
+              </div>`).join("")}</td>
+              <td class="num ${rc.unpaidAmt?"rc-no":"rc-na"}">${rc.unpaidAmt?money(rc.unpaidAmt):"—"}</td>
+            </tr>`;}).join("")}
+        </tbody>
+      </table>
 
       <div class="wk-sec">未來兩週重大事件</div>
       ${evs.length?`<table class="wk-table">
-        <thead><tr><th style="width:96px">日期</th><th style="width:64px">剩餘</th><th>專案</th><th>事項</th></tr></thead>
+        <thead><tr><th style="width:92px">日期</th><th style="width:62px">剩餘</th><th style="width:26%">專案</th><th>事項</th></tr></thead>
         <tbody>${evs.map(e=>`<tr class="${e.minor?"minor":""}">
           <td>${esc(e.date)}</td><td class="${e.d<=3?"rc-no":""}">${e.d===0?"今天":`${e.d} 天`}</td>
           <td class="wk-tname">${esc(e.proj)}</td><td>${esc(e.label)}</td>
@@ -2315,6 +2457,12 @@ function renderProjects(){
     push(p.midVisit,"期中查訪",p.midVisitDone);
     push(p.finalVisit,"期末查訪",p.finalVisitDone);
     push(p.endDate,"計畫執行結束",p.endDateDone);
+    // 有應收日期且還沒收的款，也算要追的事
+    recvStats(p).unpaid.forEach(x=>{
+      if(!x.i.due)return;
+      const u=urgency(x.i.due);
+      if(u)urgent.push({proj:p.name,pid:p.id,label:insName(x.c,x.i)+" 未收",date:x.i.due,d:daysUntil(x.i.due),u});
+    });
   });
   urgent.sort((a,b)=>(a.d||0)-(b.d||0));
 
@@ -2396,6 +2544,7 @@ function renderSchedule(){
     if(p.finalVisit)push(p.finalVisit,{type:"milestone",proj:p.name,text:"期末查訪",pid:p.id,done:p.finalVisitDone});
     if(p.startDate)push(p.startDate,{type:"milestone",proj:p.name,text:"計畫執行起始",pid:p.id,done:false});
     if(p.endDate)push(p.endDate,{type:"milestone",proj:p.name,text:"計畫執行結束",pid:p.id,done:p.endDateDone});
+    allInstallments(p).forEach(x=>{if(x.i.due)push(x.i.due,{type:"recv",proj:p.name,text:"應收 "+insName(x.c,x.i)+((+x.i.amount)?`（${money(x.i.amount)}）`:""),pid:p.id,done:x.i.got});});
   });
   (db.standaloneEvents||[]).forEach(e=>push(e.date,{type:"self",text:e.text,done:e.done,id:e.id,delay:+e.delayCount||0}));
 
@@ -2439,6 +2588,9 @@ function renderSchedule(){
               if(ev.type==="milestone")
                 return `<div class="ev ev-mile ${ev.done?"done":""}" title="${ev.done?"已完成 · ":""}重要日期，到「專案設定」修改" onclick="openProject('${ev.pid}');switchTab('settings')" style="cursor:pointer">
                   <span class="ev-proj">${esc(ev.proj)}</span>${ev.done?"✓ ":""}${esc(ev.text)}</div>`;
+              if(ev.type==="recv")
+                return `<div class="ev ev-recv ${ev.done?"done":""}" title="${ev.done?"已收款 · ":""}應收款項，點一下到該專案的經費頁" onclick="openProject('${ev.pid}');switchTab('budget')" style="cursor:pointer">
+                  <span class="ev-proj">💰 ${esc(ev.proj)}</span>${ev.done?"✓ ":""}${esc(ev.text)}</div>`;
               if(ev.type==="self")
                 return `<div class="ev ev-self ${ev.done?"done":""}">
                   <div class="chk ${ev.done?"on":""}" onclick="toggleSelfEvent('${ev.id}')"></div>
@@ -2578,10 +2730,10 @@ function renderAcctAll(){
   const ratio=budTot?Math.round(spentTot/budTot*100):0;
   // 未收款統計（含金額為 0 但尚未勾選已收的期別）
   let unpaidCnt=0, unpaidAmt=0;
-  db.projects.forEach(p=>RECEIPT_KEYS.forEach(k=>{
-    const r=(p.receipts||{})[k]; if(!r||r.got)return;
-    if(+r.amount>0){unpaidCnt++; unpaidAmt+=+r.amount;}
-  }));
+  db.projects.forEach(p=>{
+    const r=recvStats(p);
+    r.unpaid.forEach(x=>{if(+x.i.amount>0){unpaidCnt++; unpaidAmt+=+x.i.amount;}});
+  });
 
   const block=p=>{
     const open=(p.acctTodos||[]).filter(a=>!a.done);
@@ -2626,7 +2778,7 @@ function renderAcctAll(){
           </div>`).join("")}</div>`:""}
         <div class="gp-sub">請款狀態</div>
         <div class="gp-stat">
-          ${RECEIPT_KEYS.map(k=>`<span>${RECEIPTS[k].label} <b class="${p.receipts[k].got?"":"bad"}">${p.receipts[k].got?"已收":"未收"}</b>${(+p.receipts[k].amount)?` <span style="color:var(--ink-soft)">${money(p.receipts[k].amount)}</span>`:""}</span>`).join("")}
+          ${(function(){const r=recvStats(p);return r.all.length?r.all.map(x=>`<span>${insName(x.c,x.i)} <b class="${x.i.got?"":"bad"}">${x.i.got?"已收":"未收"}</b>${(+x.i.amount)?` <span style="color:var(--ink-soft)">${money(x.i.amount)}</span>`:""}${(!x.i.got&&x.i.due)?` <span style="color:${daysUntil(x.i.due)<0?"var(--rose)":"var(--ink-soft)"}">${esc(x.i.due)}</span>`:""}</span>`).join(""):`<span style="color:var(--ink-soft)">尚未建立合約</span>`;})()}
         </div>
       </div>
     </div>`;
